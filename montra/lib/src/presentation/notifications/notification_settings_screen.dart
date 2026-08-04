@@ -276,7 +276,7 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
             : null,
         value: value,
         onChanged: onChanged,
-        activeColor: Colors.white,
+        activeThumbColor: Colors.white,
         activeTrackColor: primaryColor,
         inactiveThumbColor: Colors.white,
         inactiveTrackColor: const Color(0xFFE5E7EB),

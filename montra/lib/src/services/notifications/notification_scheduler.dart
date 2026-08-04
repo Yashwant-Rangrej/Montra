@@ -5,17 +5,14 @@ import 'dart:math';
 
 import 'notification_service.dart';
 import 'notification_channels.dart';
-import 'notification_models.dart';
+import 'notification_channels.dart';
 
 class NotificationScheduler {
-  final NotificationService _service;
   final Random _random = Random();
 
-  NotificationScheduler(this._service) {
+  NotificationScheduler() {
     tz.initializeTimeZones();
   }
-
-  int _generateId() => _random.nextInt(100000);
 
   Future<void> scheduleDailySummary() async {
     final now = tz.TZDateTime.now(tz.local);
@@ -23,13 +20,6 @@ class NotificationScheduler {
     if (scheduledDate.isBefore(now)) {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
-
-    final androidDetails = AndroidNotificationDetails(
-      NotificationChannels.dailySummary.id,
-      NotificationChannels.dailySummary.name,
-      channelDescription: NotificationChannels.dailySummary.description,
-      importance: Importance.high,
-    );
 
     // Using zonedSchedule for the daily summary
     // This is a placeholder since offline data aggregation would need to happen right before sending
@@ -41,12 +31,5 @@ class NotificationScheduler {
     final now = tz.TZDateTime.now(tz.local);
     var scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, 10, 0); // 10:00 AM
     scheduledDate = scheduledDate.add(const Duration(days: 7)); // 7 days from now
-
-    final androidDetails = AndroidNotificationDetails(
-      NotificationChannels.backup.id,
-      NotificationChannels.backup.name,
-      channelDescription: NotificationChannels.backup.description,
-      importance: Importance.low,
-    );
   }
 }

@@ -1,5 +1,5 @@
-import 'dart:ui';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import '../../data/database/database.dart';
 import '../../domain/entities/sms_message.dart';
 import 'sms_pipeline.dart';
@@ -23,7 +23,7 @@ void smsBackgroundHandler() async {
         
         await pipeline.processSms(message);
       } catch (e) {
-        print("Background SMS processing error: $e");
+        debugPrint("Background SMS processing error: $e");
       }
     }
   });

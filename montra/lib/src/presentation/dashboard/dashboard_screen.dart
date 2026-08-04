@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../providers/transactions_provider.dart';
 import '../../providers/repository_providers.dart';
+import '../../providers/sms_providers.dart';
 import '../../core/theme/app_theme.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
@@ -42,7 +43,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   Navigator.pop(context);
                   final result = await Permission.sms.request();
                   if (result.isGranted) {
-                    ref.read(smsParserServiceProvider).initSmsListener();
+                    ref.read(smsInterceptorProvider).initialize();
                   }
                 },
                 child: const Text('Grant Access'),
@@ -52,7 +53,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         );
       }
     } else if (status.isGranted) {
-      ref.read(smsParserServiceProvider).initSmsListener();
+      ref.read(smsInterceptorProvider).initialize();
     }
   }
 

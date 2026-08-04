@@ -1,5 +1,5 @@
-import '../../../domain/entities/parsed_transaction.dart';
-import '../../../domain/entities/sms_message.dart';
+import '../../../../domain/entities/parsed_transaction.dart';
+import '../../../../domain/entities/sms_message.dart';
 import '../base_sms_parser.dart';
 
 class HdfcParser extends BaseSmsParser {

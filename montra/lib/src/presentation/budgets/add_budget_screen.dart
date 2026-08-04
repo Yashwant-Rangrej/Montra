@@ -17,8 +17,8 @@ class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
   final _formKey = GlobalKey<FormState>();
   double _amount = 0.0;
   CategoryEntity? _selectedCategory;
-  int _selectedMonth = DateTime.now().month;
-  int _selectedYear = DateTime.now().year;
+  final int _selectedMonth = DateTime.now().month;
+  final int _selectedYear = DateTime.now().year;
 
   @override
   Widget build(BuildContext context) {
@@ -43,10 +43,10 @@ class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
                 data: (categories) {
                   return DropdownButtonFormField<CategoryEntity>(
                     decoration: const InputDecoration(labelText: 'Category (Optional)', border: OutlineInputBorder()),
-                    value: _selectedCategory,
+                    initialValue: _selectedCategory,
                     items: [
                       const DropdownMenuItem(value: null, child: Text('Overall (All Categories)')),
-                      ...categories.map((c) => DropdownMenuItem(value: c, child: Text(c.name))).toList()
+                      ...categories.map((c) => DropdownMenuItem(value: c, child: Text(c.name)))
                     ],
                     onChanged: (val) => setState(() => _selectedCategory = val),
                   );
@@ -71,7 +71,7 @@ class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
                       );
                       
                       await ref.read(budgetRepositoryProvider).insertBudget(budget);
-                      if (mounted) context.pop();
+                      if (context.mounted) context.pop();
                     }
                   },
                   child: const Padding(

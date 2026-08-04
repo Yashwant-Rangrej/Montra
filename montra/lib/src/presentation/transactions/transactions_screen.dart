@@ -16,7 +16,7 @@ class TransactionsScreen extends ConsumerWidget {
       
       String csvData = 'ID,Amount,Type,Date,Notes,Merchant,CategoryID,AccountID\n';
       for (var tx in transactions) {
-        csvData += '${tx.id},${tx.amount},${tx.type},${tx.transactionDate.toIso8601String()},"${tx.notes ?? ''}","${tx.merchant ?? ''}",${tx.categoryId ?? ''},${tx.accountId ?? ''}\n';
+        csvData += '${tx.id},${tx.amount},${tx.type},${tx.transactionDate.toIso8601String()},"${tx.notes ?? ''}","${tx.merchant ?? ''}",${tx.categoryId ?? ''},${tx.accountId}\n';
       }
       
       await file.writeAsString(csvData);

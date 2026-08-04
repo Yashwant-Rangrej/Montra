@@ -63,7 +63,7 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
                       );
                       
                       await ref.read(goalRepositoryProvider).insertGoal(goal);
-                      if (mounted) context.pop();
+                      if (context.mounted) context.pop();
                     }
                   },
                   child: const Padding(

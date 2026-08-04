@@ -1,7 +1,6 @@
 import 'package:drift/drift.dart' as drift;
+import 'package:flutter/foundation.dart';
 import '../../data/database/database.dart';
-import '../../data/database/tables.dart';
-import '../../domain/entities/parsed_transaction.dart';
 import '../../domain/entities/sms_message.dart';
 import '../categorization/categorization_engine.dart';
 import '../notifications/notification_channels.dart';
@@ -32,7 +31,7 @@ class SmsPipeline {
 
       final isDuplicate = await _duplicateDetector.isDuplicate(parsed);
       if (isDuplicate) {
-        print('Duplicate transaction detected, skipping.');
+        debugPrint('Duplicate transaction detected, skipping.');
         return;
       }
 
@@ -83,14 +82,14 @@ class SmsPipeline {
         body: 'at ${parsed.merchant}',
         channel: NotificationChannels.transactions,
         payload: NotificationPayload(
-          id: id.toString(),
-          type: NotificationType.transaction,
+          type: NotificationType.transactionDetected.name,
           route: '/transaction/$id',
+          data: {'id': id.toString()},
         ),
       );
 
     } catch (e, st) {
-      print('Error in SMS pipeline: $e\n$st');
+      debugPrint('Error in SMS pipeline: $e\n$st');
       await _saveUnrecognized(message, e.toString());
     }
   }

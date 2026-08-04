@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../../domain/entities/sms_message.dart';
 import 'sms_background_handler.dart';
 
 abstract class SmsInterceptor {

@@ -91,7 +91,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                   child: ListView(
                     children: [
                       DropdownButtonFormField<String>(
-                        value: _type,
+                        initialValue: _type,
                         decoration: const InputDecoration(labelText: 'Type'),
                         items: ['Expense', 'Income', 'Transfer']
                             .map((t) => DropdownMenuItem(value: t, child: Text(t)))
@@ -122,7 +122,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                             });
                           }
                           return DropdownButtonFormField<int>(
-                            value: _accountId,
+                            initialValue: _accountId,
                             decoration: const InputDecoration(labelText: 'Account'),
                             items: accounts.map((a) => DropdownMenuItem(value: a.id, child: Text(a.name))).toList(),
                             onChanged: (val) => setState(() => _accountId = val),
@@ -130,25 +130,25 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                           );
                         },
                         loading: () => const CircularProgressIndicator(),
-                        error: (_, __) => const Text('Error loading accounts'),
+                        error: (_, _) => const Text('Error loading accounts'),
                       ),
                       const SizedBox(height: 16),
                       categoriesAsync.when(
                         data: (categories) {
                           final filtered = categories.where((c) => c.type == _type).toList();
                           return DropdownButtonFormField<int>(
-                            value: _categoryId,
+                            initialValue: _categoryId,
                             decoration: const InputDecoration(labelText: 'Category'),
                             items: filtered.map((c) => DropdownMenuItem(value: c.id, child: Text(c.name))).toList(),
                             onChanged: (val) => setState(() => _categoryId = val),
                           );
                         },
                         loading: () => const CircularProgressIndicator(),
-                        error: (_, __) => const Text('Error loading categories'),
+                        error: (_, _) => const Text('Error loading categories'),
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
-                        value: _paymentMethod,
+                        initialValue: _paymentMethod,
                         decoration: const InputDecoration(labelText: 'Payment Method'),
                         items: ['Cash', 'Credit Card', 'Debit Card', 'UPI', 'Bank Transfer']
                             .map((t) => DropdownMenuItem(value: t, child: Text(t)))

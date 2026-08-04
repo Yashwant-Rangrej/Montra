@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/theme/app_theme.dart';
 import '../../domain/entities/account_entity.dart';
 import '../../providers/accounts_provider.dart';
 import '../../providers/repository_providers.dart';
@@ -41,7 +40,7 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _type,
+                initialValue: _type,
                 decoration: const InputDecoration(labelText: 'Account Type'),
                 items: _accountTypes.map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
                 onChanged: (val) => setState(() => _type = val ?? 'Bank'),
@@ -79,7 +78,7 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
       await repo.insertAccount(account);
       ref.invalidate(accountsProvider);
 
-      if (mounted) {
+      if (context.mounted) {
         Navigator.of(context).pop();
       }
     }
