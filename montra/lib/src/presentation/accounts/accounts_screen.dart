@@ -27,14 +27,14 @@ class AccountsScreen extends ConsumerWidget {
               final account = accounts[index];
               return ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: AppTheme.primary.withValues(alpha: 0.1),
-                  child: const Icon(Icons.account_balance, color: AppTheme.primary),
+                  backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                  child: Icon(Icons.account_balance, color: Theme.of(context).colorScheme.primary),
                 ),
-                title: Text(account.name),
-                subtitle: Text(account.type),
+                title: Text(account.name, style: Theme.of(context).textTheme.titleMedium),
+                subtitle: Text(account.type, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                 trailing: Text(
                   '\$${account.initialBalance.toStringAsFixed(2)}',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
               );
             },

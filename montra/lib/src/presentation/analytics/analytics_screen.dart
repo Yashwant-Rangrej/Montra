@@ -82,8 +82,8 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                     final List<PieChartSectionData> pieSections = [];
                     int colorIndex = 0;
                     final colors = [
-                      AppTheme.primary, AppTheme.expense, AppTheme.income, 
-                      Colors.orange, Colors.purple, Colors.teal, Colors.amber
+                      Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.tertiary, Theme.of(context).colorScheme.secondary, 
+                      Theme.of(context).colorScheme.error, Theme.of(context).colorScheme.primaryContainer, Theme.of(context).colorScheme.secondaryContainer, Theme.of(context).colorScheme.tertiaryContainer
                     ];
 
                     final List<Widget> legendWidgets = [];
@@ -101,7 +101,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                           value: sum,
                           title: '${percentage.toStringAsFixed(1)}%',
                           radius: 50,
-                          titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                          titleStyle: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.onPrimary),
                         )
                       );
 
@@ -109,7 +109,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                         ListTile(
                           leading: CircleAvatar(backgroundColor: color, radius: 10),
                           title: Text(catName),
-                          trailing: Text('\$${sum.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                          trailing: Text('\$${sum.toStringAsFixed(2)}', style: Theme.of(context).textTheme.titleMedium),
                         )
                       );
                     });
@@ -127,11 +127,11 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text('Merchant Intelligence', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                                    Text('Merchant Intelligence', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.onPrimary)),
                                     const SizedBox(height: 16),
-                                    Text('Most Visited: ${intelligence['mostFrequentMerchant']} (${intelligence['maxVisits']} visits)', style: const TextStyle(color: Colors.white)),
+                                    Text('Most Visited: ${intelligence['mostFrequentMerchant']} (${intelligence['maxVisits']} visits)', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onPrimary)),
                                     const SizedBox(height: 8),
-                                    Text('Highest Spend: ${intelligence['topSpendingMerchant']} (\$${intelligence['maxSpent'].toStringAsFixed(2)})', style: const TextStyle(color: Colors.white)),
+                                    Text('Highest Spend: ${intelligence['topSpendingMerchant']} (\$${intelligence['maxSpent'].toStringAsFixed(2)})', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onPrimary)),
                                   ],
                                 ),
                               ),
@@ -141,7 +141,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                           error: (err, stack) => const SizedBox(),
                         ),
                         const SizedBox(height: 32),
-                        const Text('Weekly Trend (Last 7 Days)', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        Text('Weekly Trend (Last 7 Days)', style: Theme.of(context).textTheme.titleLarge),
                         const SizedBox(height: 16),
                         SizedBox(
                           height: 200,
@@ -161,7 +161,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                                       final weekDay = ['M', 'T', 'W', 'T', 'F', 'S', 'S'][date.weekday - 1];
                                       return Padding(
                                         padding: const EdgeInsets.only(top: 8.0),
-                                        child: Text(daysAgo == 0 ? 'Today' : weekDay, style: const TextStyle(fontSize: 10)),
+                                        child: Text(daysAgo == 0 ? 'Today' : weekDay, style: Theme.of(context).textTheme.labelSmall),
                                       );
                                     },
                                   ),
@@ -190,7 +190,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                           ),
                         ),
                         const SizedBox(height: 32),
-                        const Text('Category Breakdown', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        Text('Category Breakdown', style: Theme.of(context).textTheme.titleLarge),
                         const SizedBox(height: 16),
                         SizedBox(
                           height: 250,
@@ -203,7 +203,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                           ),
                         ),
                         const SizedBox(height: 32),
-                        const Text('Category Breakdown', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        Text('Category Legends', style: Theme.of(context).textTheme.titleLarge),
                         const SizedBox(height: 16),
                         ...legendWidgets,
                       ],

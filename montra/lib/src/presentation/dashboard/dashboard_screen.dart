@@ -84,19 +84,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 
   Widget _buildHeader() {
-    return const Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Good Morning,', style: TextStyle(color: Colors.grey, fontSize: 16)),
-            Text('Yashwant', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            Text('Good Morning,', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+            Text('Yashwant', style: Theme.of(context).textTheme.headlineMedium),
           ],
         ),
         CircleAvatar(
-          backgroundColor: AppTheme.primaryContainer,
-          child: Icon(Icons.person, color: AppTheme.primary),
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+          child: Icon(Icons.person, color: Theme.of(context).colorScheme.primary),
         ),
       ],
     );
@@ -108,18 +108,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         return Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: AppTheme.secondary,
+            color: Theme.of(context).colorScheme.secondary,
             borderRadius: BorderRadius.circular(32),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text('Total Balance', style: TextStyle(color: Colors.white70, fontSize: 16)),
+              Text('Total Balance', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7))),
               const SizedBox(height: 8),
-              Text('\$${stats['balance']?.toStringAsFixed(2)}', style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold)),
+              Text('\$${stats['balance']?.toStringAsFixed(2)}', style: Theme.of(context).textTheme.displayMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary)),
               const SizedBox(height: 32),
               
-              const Text('Today', style: TextStyle(color: Colors.white54, fontSize: 12, fontWeight: FontWeight.bold)),
+              Text('Today', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7))),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -129,9 +129,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              const Divider(color: Colors.white24),
+              Divider(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.2)),
               const SizedBox(height: 16),
-              const Text('This Month', style: TextStyle(color: Colors.white54, fontSize: 12, fontWeight: FontWeight.bold)),
+              Text('This Month', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7))),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -153,7 +153,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     return Row(
       children: [
         CircleAvatar(
-          backgroundColor: Colors.white24,
+          backgroundColor: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.1),
           radius: 20,
           child: Icon(
             isIncome ? Icons.arrow_downward : Icons.arrow_upward,
@@ -165,8 +165,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: const TextStyle(color: Colors.white70, fontSize: 14)),
-            Text('\$${amount.toStringAsFixed(2)}', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(title, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7))),
+            Text('\$${amount.toStringAsFixed(2)}', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.onSecondary)),
           ],
         ),
       ],
@@ -177,21 +177,21 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Recent Transactions', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            Text('See All', style: TextStyle(color: AppTheme.primary, fontWeight: FontWeight.w600)),
+            Text('Recent Transactions', style: Theme.of(context).textTheme.titleLarge),
+            Text('See All', style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Theme.of(context).colorScheme.primary)),
           ],
         ),
         const SizedBox(height: 16),
         transactionsAsync.when(
           data: (transactions) {
             if (transactions.isEmpty) {
-              return const Center(
+              return Center(
                 child: Padding(
-                  padding: EdgeInsets.all(32.0),
-                  child: Text('No transactions yet', style: TextStyle(color: Colors.grey)),
+                  padding: const EdgeInsets.all(32.0),
+                  child: Text('No transactions yet', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                 ),
               );
             }
@@ -205,19 +205,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 return ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: CircleAvatar(
-                    backgroundColor: isIncome ? AppTheme.primaryContainer : const Color(0xFFFEE2E2),
+                    backgroundColor: isIncome ? AppTheme.income.withValues(alpha: 0.1) : AppTheme.expense.withValues(alpha: 0.1),
                     child: Icon(
                       isIncome ? Icons.attach_money : Icons.shopping_bag,
                       color: isIncome ? AppTheme.income : AppTheme.expense,
                     ),
                   ),
-                  title: Text(tx.merchant ?? tx.notes ?? 'Transaction', style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text(tx.type),
+                  title: Text(tx.merchant ?? tx.notes ?? 'Transaction', style: Theme.of(context).textTheme.titleMedium),
+                  subtitle: Text(tx.type, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                   trailing: Text(
                     '${isIncome ? '+' : '-'}\$${tx.amount.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: isIncome ? AppTheme.income : AppTheme.expense,
                     ),
                   ),

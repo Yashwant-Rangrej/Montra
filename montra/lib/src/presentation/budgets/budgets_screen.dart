@@ -31,7 +31,7 @@ class BudgetsScreen extends ConsumerWidget {
                   bp.category?.name ?? 'Overall',
                   bp.spentAmount,
                   bp.budget.amount,
-                  bp.category?.color != null ? Color(int.parse(bp.category!.color!.replaceFirst('#', '0xFF'))) : AppTheme.primary,
+                  bp.category?.color != null ? Color(int.parse(bp.category!.color!.replaceFirst('#', '0xFF'))) : Theme.of(context).colorScheme.primary,
                 ),
               );
             },
@@ -56,11 +56,11 @@ class BudgetsScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: Theme.of(context).cardTheme.color ?? Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Theme.of(context).cardTheme.shadowColor ?? Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           )
@@ -80,16 +80,16 @@ class BudgetsScreen extends ConsumerWidget {
                     child: CircleAvatar(backgroundColor: color, radius: 6),
                   ),
                   const SizedBox(width: 8),
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(title, style: Theme.of(context).textTheme.titleMedium),
                 ],
               ),
               if (isOverBudget)
-                const Icon(Icons.warning, color: AppTheme.error, size: 20)
+                Icon(Icons.warning, color: Theme.of(context).colorScheme.error, size: 20)
             ],
           ),
           const SizedBox(height: 16),
           Text('\$${spent.toStringAsFixed(0)} spent of \$${total.toStringAsFixed(0)}',
-            style: const TextStyle(color: Colors.grey, fontSize: 14),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: 8),
           ClipRRect(
@@ -97,8 +97,8 @@ class BudgetsScreen extends ConsumerWidget {
             child: LinearProgressIndicator(
               value: percentage,
               minHeight: 12,
-              backgroundColor: AppTheme.background,
-              valueColor: AlwaysStoppedAnimation<Color>(isOverBudget ? AppTheme.error : color),
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              valueColor: AlwaysStoppedAnimation<Color>(isOverBudget ? Theme.of(context).colorScheme.error : color),
             ),
           )
         ],

@@ -12,13 +12,13 @@ class DeveloperNotificationTestScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Developer Testing: Notifications'),
-        backgroundColor: Colors.red[900],
-        foregroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.error,
+        foregroundColor: Theme.of(context).colorScheme.onError,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const Text('These buttons trigger native notifications for testing purposes only.', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+          Text('These buttons trigger native notifications for testing purposes only.', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.error, fontWeight: FontWeight.bold)),
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () => manager.showDailySummary(

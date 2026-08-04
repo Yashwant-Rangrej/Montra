@@ -48,11 +48,11 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('New Transaction'),
-        backgroundColor: _type == 'Expense' ? AppTheme.expense : AppTheme.income,
-        foregroundColor: Colors.white,
+        backgroundColor: _type == 'Expense' ? Theme.of(context).colorScheme.tertiary : Theme.of(context).colorScheme.secondary,
+        foregroundColor: _type == 'Expense' ? Theme.of(context).colorScheme.onTertiary : Theme.of(context).colorScheme.onSecondary,
       ),
       body: Container(
-        color: _type == 'Expense' ? AppTheme.expense : AppTheme.income,
+        color: _type == 'Expense' ? Theme.of(context).colorScheme.tertiary : Theme.of(context).colorScheme.secondary,
         child: Column(
           children: [
             Padding(
@@ -60,15 +60,24 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('How much?', style: TextStyle(color: Colors.white70, fontSize: 18)),
+                  Text('How much?', style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: _type == 'Expense' ? Theme.of(context).colorScheme.onTertiary.withValues(alpha: 0.7) : Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7)
+                  )),
                   TextFormField(
                     initialValue: '',
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    style: const TextStyle(color: Colors.white, fontSize: 48, fontWeight: FontWeight.bold),
-                    decoration: const InputDecoration(
+                    style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                      color: _type == 'Expense' ? Theme.of(context).colorScheme.onTertiary : Theme.of(context).colorScheme.onSecondary
+                    ),
+                    decoration: InputDecoration(
                       prefixText: '\$ ',
-                      prefixStyle: TextStyle(color: Colors.white, fontSize: 48, fontWeight: FontWeight.bold),
+                      prefixStyle: Theme.of(context).textTheme.displayLarge?.copyWith(
+                        color: _type == 'Expense' ? Theme.of(context).colorScheme.onTertiary : Theme.of(context).colorScheme.onSecondary
+                      ),
                       border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      fillColor: Colors.transparent,
                     ),
                     onChanged: (val) => _amount = double.tryParse(val) ?? 0.0,
                     validator: (val) => (double.tryParse(val ?? '') ?? 0.0) <= 0 ? 'Enter valid amount' : null,
@@ -79,9 +88,9 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(24.0),
-                decoration: const BoxDecoration(
-                  color: AppTheme.surface,
-                  borderRadius: BorderRadius.only(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(32),
                     topRight: Radius.circular(32),
                   ),
@@ -215,7 +224,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       
       await repo.insertTransaction(transaction);
       
-      if (mounted) {
+      if (context.mounted) {
         Navigator.of(context).pop();
       }
     }

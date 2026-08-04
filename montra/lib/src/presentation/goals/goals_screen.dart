@@ -29,7 +29,7 @@ class GoalsScreen extends ConsumerWidget {
               
               return Card(
                 elevation: 0,
-                color: AppTheme.surface,
+                color: Theme.of(context).cardTheme.color ?? Theme.of(context).colorScheme.surface,
                 margin: const EdgeInsets.only(bottom: 16),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -39,25 +39,25 @@ class GoalsScreen extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(goal.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                          Text(goal.name, style: Theme.of(context).textTheme.titleLarge),
                           Text(
                             '\$${goal.savedAmount.toStringAsFixed(0)} / \$${goal.targetAmount.toStringAsFixed(0)}',
-                            style: const TextStyle(color: Colors.grey),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
                         ],
                       ),
                       const SizedBox(height: 12),
                       LinearProgressIndicator(
                         value: progress,
-                        backgroundColor: AppTheme.primaryContainer,
-                        color: AppTheme.primary,
+                        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                        color: Theme.of(context).colorScheme.primary,
                         minHeight: 8,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         '${(progress * 100).toStringAsFixed(1)}% Completed',
-                        style: const TextStyle(color: Colors.grey, fontSize: 12),
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                       ),
                     ],
                   ),
@@ -71,7 +71,7 @@ class GoalsScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/add-goal'),
-        backgroundColor: AppTheme.primary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         child: const Icon(Icons.add),
       ),
     );
@@ -82,16 +82,16 @@ class GoalsScreen extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.flag_outlined, size: 64, color: Colors.grey),
+          Icon(Icons.flag_outlined, size: 64, color: Theme.of(context).colorScheme.outline),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'No Goals Yet',
-            style: TextStyle(fontSize: 20, color: Colors.grey, fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.outline),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Start tracking your savings targets.',
-            style: TextStyle(color: Colors.grey),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.outline),
           ),
           const SizedBox(height: 24),
           ElevatedButton(

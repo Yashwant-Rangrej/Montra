@@ -40,27 +40,22 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
 
   @override
   Widget build(BuildContext context) {
-    const bgColor = Color(0xFFFDF9EE);
-    const textColor = Color(0xFF1B3B7B);
     final settings = ref.watch(notificationSettingsProvider);
     final notifier = ref.read(notificationSettingsProvider.notifier);
 
     return Scaffold(
-      backgroundColor: bgColor,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: bgColor,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: textColor),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
           onPressed: () => context.pop(),
         ),
-        title: const Text(
+        title: Text(
           'Notification Settings',
-          style: TextStyle(
-            color: textColor,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.titleLarge,
         ),
         centerTitle: true,
       ),
@@ -72,28 +67,28 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
               margin: const EdgeInsets.only(bottom: 24),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFFEF2F2),
+                color: Theme.of(context).colorScheme.errorContainer,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFF87171)),
+                border: Border.all(color: Theme.of(context).colorScheme.error.withValues(alpha: 0.5)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Notifications Disabled',
-                    style: TextStyle(color: Color(0xFF991B1B), fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onErrorContainer),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'Please enable notifications in your device settings to receive alerts and summaries.',
-                    style: TextStyle(color: Color(0xFF991B1B), fontSize: 13),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onErrorContainer),
                   ),
                   const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: _requestPermission,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFDC2626),
-                      foregroundColor: Colors.white,
+                      backgroundColor: Theme.of(context).colorScheme.error,
+                      foregroundColor: Theme.of(context).colorScheme.onError,
                     ),
                     child: const Text('Enable Notifications'),
                   ),
@@ -218,21 +213,16 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
       padding: const EdgeInsets.only(bottom: 12.0, left: 4.0),
       child: Text(
         title,
-        style: const TextStyle(
-          color: Color(0xFF6B7280),
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 0.5,
-        ),
+        style: Theme.of(context).textTheme.labelLarge,
       ),
     );
   }
 
   Widget _buildDivider() {
     return Container(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: const Divider(height: 1, color: Color(0xFFF3F4F6)),
+      child: Divider(height: 1, color: Theme.of(context).colorScheme.surfaceContainerHighest),
     );
   }
 
@@ -244,13 +234,9 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
     required bool isTop,
     required bool isBottom,
   }) {
-    const textColor = Color(0xFF1B3B7B);
-    const subTextColor = Color(0xFF4B5563);
-    const primaryColor = Color(0xFF2563EB); // Blue for active switches
-
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.vertical(
           top: isTop ? const Radius.circular(16) : Radius.zero,
           bottom: isBottom ? const Radius.circular(16) : Radius.zero,
@@ -259,27 +245,20 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
       child: SwitchListTile(
         title: Text(
           title,
-          style: const TextStyle(
-            color: textColor,
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-          ),
+          style: Theme.of(context).textTheme.titleMedium,
         ),
         subtitle: subtitle != null
             ? Text(
                 subtitle,
-                style: const TextStyle(
-                  color: subTextColor,
-                  fontSize: 12,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               )
             : null,
         value: value,
         onChanged: onChanged,
-        activeThumbColor: Colors.white,
-        activeTrackColor: primaryColor,
-        inactiveThumbColor: Colors.white,
-        inactiveTrackColor: const Color(0xFFE5E7EB),
+        activeThumbColor: Theme.of(context).colorScheme.onPrimary,
+        activeTrackColor: Theme.of(context).colorScheme.primary,
+        inactiveThumbColor: Theme.of(context).colorScheme.surface,
+        inactiveTrackColor: Theme.of(context).colorScheme.surfaceContainerHighest,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       ),
     );

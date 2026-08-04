@@ -28,20 +28,20 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
           child: Column(
             children: [
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Goal Name', border: OutlineInputBorder()),
+                decoration: const InputDecoration(labelText: 'Goal Name'),
                 validator: (value) => value == null || value.isEmpty ? 'Required' : null,
                 onSaved: (value) => _name = value!,
               ),
               const SizedBox(height: 16),
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Target Amount (\$)', border: OutlineInputBorder()),
+                decoration: const InputDecoration(labelText: 'Target Amount (\$)'),
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 validator: (value) => value == null || value.isEmpty ? 'Required' : null,
                 onSaved: (value) => _targetAmount = double.parse(value!),
               ),
               const SizedBox(height: 16),
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Already Saved Amount (\$)', border: OutlineInputBorder()),
+                decoration: const InputDecoration(labelText: 'Already Saved Amount (\$)'),
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 initialValue: '0',
                 onSaved: (value) => _savedAmount = double.tryParse(value ?? '0') ?? 0,

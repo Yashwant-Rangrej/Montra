@@ -64,14 +64,9 @@ class TransactionsScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Search merchant, note, category...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                filled: true,
-                fillColor: AppTheme.surface,
+                prefixIcon: Icon(Icons.search),
               ),
               onChanged: (value) {
                 ref.read(searchQueryProvider.notifier).state = value;
@@ -98,19 +93,17 @@ class TransactionsScreen extends ConsumerWidget {
                         margin: const EdgeInsets.only(bottom: 12),
                         child: ListTile(
                           leading: CircleAvatar(
-                            backgroundColor: isIncome ? AppTheme.primaryContainer : const Color(0xFFFEE2E2),
+                            backgroundColor: isIncome ? AppTheme.income.withValues(alpha: 0.1) : AppTheme.expense.withValues(alpha: 0.1),
                             child: Icon(
                               isIncome ? Icons.attach_money : Icons.shopping_bag,
                               color: isIncome ? AppTheme.income : AppTheme.expense,
                             ),
                           ),
-                          title: Text(tx.merchant ?? tx.notes ?? 'Transaction', style: const TextStyle(fontWeight: FontWeight.bold)),
-                          subtitle: Text('${tx.type} • ${tx.transactionDate.day}/${tx.transactionDate.month}/${tx.transactionDate.year}'),
+                          title: Text(tx.merchant ?? tx.notes ?? 'Transaction', style: Theme.of(context).textTheme.titleMedium),
+                          subtitle: Text('${tx.type} • ${tx.transactionDate.day}/${tx.transactionDate.month}/${tx.transactionDate.year}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                           trailing: Text(
                             '${isIncome ? '+' : '-'}\$${tx.amount.toStringAsFixed(2)}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               color: isIncome ? AppTheme.income : AppTheme.expense,
                             ),
                           ),

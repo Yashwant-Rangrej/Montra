@@ -33,7 +33,7 @@ class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
           child: Column(
             children: [
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Budget Amount (\$)', border: OutlineInputBorder()),
+                decoration: const InputDecoration(labelText: 'Budget Amount (\$)'),
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 validator: (value) => value == null || value.isEmpty ? 'Required' : null,
                 onSaved: (value) => _amount = double.parse(value!),
@@ -42,7 +42,7 @@ class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
               categoriesAsync.when(
                 data: (categories) {
                   return DropdownButtonFormField<CategoryEntity>(
-                    decoration: const InputDecoration(labelText: 'Category (Optional)', border: OutlineInputBorder()),
+                    decoration: const InputDecoration(labelText: 'Category (Optional)'),
                     initialValue: _selectedCategory,
                     items: [
                       const DropdownMenuItem(value: null, child: Text('Overall (All Categories)')),

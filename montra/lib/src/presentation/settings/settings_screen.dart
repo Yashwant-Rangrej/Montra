@@ -14,7 +14,7 @@ class SettingsScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('Settings')),
       body: ListView(
         children: [
-          const Text('General', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+          Text('General', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.outline)),
           const SizedBox(height: 16),
           ListTile(
             title: const Text('Accounts'),
@@ -42,7 +42,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const Divider(),
           const SizedBox(height: 16),
-          const Text('Security', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+          Text('Security', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.outline)),
           const SizedBox(height: 16),
           SwitchListTile(
             title: const Text('App Lock (Biometrics/PIN)'),
@@ -65,8 +65,8 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(),
           if (kDebugMode) ...[
             ListTile(
-              leading: const Icon(Icons.bug_report, color: Colors.red),
-              title: const Text('Developer Notification Test', style: TextStyle(color: Colors.red)),
+              leading: Icon(Icons.bug_report, color: Theme.of(context).colorScheme.error),
+              title: Text('Developer Notification Test', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.error)),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
               onTap: () {
                 context.push('/developer-notification-test');

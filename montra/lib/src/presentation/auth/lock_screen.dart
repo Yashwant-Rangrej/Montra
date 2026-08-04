@@ -49,22 +49,20 @@ class _LockScreenState extends ConsumerState<LockScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.lock, size: 80, color: Colors.white),
+            Icon(Icons.lock, size: 80, color: Theme.of(context).colorScheme.onPrimary),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Montra is Locked',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
             const SizedBox(height: 48),
             _isAuthenticating
-                ? const CircularProgressIndicator(color: Colors.white)
+                ? CircularProgressIndicator(color: Theme.of(context).colorScheme.onPrimary)
                 : ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
+                      backgroundColor: Theme.of(context).colorScheme.onPrimary,
                       foregroundColor: Theme.of(context).colorScheme.primary,
                     ),
                     onPressed: _authenticate,
