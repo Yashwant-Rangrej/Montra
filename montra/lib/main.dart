@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'src/providers/notification_providers.dart';
 import 'src/services/notifications/notification_models.dart';
+import 'src/providers/sms_providers.dart';
+import 'src/data/repositories/notification_repository.dart';
 
 import 'src/core/routing/app_router.dart';
 import 'src/core/theme/app_theme.dart';
@@ -29,6 +31,15 @@ class _MontraAppState extends ConsumerState<MontraApp> {
   void initState() {
     super.initState();
     _initNotifications();
+    _initSmsListener();
+  }
+
+  Future<void> _initSmsListener() async {
+    final settings = ref.read(notificationSettingsProvider);
+    if (settings.smsDetectionEnabled) {
+      final smsService = ref.read(smsServiceProvider);
+      smsService.startListening();
+    }
   }
 
   Future<void> _initNotifications() async {

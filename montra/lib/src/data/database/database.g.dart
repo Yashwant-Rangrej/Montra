@@ -2484,18 +2484,6 @@ class $NotificationsTable extends Notifications
         type: DriftSqlType.dateTime,
         requiredDuringInsert: true,
       );
-  static const VerificationMeta _isReadMeta = const VerificationMeta('isRead');
-  @override
-  late final GeneratedColumn<bool> isRead = GeneratedColumn<bool>(
-    'is_read',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_read" IN (0, 1))',
-    ),
-  );
   static const VerificationMeta _typeMeta = const VerificationMeta('type');
   @override
   late final GeneratedColumn<String> type = GeneratedColumn<String>(
@@ -2505,14 +2493,39 @@ class $NotificationsTable extends Notifications
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _isReadMeta = const VerificationMeta('isRead');
+  @override
+  late final GeneratedColumn<bool> isRead = GeneratedColumn<bool>(
+    'is_read',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_read" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _payloadMeta = const VerificationMeta(
+    'payload',
+  );
+  @override
+  late final GeneratedColumn<String> payload = GeneratedColumn<String>(
+    'payload',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     title,
     body,
     notificationDate,
-    isRead,
     type,
+    isRead,
+    payload,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2556,14 +2569,6 @@ class $NotificationsTable extends Notifications
     } else if (isInserting) {
       context.missing(_notificationDateMeta);
     }
-    if (data.containsKey('is_read')) {
-      context.handle(
-        _isReadMeta,
-        isRead.isAcceptableOrUnknown(data['is_read']!, _isReadMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_isReadMeta);
-    }
     if (data.containsKey('type')) {
       context.handle(
         _typeMeta,
@@ -2571,6 +2576,18 @@ class $NotificationsTable extends Notifications
       );
     } else if (isInserting) {
       context.missing(_typeMeta);
+    }
+    if (data.containsKey('is_read')) {
+      context.handle(
+        _isReadMeta,
+        isRead.isAcceptableOrUnknown(data['is_read']!, _isReadMeta),
+      );
+    }
+    if (data.containsKey('payload')) {
+      context.handle(
+        _payloadMeta,
+        payload.isAcceptableOrUnknown(data['payload']!, _payloadMeta),
+      );
     }
     return context;
   }
@@ -2597,14 +2614,18 @@ class $NotificationsTable extends Notifications
         DriftSqlType.dateTime,
         data['${effectivePrefix}notification_date'],
       )!,
-      isRead: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_read'],
-      )!,
       type: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}type'],
       )!,
+      isRead: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_read'],
+      )!,
+      payload: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload'],
+      ),
     );
   }
 
@@ -2619,15 +2640,17 @@ class Notification extends DataClass implements Insertable<Notification> {
   final String title;
   final String body;
   final DateTime notificationDate;
-  final bool isRead;
   final String type;
+  final bool isRead;
+  final String? payload;
   const Notification({
     required this.id,
     required this.title,
     required this.body,
     required this.notificationDate,
-    required this.isRead,
     required this.type,
+    required this.isRead,
+    this.payload,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2636,8 +2659,11 @@ class Notification extends DataClass implements Insertable<Notification> {
     map['title'] = Variable<String>(title);
     map['body'] = Variable<String>(body);
     map['notification_date'] = Variable<DateTime>(notificationDate);
-    map['is_read'] = Variable<bool>(isRead);
     map['type'] = Variable<String>(type);
+    map['is_read'] = Variable<bool>(isRead);
+    if (!nullToAbsent || payload != null) {
+      map['payload'] = Variable<String>(payload);
+    }
     return map;
   }
 
@@ -2647,8 +2673,11 @@ class Notification extends DataClass implements Insertable<Notification> {
       title: Value(title),
       body: Value(body),
       notificationDate: Value(notificationDate),
-      isRead: Value(isRead),
       type: Value(type),
+      isRead: Value(isRead),
+      payload: payload == null && nullToAbsent
+          ? const Value.absent()
+          : Value(payload),
     );
   }
 
@@ -2662,8 +2691,9 @@ class Notification extends DataClass implements Insertable<Notification> {
       title: serializer.fromJson<String>(json['title']),
       body: serializer.fromJson<String>(json['body']),
       notificationDate: serializer.fromJson<DateTime>(json['notificationDate']),
-      isRead: serializer.fromJson<bool>(json['isRead']),
       type: serializer.fromJson<String>(json['type']),
+      isRead: serializer.fromJson<bool>(json['isRead']),
+      payload: serializer.fromJson<String?>(json['payload']),
     );
   }
   @override
@@ -2674,8 +2704,9 @@ class Notification extends DataClass implements Insertable<Notification> {
       'title': serializer.toJson<String>(title),
       'body': serializer.toJson<String>(body),
       'notificationDate': serializer.toJson<DateTime>(notificationDate),
-      'isRead': serializer.toJson<bool>(isRead),
       'type': serializer.toJson<String>(type),
+      'isRead': serializer.toJson<bool>(isRead),
+      'payload': serializer.toJson<String?>(payload),
     };
   }
 
@@ -2684,15 +2715,17 @@ class Notification extends DataClass implements Insertable<Notification> {
     String? title,
     String? body,
     DateTime? notificationDate,
-    bool? isRead,
     String? type,
+    bool? isRead,
+    Value<String?> payload = const Value.absent(),
   }) => Notification(
     id: id ?? this.id,
     title: title ?? this.title,
     body: body ?? this.body,
     notificationDate: notificationDate ?? this.notificationDate,
-    isRead: isRead ?? this.isRead,
     type: type ?? this.type,
+    isRead: isRead ?? this.isRead,
+    payload: payload.present ? payload.value : this.payload,
   );
   Notification copyWithCompanion(NotificationsCompanion data) {
     return Notification(
@@ -2702,8 +2735,9 @@ class Notification extends DataClass implements Insertable<Notification> {
       notificationDate: data.notificationDate.present
           ? data.notificationDate.value
           : this.notificationDate,
-      isRead: data.isRead.present ? data.isRead.value : this.isRead,
       type: data.type.present ? data.type.value : this.type,
+      isRead: data.isRead.present ? data.isRead.value : this.isRead,
+      payload: data.payload.present ? data.payload.value : this.payload,
     );
   }
 
@@ -2714,15 +2748,16 @@ class Notification extends DataClass implements Insertable<Notification> {
           ..write('title: $title, ')
           ..write('body: $body, ')
           ..write('notificationDate: $notificationDate, ')
+          ..write('type: $type, ')
           ..write('isRead: $isRead, ')
-          ..write('type: $type')
+          ..write('payload: $payload')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode =>
-      Object.hash(id, title, body, notificationDate, isRead, type);
+      Object.hash(id, title, body, notificationDate, type, isRead, payload);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2731,8 +2766,9 @@ class Notification extends DataClass implements Insertable<Notification> {
           other.title == this.title &&
           other.body == this.body &&
           other.notificationDate == this.notificationDate &&
+          other.type == this.type &&
           other.isRead == this.isRead &&
-          other.type == this.type);
+          other.payload == this.payload);
 }
 
 class NotificationsCompanion extends UpdateCompanion<Notification> {
@@ -2740,43 +2776,47 @@ class NotificationsCompanion extends UpdateCompanion<Notification> {
   final Value<String> title;
   final Value<String> body;
   final Value<DateTime> notificationDate;
-  final Value<bool> isRead;
   final Value<String> type;
+  final Value<bool> isRead;
+  final Value<String?> payload;
   const NotificationsCompanion({
     this.id = const Value.absent(),
     this.title = const Value.absent(),
     this.body = const Value.absent(),
     this.notificationDate = const Value.absent(),
-    this.isRead = const Value.absent(),
     this.type = const Value.absent(),
+    this.isRead = const Value.absent(),
+    this.payload = const Value.absent(),
   });
   NotificationsCompanion.insert({
     this.id = const Value.absent(),
     required String title,
     required String body,
     required DateTime notificationDate,
-    required bool isRead,
     required String type,
+    this.isRead = const Value.absent(),
+    this.payload = const Value.absent(),
   }) : title = Value(title),
        body = Value(body),
        notificationDate = Value(notificationDate),
-       isRead = Value(isRead),
        type = Value(type);
   static Insertable<Notification> custom({
     Expression<int>? id,
     Expression<String>? title,
     Expression<String>? body,
     Expression<DateTime>? notificationDate,
-    Expression<bool>? isRead,
     Expression<String>? type,
+    Expression<bool>? isRead,
+    Expression<String>? payload,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (title != null) 'title': title,
       if (body != null) 'body': body,
       if (notificationDate != null) 'notification_date': notificationDate,
-      if (isRead != null) 'is_read': isRead,
       if (type != null) 'type': type,
+      if (isRead != null) 'is_read': isRead,
+      if (payload != null) 'payload': payload,
     });
   }
 
@@ -2785,16 +2825,18 @@ class NotificationsCompanion extends UpdateCompanion<Notification> {
     Value<String>? title,
     Value<String>? body,
     Value<DateTime>? notificationDate,
-    Value<bool>? isRead,
     Value<String>? type,
+    Value<bool>? isRead,
+    Value<String?>? payload,
   }) {
     return NotificationsCompanion(
       id: id ?? this.id,
       title: title ?? this.title,
       body: body ?? this.body,
       notificationDate: notificationDate ?? this.notificationDate,
-      isRead: isRead ?? this.isRead,
       type: type ?? this.type,
+      isRead: isRead ?? this.isRead,
+      payload: payload ?? this.payload,
     );
   }
 
@@ -2813,11 +2855,14 @@ class NotificationsCompanion extends UpdateCompanion<Notification> {
     if (notificationDate.present) {
       map['notification_date'] = Variable<DateTime>(notificationDate.value);
     }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
     if (isRead.present) {
       map['is_read'] = Variable<bool>(isRead.value);
     }
-    if (type.present) {
-      map['type'] = Variable<String>(type.value);
+    if (payload.present) {
+      map['payload'] = Variable<String>(payload.value);
     }
     return map;
   }
@@ -2829,8 +2874,9 @@ class NotificationsCompanion extends UpdateCompanion<Notification> {
           ..write('title: $title, ')
           ..write('body: $body, ')
           ..write('notificationDate: $notificationDate, ')
+          ..write('type: $type, ')
           ..write('isRead: $isRead, ')
-          ..write('type: $type')
+          ..write('payload: $payload')
           ..write(')'))
         .toString();
   }
@@ -3511,6 +3557,349 @@ class TransactionTagsCompanion extends UpdateCompanion<TransactionTag> {
   }
 }
 
+class $UnrecognizedSmsTable extends UnrecognizedSms
+    with TableInfo<$UnrecognizedSmsTable, UnrecognizedSm> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UnrecognizedSmsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _senderMeta = const VerificationMeta('sender');
+  @override
+  late final GeneratedColumn<String> sender = GeneratedColumn<String>(
+    'sender',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _receivedAtMeta = const VerificationMeta(
+    'receivedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> receivedAt = GeneratedColumn<DateTime>(
+    'received_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _reasonMeta = const VerificationMeta('reason');
+  @override
+  late final GeneratedColumn<String> reason = GeneratedColumn<String>(
+    'reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, sender, body, receivedAt, reason];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'unrecognized_sms';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<UnrecognizedSm> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('sender')) {
+      context.handle(
+        _senderMeta,
+        sender.isAcceptableOrUnknown(data['sender']!, _senderMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_senderMeta);
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bodyMeta);
+    }
+    if (data.containsKey('received_at')) {
+      context.handle(
+        _receivedAtMeta,
+        receivedAt.isAcceptableOrUnknown(data['received_at']!, _receivedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_receivedAtMeta);
+    }
+    if (data.containsKey('reason')) {
+      context.handle(
+        _reasonMeta,
+        reason.isAcceptableOrUnknown(data['reason']!, _reasonMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  UnrecognizedSm map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UnrecognizedSm(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      sender: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sender'],
+      )!,
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      )!,
+      receivedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}received_at'],
+      )!,
+      reason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reason'],
+      ),
+    );
+  }
+
+  @override
+  $UnrecognizedSmsTable createAlias(String alias) {
+    return $UnrecognizedSmsTable(attachedDatabase, alias);
+  }
+}
+
+class UnrecognizedSm extends DataClass implements Insertable<UnrecognizedSm> {
+  final int id;
+  final String sender;
+  final String body;
+  final DateTime receivedAt;
+  final String? reason;
+  const UnrecognizedSm({
+    required this.id,
+    required this.sender,
+    required this.body,
+    required this.receivedAt,
+    this.reason,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['sender'] = Variable<String>(sender);
+    map['body'] = Variable<String>(body);
+    map['received_at'] = Variable<DateTime>(receivedAt);
+    if (!nullToAbsent || reason != null) {
+      map['reason'] = Variable<String>(reason);
+    }
+    return map;
+  }
+
+  UnrecognizedSmsCompanion toCompanion(bool nullToAbsent) {
+    return UnrecognizedSmsCompanion(
+      id: Value(id),
+      sender: Value(sender),
+      body: Value(body),
+      receivedAt: Value(receivedAt),
+      reason: reason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reason),
+    );
+  }
+
+  factory UnrecognizedSm.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UnrecognizedSm(
+      id: serializer.fromJson<int>(json['id']),
+      sender: serializer.fromJson<String>(json['sender']),
+      body: serializer.fromJson<String>(json['body']),
+      receivedAt: serializer.fromJson<DateTime>(json['receivedAt']),
+      reason: serializer.fromJson<String?>(json['reason']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'sender': serializer.toJson<String>(sender),
+      'body': serializer.toJson<String>(body),
+      'receivedAt': serializer.toJson<DateTime>(receivedAt),
+      'reason': serializer.toJson<String?>(reason),
+    };
+  }
+
+  UnrecognizedSm copyWith({
+    int? id,
+    String? sender,
+    String? body,
+    DateTime? receivedAt,
+    Value<String?> reason = const Value.absent(),
+  }) => UnrecognizedSm(
+    id: id ?? this.id,
+    sender: sender ?? this.sender,
+    body: body ?? this.body,
+    receivedAt: receivedAt ?? this.receivedAt,
+    reason: reason.present ? reason.value : this.reason,
+  );
+  UnrecognizedSm copyWithCompanion(UnrecognizedSmsCompanion data) {
+    return UnrecognizedSm(
+      id: data.id.present ? data.id.value : this.id,
+      sender: data.sender.present ? data.sender.value : this.sender,
+      body: data.body.present ? data.body.value : this.body,
+      receivedAt: data.receivedAt.present
+          ? data.receivedAt.value
+          : this.receivedAt,
+      reason: data.reason.present ? data.reason.value : this.reason,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UnrecognizedSm(')
+          ..write('id: $id, ')
+          ..write('sender: $sender, ')
+          ..write('body: $body, ')
+          ..write('receivedAt: $receivedAt, ')
+          ..write('reason: $reason')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, sender, body, receivedAt, reason);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UnrecognizedSm &&
+          other.id == this.id &&
+          other.sender == this.sender &&
+          other.body == this.body &&
+          other.receivedAt == this.receivedAt &&
+          other.reason == this.reason);
+}
+
+class UnrecognizedSmsCompanion extends UpdateCompanion<UnrecognizedSm> {
+  final Value<int> id;
+  final Value<String> sender;
+  final Value<String> body;
+  final Value<DateTime> receivedAt;
+  final Value<String?> reason;
+  const UnrecognizedSmsCompanion({
+    this.id = const Value.absent(),
+    this.sender = const Value.absent(),
+    this.body = const Value.absent(),
+    this.receivedAt = const Value.absent(),
+    this.reason = const Value.absent(),
+  });
+  UnrecognizedSmsCompanion.insert({
+    this.id = const Value.absent(),
+    required String sender,
+    required String body,
+    required DateTime receivedAt,
+    this.reason = const Value.absent(),
+  }) : sender = Value(sender),
+       body = Value(body),
+       receivedAt = Value(receivedAt);
+  static Insertable<UnrecognizedSm> custom({
+    Expression<int>? id,
+    Expression<String>? sender,
+    Expression<String>? body,
+    Expression<DateTime>? receivedAt,
+    Expression<String>? reason,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (sender != null) 'sender': sender,
+      if (body != null) 'body': body,
+      if (receivedAt != null) 'received_at': receivedAt,
+      if (reason != null) 'reason': reason,
+    });
+  }
+
+  UnrecognizedSmsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? sender,
+    Value<String>? body,
+    Value<DateTime>? receivedAt,
+    Value<String?>? reason,
+  }) {
+    return UnrecognizedSmsCompanion(
+      id: id ?? this.id,
+      sender: sender ?? this.sender,
+      body: body ?? this.body,
+      receivedAt: receivedAt ?? this.receivedAt,
+      reason: reason ?? this.reason,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (sender.present) {
+      map['sender'] = Variable<String>(sender.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (receivedAt.present) {
+      map['received_at'] = Variable<DateTime>(receivedAt.value);
+    }
+    if (reason.present) {
+      map['reason'] = Variable<String>(reason.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UnrecognizedSmsCompanion(')
+          ..write('id: $id, ')
+          ..write('sender: $sender, ')
+          ..write('body: $body, ')
+          ..write('receivedAt: $receivedAt, ')
+          ..write('reason: $reason')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -3523,6 +3912,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $SettingsTable settings = $SettingsTable(this);
   late final $TagsTable tags = $TagsTable(this);
   late final $TransactionTagsTable transactionTags = $TransactionTagsTable(
+    this,
+  );
+  late final $UnrecognizedSmsTable unrecognizedSms = $UnrecognizedSmsTable(
     this,
   );
   @override
@@ -3539,6 +3931,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     settings,
     tags,
     transactionTags,
+    unrecognizedSms,
   ];
 }
 
@@ -4764,8 +5157,9 @@ typedef $$NotificationsTableCreateCompanionBuilder =
       required String title,
       required String body,
       required DateTime notificationDate,
-      required bool isRead,
       required String type,
+      Value<bool> isRead,
+      Value<String?> payload,
     });
 typedef $$NotificationsTableUpdateCompanionBuilder =
     NotificationsCompanion Function({
@@ -4773,8 +5167,9 @@ typedef $$NotificationsTableUpdateCompanionBuilder =
       Value<String> title,
       Value<String> body,
       Value<DateTime> notificationDate,
-      Value<bool> isRead,
       Value<String> type,
+      Value<bool> isRead,
+      Value<String?> payload,
     });
 
 class $$NotificationsTableFilterComposer
@@ -4806,13 +5201,18 @@ class $$NotificationsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<bool> get isRead => $composableBuilder(
     column: $table.isRead,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get type => $composableBuilder(
-    column: $table.type,
+  ColumnFilters<String> get payload => $composableBuilder(
+    column: $table.payload,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -4846,13 +5246,18 @@ class $$NotificationsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get isRead => $composableBuilder(
     column: $table.isRead,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get type => $composableBuilder(
-    column: $table.type,
+  ColumnOrderings<String> get payload => $composableBuilder(
+    column: $table.payload,
     builder: (column) => ColumnOrderings(column),
   );
 }
@@ -4880,11 +5285,14 @@ class $$NotificationsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
   GeneratedColumn<bool> get isRead =>
       $composableBuilder(column: $table.isRead, builder: (column) => column);
 
-  GeneratedColumn<String> get type =>
-      $composableBuilder(column: $table.type, builder: (column) => column);
+  GeneratedColumn<String> get payload =>
+      $composableBuilder(column: $table.payload, builder: (column) => column);
 }
 
 class $$NotificationsTableTableManager
@@ -4922,15 +5330,17 @@ class $$NotificationsTableTableManager
                 Value<String> title = const Value.absent(),
                 Value<String> body = const Value.absent(),
                 Value<DateTime> notificationDate = const Value.absent(),
-                Value<bool> isRead = const Value.absent(),
                 Value<String> type = const Value.absent(),
+                Value<bool> isRead = const Value.absent(),
+                Value<String?> payload = const Value.absent(),
               }) => NotificationsCompanion(
                 id: id,
                 title: title,
                 body: body,
                 notificationDate: notificationDate,
-                isRead: isRead,
                 type: type,
+                isRead: isRead,
+                payload: payload,
               ),
           createCompanionCallback:
               ({
@@ -4938,15 +5348,17 @@ class $$NotificationsTableTableManager
                 required String title,
                 required String body,
                 required DateTime notificationDate,
-                required bool isRead,
                 required String type,
+                Value<bool> isRead = const Value.absent(),
+                Value<String?> payload = const Value.absent(),
               }) => NotificationsCompanion.insert(
                 id: id,
                 title: title,
                 body: body,
                 notificationDate: notificationDate,
-                isRead: isRead,
                 type: type,
+                isRead: isRead,
+                payload: payload,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -5397,6 +5809,208 @@ typedef $$TransactionTagsTableProcessedTableManager =
       TransactionTag,
       PrefetchHooks Function()
     >;
+typedef $$UnrecognizedSmsTableCreateCompanionBuilder =
+    UnrecognizedSmsCompanion Function({
+      Value<int> id,
+      required String sender,
+      required String body,
+      required DateTime receivedAt,
+      Value<String?> reason,
+    });
+typedef $$UnrecognizedSmsTableUpdateCompanionBuilder =
+    UnrecognizedSmsCompanion Function({
+      Value<int> id,
+      Value<String> sender,
+      Value<String> body,
+      Value<DateTime> receivedAt,
+      Value<String?> reason,
+    });
+
+class $$UnrecognizedSmsTableFilterComposer
+    extends Composer<_$AppDatabase, $UnrecognizedSmsTable> {
+  $$UnrecognizedSmsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sender => $composableBuilder(
+    column: $table.sender,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get receivedAt => $composableBuilder(
+    column: $table.receivedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reason => $composableBuilder(
+    column: $table.reason,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$UnrecognizedSmsTableOrderingComposer
+    extends Composer<_$AppDatabase, $UnrecognizedSmsTable> {
+  $$UnrecognizedSmsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sender => $composableBuilder(
+    column: $table.sender,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get receivedAt => $composableBuilder(
+    column: $table.receivedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reason => $composableBuilder(
+    column: $table.reason,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$UnrecognizedSmsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UnrecognizedSmsTable> {
+  $$UnrecognizedSmsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get sender =>
+      $composableBuilder(column: $table.sender, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get receivedAt => $composableBuilder(
+    column: $table.receivedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get reason =>
+      $composableBuilder(column: $table.reason, builder: (column) => column);
+}
+
+class $$UnrecognizedSmsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UnrecognizedSmsTable,
+          UnrecognizedSm,
+          $$UnrecognizedSmsTableFilterComposer,
+          $$UnrecognizedSmsTableOrderingComposer,
+          $$UnrecognizedSmsTableAnnotationComposer,
+          $$UnrecognizedSmsTableCreateCompanionBuilder,
+          $$UnrecognizedSmsTableUpdateCompanionBuilder,
+          (
+            UnrecognizedSm,
+            BaseReferences<
+              _$AppDatabase,
+              $UnrecognizedSmsTable,
+              UnrecognizedSm
+            >,
+          ),
+          UnrecognizedSm,
+          PrefetchHooks Function()
+        > {
+  $$UnrecognizedSmsTableTableManager(
+    _$AppDatabase db,
+    $UnrecognizedSmsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UnrecognizedSmsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UnrecognizedSmsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UnrecognizedSmsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> sender = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<DateTime> receivedAt = const Value.absent(),
+                Value<String?> reason = const Value.absent(),
+              }) => UnrecognizedSmsCompanion(
+                id: id,
+                sender: sender,
+                body: body,
+                receivedAt: receivedAt,
+                reason: reason,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String sender,
+                required String body,
+                required DateTime receivedAt,
+                Value<String?> reason = const Value.absent(),
+              }) => UnrecognizedSmsCompanion.insert(
+                id: id,
+                sender: sender,
+                body: body,
+                receivedAt: receivedAt,
+                reason: reason,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$UnrecognizedSmsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UnrecognizedSmsTable,
+      UnrecognizedSm,
+      $$UnrecognizedSmsTableFilterComposer,
+      $$UnrecognizedSmsTableOrderingComposer,
+      $$UnrecognizedSmsTableAnnotationComposer,
+      $$UnrecognizedSmsTableCreateCompanionBuilder,
+      $$UnrecognizedSmsTableUpdateCompanionBuilder,
+      (
+        UnrecognizedSm,
+        BaseReferences<_$AppDatabase, $UnrecognizedSmsTable, UnrecognizedSm>,
+      ),
+      UnrecognizedSm,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -5418,4 +6032,6 @@ class $AppDatabaseManager {
   $$TagsTableTableManager get tags => $$TagsTableTableManager(_db, _db.tags);
   $$TransactionTagsTableTableManager get transactionTags =>
       $$TransactionTagsTableTableManager(_db, _db.transactionTags);
+  $$UnrecognizedSmsTableTableManager get unrecognizedSms =>
+      $$UnrecognizedSmsTableTableManager(_db, _db.unrecognizedSms);
 }

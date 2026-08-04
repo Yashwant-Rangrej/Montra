@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../services/sms/sms_parser_service.dart';
 
 import '../data/database/database.dart';
 import '../data/repositories/account_repository_impl.dart';
@@ -42,6 +41,3 @@ final goalRepositoryProvider = Provider<GoalRepository>((ref) {
   return GoalRepositoryImpl(ref.watch(databaseProvider));
 });
 
-final smsParserServiceProvider = Provider<SmsParserService>((ref) {
-  return SmsParserService(ref.watch(transactionRepositoryProvider));
-});

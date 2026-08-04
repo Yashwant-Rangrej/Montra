@@ -5,6 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../data/repositories/notification_repository.dart';
 import '../../providers/notification_providers.dart';
+import '../../providers/sms_providers.dart';
 
 class NotificationSettingsScreen extends ConsumerStatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -133,7 +134,24 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
             title: 'SMS Notifications',
             subtitle: 'For automatic detections',
             value: settings.smsDetectionEnabled,
-            onChanged: (val) => notifier.updateSettings(settings.copyWith(smsDetectionEnabled: val)),
+            onChanged: (val) async {
+              if (val) {
+                final smsService = ref.read(smsServiceProvider);
+                final granted = await smsService.requestPermissions();
+                if (granted) {
+                  smsService.startListening();
+                  notifier.updateSettings(settings.copyWith(smsDetectionEnabled: true));
+                } else {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('SMS Permission denied')),
+                    );
+                  }
+                }
+              } else {
+                notifier.updateSettings(settings.copyWith(smsDetectionEnabled: false));
+              }
+            },
             isTop: true,
             isBottom: false,
           ),

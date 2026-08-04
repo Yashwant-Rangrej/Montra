@@ -58,8 +58,17 @@ class Notifications extends Table {
   TextColumn get title => text()();
   TextColumn get body => text()();
   DateTimeColumn get notificationDate => dateTime()();
-  BoolColumn get isRead => boolean()();
   TextColumn get type => text()(); 
+  BoolColumn get isRead => boolean().withDefault(const Constant(false))();
+  TextColumn get payload => text().nullable()();
+}
+
+class UnrecognizedSms extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get sender => text()();
+  TextColumn get body => text()();
+  DateTimeColumn get receivedAt => dateTime()();
+  TextColumn get reason => text().nullable()();
 }
 
 class Settings extends Table {
