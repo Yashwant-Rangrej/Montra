@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../presentation/auth/lock_screen.dart';
+import '../../presentation/onboarding/onboarding_screen.dart';
 
 import '../../presentation/dashboard/dashboard_screen.dart';
 import '../../presentation/transactions/transactions_screen.dart';
@@ -25,12 +26,19 @@ final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(d
 final appRouterProvider = Provider<GoRouter>((ref) {
   final isAppLockEnabled = ref.watch(appLockEnabledProvider);
   final isUnlocked = ref.watch(authStateProvider);
+  final isOnboardingCompleted = ref.watch(onboardingCompletedProvider);
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/',
     redirect: (context, state) {
-      if (isAppLockEnabled && !isUnlocked && state.matchedLocation != '/auth') {
+      if (!isOnboardingCompleted && state.matchedLocation != '/onboarding') {
+        return '/onboarding';
+      }
+      if (isOnboardingCompleted && state.matchedLocation == '/onboarding') {
+        return '/';
+      }
+      if (isAppLockEnabled && !isUnlocked && state.matchedLocation != '/auth' && state.matchedLocation != '/onboarding') {
         return '/auth';
       }
       if (isUnlocked && state.matchedLocation == '/auth') {
@@ -43,6 +51,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/auth',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const LockScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const OnboardingScreen(),
       ),
     ShellRoute(
       navigatorKey: _shellNavigatorKey,

@@ -29,6 +29,9 @@ class NotificationService {
         AndroidFlutterLocalNotificationsPlugin>();
     
     if (androidPlugin != null) {
+      try {
+        await androidPlugin.requestNotificationsPermission();
+      } catch (_) {}
       for (var channel in NotificationChannels.allChannels) {
         await androidPlugin.createNotificationChannel(channel);
       }

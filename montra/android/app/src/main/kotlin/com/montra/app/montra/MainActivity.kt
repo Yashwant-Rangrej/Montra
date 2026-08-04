@@ -1,11 +1,11 @@
 package com.montra.app.montra
 
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import android.content.Context
 
-class MainActivity: FlutterActivity() {
+class MainActivity: FlutterFragmentActivity() {
     private val CHANNEL = "com.montra.app/sms_interceptor"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
