@@ -68,3 +68,43 @@ final dashboardStatsProvider = FutureProvider<Map<String, double>>((ref) async {
     'monthlyExpense': monthlyExpense,
   };
 });
+
+final merchantIntelligenceProvider = FutureProvider<Map<String, dynamic>>((ref) async {
+  final transactions = await ref.watch(transactionsProvider.future);
+  
+  final Map<String, int> visitFrequency = {};
+  final Map<String, double> totalSpent = {};
+
+  for (var tx in transactions) {
+    if (tx.type == 'Expense' && tx.merchant != null && tx.merchant!.isNotEmpty) {
+      final merchant = tx.merchant!;
+      visitFrequency[merchant] = (visitFrequency[merchant] ?? 0) + 1;
+      totalSpent[merchant] = (totalSpent[merchant] ?? 0) + tx.amount;
+    }
+  }
+
+  String mostFrequentMerchant = 'None';
+  int maxVisits = 0;
+  visitFrequency.forEach((merchant, visits) {
+    if (visits > maxVisits) {
+      maxVisits = visits;
+      mostFrequentMerchant = merchant;
+    }
+  });
+
+  String topSpendingMerchant = 'None';
+  double maxSpent = 0;
+  totalSpent.forEach((merchant, spent) {
+    if (spent > maxSpent) {
+      maxSpent = spent;
+      topSpendingMerchant = merchant;
+    }
+  });
+
+  return {
+    'mostFrequentMerchant': mostFrequentMerchant,
+    'maxVisits': maxVisits,
+    'topSpendingMerchant': topSpendingMerchant,
+    'maxSpent': maxSpent,
+  };
+});

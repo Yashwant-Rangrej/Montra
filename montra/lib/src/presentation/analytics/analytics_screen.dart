@@ -20,6 +20,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
   Widget build(BuildContext context) {
     final transactionsAsync = ref.watch(transactionsProvider);
     final categoriesAsync = ref.watch(categoriesProvider);
+    final intelligenceAsync = ref.watch(merchantIntelligenceProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -56,10 +57,23 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                     // Group by category ID
                     final Map<int, double> categorySums = {};
                     double totalAmount = 0;
+                    
+                    // Daily sums for last 7 days
+                    final Map<int, double> dailySums = {
+                      for (var i = 0; i < 7; i++) i: 0.0
+                    };
+                    
+                    final now = DateTime.now();
+
                     for (var t in filtered) {
-                      final catId = t.categoryId ?? 0; // 0 for uncategorized
+                      final catId = t.categoryId ?? 0;
                       categorySums[catId] = (categorySums[catId] ?? 0) + t.amount;
                       totalAmount += t.amount;
+
+                      final daysDifference = now.difference(t.transactionDate).inDays;
+                      if (daysDifference >= 0 && daysDifference < 7) {
+                        dailySums[daysDifference] = (dailySums[daysDifference] ?? 0) + t.amount;
+                      }
                     }
 
                     if (totalAmount == 0) return const Center(child: Text('Total is zero.'));
@@ -103,6 +117,81 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                     return ListView(
                       padding: const EdgeInsets.all(24.0),
                       children: [
+                        intelligenceAsync.when(
+                          data: (intelligence) {
+                            return Card(
+                              color: AppTheme.primary,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('Merchant Intelligence', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                                    const SizedBox(height: 16),
+                                    Text('Most Visited: ${intelligence['mostFrequentMerchant']} (${intelligence['maxVisits']} visits)', style: const TextStyle(color: Colors.white)),
+                                    const SizedBox(height: 8),
+                                    Text('Highest Spend: ${intelligence['topSpendingMerchant']} (\$${intelligence['maxSpent'].toStringAsFixed(2)})', style: const TextStyle(color: Colors.white)),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                          loading: () => const SizedBox(),
+                          error: (err, stack) => const SizedBox(),
+                        ),
+                        const SizedBox(height: 32),
+                        const Text('Weekly Trend (Last 7 Days)', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          height: 200,
+                          child: BarChart(
+                            BarChartData(
+                              alignment: BarChartAlignment.spaceAround,
+                              barTouchData: BarTouchData(enabled: false),
+                              titlesData: FlTitlesData(
+                                show: true,
+                                bottomTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: true,
+                                    getTitlesWidget: (value, meta) {
+                                      final daysAgo = value.toInt();
+                                      if (daysAgo < 0 || daysAgo > 6) return const SizedBox();
+                                      final date = now.subtract(Duration(days: daysAgo));
+                                      final weekDay = ['M', 'T', 'W', 'T', 'F', 'S', 'S'][date.weekday - 1];
+                                      return Padding(
+                                        padding: const EdgeInsets.only(top: 8.0),
+                                        child: Text(daysAgo == 0 ? 'Today' : weekDay, style: const TextStyle(fontSize: 10)),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                              ),
+                              gridData: const FlGridData(show: false),
+                              borderData: FlBorderData(show: false),
+                              barGroups: [
+                                for (var i = 6; i >= 0; i--)
+                                  BarChartGroupData(
+                                    x: i,
+                                    barRods: [
+                                      BarChartRodData(
+                                        toY: dailySums[i] ?? 0,
+                                        color: _selectedType == 'Income' ? AppTheme.income : AppTheme.expense,
+                                        width: 16,
+                                        borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                                      ),
+                                    ],
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        const Text('Category Breakdown', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 16),
                         SizedBox(
                           height: 250,
                           child: PieChart(
