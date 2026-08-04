@@ -13,10 +13,6 @@ class AuthService {
       if (canAuthenticate) {
         authenticated = await auth.authenticate(
           localizedReason: 'Please authenticate to access Montra',
-          options: const AuthenticationOptions(
-            stickyAuth: true,
-            biometricOnly: false,
-          ),
         );
       } else {
         // If device has no security set up, allow access or prompt setup.
@@ -24,7 +20,7 @@ class AuthService {
         authenticated = true; 
       }
     } on PlatformException catch (e) {
-      print('Auth error: $e');
+      // Handle error
       authenticated = false;
     }
     return authenticated;

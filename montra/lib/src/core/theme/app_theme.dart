@@ -36,8 +36,6 @@ class AppTheme {
         onSecondary: onSecondary,
         secondaryContainer: secondaryContainer,
         onSecondaryContainer: onSecondaryContainer,
-        background: background,
-        onBackground: onBackground,
         surface: surface,
         onSurface: onSurface,
         error: error,
@@ -64,22 +62,22 @@ class AppTheme {
           ),
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: surface,
         elevation: 2,
-        shadowColor: Colors.black.withOpacity(0.05),
+        shadowColor: Colors.black.withValues(alpha: 0.05),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
         ),
       ),
       textTheme: const TextTheme(
-        displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: onBackground),
-        displayMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: onBackground),
-        displaySmall: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: onBackground),
-        headlineMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: onBackground),
-        titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: onBackground),
-        bodyLarge: TextStyle(fontSize: 16, color: onBackground),
-        bodyMedium: TextStyle(fontSize: 14, color: onBackground),
+        displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: onSurface),
+        displayMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: onSurface),
+        displaySmall: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: onSurface),
+        headlineMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: onSurface),
+        titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: onSurface),
+        bodyLarge: TextStyle(fontSize: 16, color: onSurface),
+        bodyMedium: TextStyle(fontSize: 14, color: onSurface),
       ),
     );
   }

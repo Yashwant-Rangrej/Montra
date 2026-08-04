@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/theme/app_theme.dart';
-import '../../../domain/entities/transaction_entity.dart';
-import '../../../providers/repository_providers.dart';
+import '../../core/theme/app_theme.dart';
+import '../../domain/entities/transaction_entity.dart';
+import '../../providers/repository_providers.dart';
 
 class AddTransactionScreen extends ConsumerStatefulWidget {
   const AddTransactionScreen({super.key});
@@ -19,7 +19,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   double _amount = 0.0;
   String _merchant = '';
   String _notes = '';
-  DateTime _date = DateTime.now();
+  final DateTime _date = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +69,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                   child: ListView(
                     children: [
                       DropdownButtonFormField<String>(
-                        value: _type,
+                        initialValue: _type,
                         decoration: const InputDecoration(labelText: 'Type'),
                         items: ['Expense', 'Income', 'Transfer']
                             .map((t) => DropdownMenuItem(value: t, child: Text(t)))
