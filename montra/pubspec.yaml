@@ -27,7 +27,7 @@ dependencies:
   telephony: ^0.2.0
   flutter_local_notifications: ^22.2.0
   image_picker: ^1.2.3
-  permission_handler: ^13.0.0
+  permission_handler: ^11.3.1
 
 dev_dependencies:
   flutter_test:

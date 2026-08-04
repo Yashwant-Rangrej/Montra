@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../domain/entities/budget_entity.dart';
-import '../../domain/entities/category_entity.dart';
+import '../domain/entities/budget_entity.dart';
+import '../domain/entities/category_entity.dart';
 import 'repository_providers.dart';
 import 'transactions_provider.dart';
 import 'categories_provider.dart';

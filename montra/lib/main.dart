@@ -14,15 +14,17 @@ void main() {
   );
 }
 
-class MontraApp extends StatelessWidget {
+class MontraApp extends ConsumerWidget {
   const MontraApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final goRouter = ref.watch(appRouterProvider);
+
     return MaterialApp.router(
       title: 'Montra',
       theme: AppTheme.lightTheme,
-      routerConfig: appRouter,
+      routerConfig: goRouter,
       debugShowCheckedModeBanner: false,
     );
   }

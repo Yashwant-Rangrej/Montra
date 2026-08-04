@@ -7,6 +7,25 @@ final transactionsProvider = FutureProvider<List<TransactionEntity>>((ref) async
   return repository.getAllTransactions();
 });
 
+final searchQueryProvider = StateProvider<String>((ref) => '');
+
+final filteredTransactionsProvider = FutureProvider<List<TransactionEntity>>((ref) async {
+  final transactions = await ref.watch(transactionsProvider.future);
+  final query = ref.watch(searchQueryProvider).toLowerCase();
+
+  if (query.isEmpty) {
+    return transactions;
+  }
+
+  return transactions.where((tx) {
+    final merchant = tx.merchant?.toLowerCase() ?? '';
+    final notes = tx.notes?.toLowerCase() ?? '';
+    final type = tx.type.toLowerCase();
+    
+    return merchant.contains(query) || notes.contains(query) || type.contains(query);
+  }).toList();
+});
+
 final dashboardStatsProvider = FutureProvider<Map<String, double>>((ref) async {
   final transactions = await ref.watch(transactionsProvider.future);
   

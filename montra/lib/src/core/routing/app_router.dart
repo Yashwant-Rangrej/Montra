@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../providers/auth_provider.dart';
+import '../../presentation/auth/lock_screen.dart';
 
 import '../../presentation/dashboard/dashboard_screen.dart';
 import '../../presentation/transactions/transactions_screen.dart';
@@ -17,10 +20,28 @@ import '../../presentation/budgets/add_budget_screen.dart';
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 
-final GoRouter appRouter = GoRouter(
-  navigatorKey: _rootNavigatorKey,
-  initialLocation: '/',
-  routes: [
+final appRouterProvider = Provider<GoRouter>((ref) {
+  final isAppLockEnabled = ref.watch(appLockEnabledProvider);
+  final isUnlocked = ref.watch(authStateProvider);
+
+  return GoRouter(
+    navigatorKey: _rootNavigatorKey,
+    initialLocation: '/',
+    redirect: (context, state) {
+      if (isAppLockEnabled && !isUnlocked && state.matchedLocation != '/auth') {
+        return '/auth';
+      }
+      if (isUnlocked && state.matchedLocation == '/auth') {
+        return '/';
+      }
+      return null;
+    },
+    routes: [
+      GoRoute(
+        path: '/auth',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const LockScreen(),
+      ),
     ShellRoute(
       navigatorKey: _shellNavigatorKey,
       builder: (BuildContext context, GoRouterState state, Widget child) {
@@ -81,3 +102,4 @@ final GoRouter appRouter = GoRouter(
     ),
   ],
 );
+});

@@ -19,7 +19,7 @@ class AuthService {
         // For offline-first privacy, we assume true if unsupported in dev
         authenticated = true; 
       }
-    } on PlatformException catch (e) {
+    } on PlatformException {
       // Handle error
       authenticated = false;
     }

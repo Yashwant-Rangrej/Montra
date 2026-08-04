@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../providers/auth_provider.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isAppLockEnabled = ref.watch(appLockEnabledProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: ListView(
@@ -34,6 +37,28 @@ class SettingsScreen extends StatelessWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
               context.push('/budgets');
+            },
+          ),
+          const Divider(),
+          const SizedBox(height: 16),
+          const Text('Security', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 16),
+          SwitchListTile(
+            title: const Text('App Lock (Biometrics/PIN)'),
+            subtitle: const Text('Require authentication to open Montra'),
+            secondary: const Icon(Icons.security),
+            value: isAppLockEnabled,
+            onChanged: (value) async {
+              // Only allow enabling if they can successfully authenticate right now
+              if (value) {
+                final authService = ref.read(authServiceProvider);
+                final success = await authService.authenticateUser();
+                if (success) {
+                  ref.read(appLockEnabledProvider.notifier).toggle(true);
+                }
+              } else {
+                ref.read(appLockEnabledProvider.notifier).toggle(false);
+              }
             },
           ),
           const Divider(),

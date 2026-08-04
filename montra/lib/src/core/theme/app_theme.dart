@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // Emerald Trust Color Tokens
-  static const Color primary = Color(0xFF00A86B); // Emerald Green
+  // New UI Design Tokens
+  static const Color primary = Color(0xFF4252B6); // Indigo Blue
   static const Color onPrimary = Colors.white;
-  static const Color primaryContainer = Color(0xFFE6F6ED);
-  static const Color onPrimaryContainer = Color(0xFF003823);
+  static const Color primaryContainer = Color(0xFFE8EAF6);
+  static const Color onPrimaryContainer = Color(0xFF1A237E);
 
-  static const Color secondary = Color(0xFF1E293B); // Slate
+  static const Color secondary = Color(0xFF4252B6); // Indigo
   static const Color onSecondary = Colors.white;
   static const Color secondaryContainer = Color(0xFFF1F5F9);
   static const Color onSecondaryContainer = Color(0xFF0F172A);
 
-  static const Color background = Color(0xFFF8FAFC);
-  static const Color onBackground = Color(0xFF0F172A);
+  static const Color background = Color(0xFFFDFBF7); // Warm Cream Background
+  static const Color onBackground = Color(0xFF11142D);
   static const Color surface = Colors.white;
-  static const Color onSurface = Color(0xFF0F172A);
+  static const Color onSurface = Color(0xFF11142D);
 
   static const Color error = Color(0xFFEF4444);
   static const Color onError = Colors.white;
   
-  static const Color expense = Color(0xFFFD3C4A);
-  static const Color income = Color(0xFF00A86B);
-  static const Color transfer = Color(0xFF0077FF);
+  static const Color expense = Color(0xFFEB5757); // Red
+  static const Color income = Color(0xFF27AE60); // Green
+  static const Color transfer = Color(0xFF2F80ED); // Blue
 
   static ThemeData get lightTheme {
     return ThemeData(
