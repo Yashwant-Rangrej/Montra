@@ -7,4 +7,5 @@ abstract class BudgetRepository {
   Future<int> insertBudget(BudgetEntity budget);
   Future<bool> updateBudget(BudgetEntity budget);
   Future<int> deleteBudget(int id);
+  Stream<List<BudgetEntity>> watchBudgets();
 }

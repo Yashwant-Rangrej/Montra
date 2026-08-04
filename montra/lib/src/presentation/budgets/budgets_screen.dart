@@ -1,28 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
+import '../../providers/budgets_provider.dart';
 
 class BudgetsScreen extends ConsumerWidget {
   const BudgetsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final budgetsProgressAsync = ref.watch(budgetsProgressProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Budgets'),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(24.0),
-        children: [
-          _buildBudgetCard('Shopping', 120, 1000, AppTheme.primary),
-          const SizedBox(height: 16),
-          _buildBudgetCard('Transportation', 350, 700, AppTheme.transfer),
-          const SizedBox(height: 16),
-          _buildBudgetCard('Food & Dining', 800, 1000, AppTheme.expense),
-        ],
+      body: budgetsProgressAsync.when(
+        data: (budgets) {
+          if (budgets.isEmpty) {
+            return const Center(child: Text('No budgets found.'));
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.all(24.0),
+            itemCount: budgets.length,
+            itemBuilder: (context, index) {
+              final bp = budgets[index];
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: _buildBudgetCard(
+                  bp.category?.name ?? 'Overall',
+                  bp.spentAmount,
+                  bp.budget.amount,
+                  bp.category?.color != null ? Color(int.parse(bp.category!.color!.replaceFirst('#', '0xFF'))) : AppTheme.primary,
+                ),
+              );
+            },
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, st) => Center(child: Text('Error: $e')),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          context.push('/add-budget');
+        },
         child: const Icon(Icons.add),
       ),
     );

@@ -1,6 +1,15 @@
+import 'package:flutter/foundation.dart';
 import 'package:telephony/telephony.dart';
 import '../../domain/entities/transaction_entity.dart';
 import '../../domain/repositories/transaction_repository.dart';
+
+// Top-level background message handler for Telephony
+@pragma('vm:entry-point')
+void backgroundMessageHandler(SmsMessage message) {
+  // In a real background handler, we'd need to re-initialize dependencies.
+  // For simplicity in this PRD, we just print or use a static reference.
+  debugPrint("Background SMS received: ${message.body}");
+}
 
 class SmsParserService {
   final TransactionRepository _transactionRepo;
@@ -15,6 +24,13 @@ class SmsParserService {
       await _transactionRepo.insertTransaction(transaction);
       // Optional: Trigger a local notification here
     }
+  }
+
+  void initSmsListener() {
+    Telephony.instance.listenIncomingSms(
+      onNewMessage: handleIncomingSms,
+      onBackgroundMessage: backgroundMessageHandler,
+    );
   }
 
   TransactionEntity? _parseSmsToTransaction(String body) {

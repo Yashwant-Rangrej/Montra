@@ -10,6 +10,9 @@ import '../../presentation/main_scaffold.dart';
 import '../../presentation/transactions/add_transaction_screen.dart';
 import '../../presentation/accounts/accounts_screen.dart';
 import '../../presentation/accounts/add_account_screen.dart';
+import '../../presentation/goals/goals_screen.dart';
+import '../../presentation/goals/add_goal_screen.dart';
+import '../../presentation/budgets/add_budget_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
@@ -60,6 +63,21 @@ final GoRouter appRouter = GoRouter(
       path: '/add-account',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const AddAccountScreen(),
+    ),
+    GoRoute(
+      path: '/goals',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const GoalsScreen(),
+    ),
+    GoRoute(
+      path: '/add-goal',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const AddGoalScreen(),
+    ),
+    GoRoute(
+      path: '/add-budget',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const AddBudgetScreen(),
     ),
   ],
 );

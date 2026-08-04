@@ -66,4 +66,11 @@ class BudgetRepositoryImpl implements BudgetRepository {
   Future<int> deleteBudget(int id) async {
     return await (db.delete(db.budgets)..where((b) => b.id.equals(id))).go();
   }
+
+  @override
+  Stream<List<BudgetEntity>> watchBudgets() {
+    return db.select(db.budgets).watch().map((budgets) {
+      return budgets.map(_mapToEntity).toList();
+    });
+  }
 }

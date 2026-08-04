@@ -8,12 +8,12 @@ import 'tables.dart';
 
 part 'database.g.dart';
 
-@DriftDatabase(tables: [Accounts, Categories, Transactions, Budgets, Notifications, Settings, Tags, TransactionTags])
+@DriftDatabase(tables: [Accounts, Categories, Transactions, Budgets, Goals, Notifications, Settings, Tags, TransactionTags])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration {
@@ -24,6 +24,9 @@ class AppDatabase extends _$AppDatabase {
       onUpgrade: (Migrator m, int from, int to) async {
         if (from < 2) {
           await m.addColumn(transactions, transactions.receiptAttachment);
+        }
+        if (from < 3) {
+          await m.createTable(goals);
         }
       },
     );

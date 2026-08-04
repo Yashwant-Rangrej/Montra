@@ -1,13 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../providers/transactions_provider.dart';
+import '../../providers/repository_providers.dart';
 import '../../core/theme/app_theme.dart';
 
-class DashboardScreen extends ConsumerWidget {
+class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndRequestSmsPermission();
+    });
+  }
+
+  Future<void> _checkAndRequestSmsPermission() async {
+    final status = await Permission.sms.status;
+    if (status.isDenied) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            title: const Text('SMS Access Required'),
+            content: const Text(
+                'Montra needs access to your SMS messages to automatically track your expenses and income directly from bank notifications. We value your privacy and this data never leaves your device.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Later'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  final result = await Permission.sms.request();
+                  if (result.isGranted) {
+                    ref.read(smsParserServiceProvider).initSmsListener();
+                  }
+                },
+                child: const Text('Grant Access'),
+              ),
+            ],
+          ),
+        );
+      }
+    } else if (status.isGranted) {
+      ref.read(smsParserServiceProvider).initSmsListener();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final statsAsync = ref.watch(dashboardStatsProvider);
     final transactionsAsync = ref.watch(transactionsProvider);
 
