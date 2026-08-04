@@ -1,38 +1,63 @@
+import 'dart:convert';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'notification_channels.dart';
+import 'notification_models.dart';
 
 class NotificationService {
-  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
 
-  Future<void> init() async {
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+  Future<void> init(Function(NotificationPayload) onNotificationTap) async {
+    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const initSettings = InitializationSettings(android: androidInit);
 
-    const InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
-
-    await _flutterLocalNotificationsPlugin.initialize(
-      settings: initializationSettings,
+    await _plugin.initialize(
+      settings: initSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        if (response.payload != null) {
+          try {
+            final payload = NotificationPayload.fromJson(jsonDecode(response.payload!));
+            onNotificationTap(payload);
+          } catch (e) {
+            // Handle parsing error
+          }
+        }
+      },
     );
+
+    // Create Android channels
+    final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    
+    if (androidPlugin != null) {
+      for (var channel in NotificationChannels.allChannels) {
+        await androidPlugin.createNotificationChannel(channel);
+      }
+    }
   }
 
-  Future<void> showNotification({required int id, required String title, required String body}) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      'montra_transaction_channel',
-      'Transactions',
-      channelDescription: 'Notifications for auto-imported transactions',
-      importance: Importance.max,
+  Future<void> showNotification({
+    required int id,
+    required String title,
+    required String body,
+    required AndroidNotificationChannel channel,
+    required NotificationPayload payload,
+  }) async {
+    final androidDetails = AndroidNotificationDetails(
+      channel.id,
+      channel.name,
+      channelDescription: channel.description,
+      importance: channel.importance,
       priority: Priority.high,
     );
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
-        
-    await _flutterLocalNotificationsPlugin.show(
+
+    final details = NotificationDetails(android: androidDetails);
+
+    await _plugin.show(
       id: id,
       title: title,
       body: body,
-      notificationDetails: platformChannelSpecifics,
+      notificationDetails: details,
+      payload: jsonEncode(payload.toJson()),
     );
   }
 }

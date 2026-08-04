@@ -14,9 +14,9 @@ class MainScaffold extends StatelessWidget {
         selectedIndex: _calculateSelectedIndex(context),
         onDestinationSelected: (int index) => _onItemTapped(index, context),
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Dashboard'),
+          NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Home'),
           NavigationDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: 'Transactions'),
-          NavigationDestination(icon: Icon(Icons.notifications_outlined), selectedIcon: Icon(Icons.notifications), label: 'Alerts'),
+          NavigationDestination(icon: Icon(Icons.pie_chart_outline), selectedIcon: Icon(Icons.pie_chart), label: 'Budgets'),
           NavigationDestination(icon: Icon(Icons.bar_chart_outlined), selectedIcon: Icon(Icons.bar_chart), label: 'Analytics'),
           NavigationDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: 'Settings'),
         ],
@@ -37,7 +37,7 @@ class MainScaffold extends StatelessWidget {
     if (location.startsWith('/transactions')) {
       return 1;
     }
-    if (location.startsWith('/notifications')) {
+    if (location.startsWith('/budgets')) {
       return 2;
     }
     if (location.startsWith('/analytics')) {
@@ -58,7 +58,7 @@ class MainScaffold extends StatelessWidget {
         GoRouter.of(context).go('/transactions');
         break;
       case 2:
-        GoRouter.of(context).go('/notifications');
+        GoRouter.of(context).go('/budgets');
         break;
       case 3:
         GoRouter.of(context).go('/analytics');

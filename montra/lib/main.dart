@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'src/providers/notification_providers.dart';
+import 'src/services/notifications/notification_models.dart';
+
 import 'src/core/routing/app_router.dart';
 import 'src/core/theme/app_theme.dart';
 
@@ -14,11 +17,31 @@ void main() {
   );
 }
 
-class MontraApp extends ConsumerWidget {
+class MontraApp extends ConsumerStatefulWidget {
   const MontraApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MontraApp> createState() => _MontraAppState();
+}
+
+class _MontraAppState extends ConsumerState<MontraApp> {
+  @override
+  void initState() {
+    super.initState();
+    _initNotifications();
+  }
+
+  Future<void> _initNotifications() async {
+    final service = ref.read(notificationServiceProvider);
+    await service.init((NotificationPayload payload) {
+      final router = ref.read(appRouterProvider);
+      // Ensure we navigate to the route specified in the payload
+      router.push(payload.route);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final goRouter = ref.watch(appRouterProvider);
 
     return MaterialApp.router(

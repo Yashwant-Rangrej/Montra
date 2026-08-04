@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
@@ -62,6 +63,17 @@ class SettingsScreen extends ConsumerWidget {
             },
           ),
           const Divider(),
+          if (kDebugMode) ...[
+            ListTile(
+              leading: const Icon(Icons.bug_report, color: Colors.red),
+              title: const Text('Developer Notification Test', style: TextStyle(color: Colors.red)),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () {
+                context.push('/developer-notification-test');
+              },
+            ),
+            const Divider(),
+          ]
         ],
       ),
     );

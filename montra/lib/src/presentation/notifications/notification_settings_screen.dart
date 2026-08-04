@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import '../../data/repositories/notification_repository.dart';
+import '../../providers/notification_providers.dart';
 
 class NotificationSettingsScreen extends ConsumerStatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -10,26 +14,35 @@ class NotificationSettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _NotificationSettingsScreenState extends ConsumerState<NotificationSettingsScreen> {
-  // Temporary state for UI preview matching the design
-  final Map<String, bool> _settings = {
-    'daily': true,
-    'weekly': true,
-    'monthly': false,
-    'sms': true,
-    'large_expense': true,
-    'budget': true,
-    'goal': false,
-    'quiet': true,
-    'sound': true,
-    'vibration': false,
-  };
+  bool _permissionGranted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkPermission();
+  }
+
+  Future<void> _checkPermission() async {
+    final status = await Permission.notification.status;
+    setState(() {
+      _permissionGranted = status.isGranted;
+    });
+  }
+
+  Future<void> _requestPermission() async {
+    final service = ref.read(notificationPermissionServiceProvider);
+    final granted = await service.requestPermission();
+    setState(() {
+      _permissionGranted = granted;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     const bgColor = Color(0xFFFDF9EE);
     const textColor = Color(0xFF1B3B7B);
-    const primaryColor = Color(0xFF2563EB); // Blue for active switches
-    const inactiveColor = Color(0xFFE5E7EB);
+    final settings = ref.watch(notificationSettingsProvider);
+    final notifier = ref.read(notificationSettingsProvider.notifier);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -53,12 +66,45 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
         children: [
+          if (!_permissionGranted)
+            Container(
+              margin: const EdgeInsets.only(bottom: 24),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFEF2F2),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFF87171)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Notifications Disabled',
+                    style: TextStyle(color: Color(0xFF991B1B), fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Please enable notifications in your device settings to receive alerts and summaries.',
+                    style: TextStyle(color: Color(0xFF991B1B), fontSize: 13),
+                  ),
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: _requestPermission,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFDC2626),
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Enable Notifications'),
+                  ),
+                ],
+              ),
+            ),
           _buildSectionHeader('Summaries'),
           _buildSwitchTile(
             title: 'Daily Summary',
             subtitle: 'Delivered at 9:00 PM',
-            value: _settings['daily']!,
-            onChanged: (val) => setState(() => _settings['daily'] = val),
+            value: settings.dailySummaryEnabled,
+            onChanged: (val) => notifier.updateSettings(settings.copyWith(dailySummaryEnabled: val)),
             isTop: true,
             isBottom: false,
           ),
@@ -66,8 +112,8 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
           _buildSwitchTile(
             title: 'Weekly Summary',
             subtitle: 'Overview of your week',
-            value: _settings['weekly']!,
-            onChanged: (val) => setState(() => _settings['weekly'] = val),
+            value: settings.weeklySummaryEnabled,
+            onChanged: (val) => notifier.updateSettings(settings.copyWith(weeklySummaryEnabled: val)),
             isTop: false,
             isBottom: false,
           ),
@@ -75,8 +121,8 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
           _buildSwitchTile(
             title: 'Monthly Summary',
             subtitle: 'Deep dive into your month',
-            value: _settings['monthly']!,
-            onChanged: (val) => setState(() => _settings['monthly'] = val),
+            value: settings.monthlySummaryEnabled,
+            onChanged: (val) => notifier.updateSettings(settings.copyWith(monthlySummaryEnabled: val)),
             isTop: false,
             isBottom: true,
           ),
@@ -86,8 +132,8 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
           _buildSwitchTile(
             title: 'SMS Notifications',
             subtitle: 'For automatic detections',
-            value: _settings['sms']!,
-            onChanged: (val) => setState(() => _settings['sms'] = val),
+            value: settings.smsDetectionEnabled,
+            onChanged: (val) => notifier.updateSettings(settings.copyWith(smsDetectionEnabled: val)),
             isTop: true,
             isBottom: false,
           ),
@@ -95,8 +141,8 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
           _buildSwitchTile(
             title: 'Large Expense Alerts',
             subtitle: 'Transactions over \$500',
-            value: _settings['large_expense']!,
-            onChanged: (val) => setState(() => _settings['large_expense'] = val),
+            value: settings.largeExpenseAlertsEnabled,
+            onChanged: (val) => notifier.updateSettings(settings.copyWith(largeExpenseAlertsEnabled: val)),
             isTop: false,
             isBottom: true,
           ),
@@ -106,8 +152,8 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
           _buildSwitchTile(
             title: 'Budget Alerts',
             subtitle: 'At 50%, 80%, and 100% milestones',
-            value: _settings['budget']!,
-            onChanged: (val) => setState(() => _settings['budget'] = val),
+            value: settings.budgetAlertsEnabled,
+            onChanged: (val) => notifier.updateSettings(settings.copyWith(budgetAlertsEnabled: val)),
             isTop: true,
             isBottom: false,
           ),
@@ -115,9 +161,20 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
           _buildSwitchTile(
             title: 'Goal Reminders',
             subtitle: 'Updates on your savings goals',
-            value: _settings['goal']!,
-            onChanged: (val) => setState(() => _settings['goal'] = val),
+            value: settings.goalRemindersEnabled,
+            onChanged: (val) => notifier.updateSettings(settings.copyWith(goalRemindersEnabled: val)),
             isTop: false,
+            isBottom: true,
+          ),
+
+          const SizedBox(height: 24),
+          _buildSectionHeader('Insights'),
+          _buildSwitchTile(
+            title: 'Smart Insights',
+            subtitle: 'Intelligent financial tips and trends',
+            value: settings.smartInsightsEnabled,
+            onChanged: (val) => notifier.updateSettings(settings.copyWith(smartInsightsEnabled: val)),
+            isTop: true,
             isBottom: true,
           ),
 
@@ -126,27 +183,9 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
           _buildSwitchTile(
             title: 'Quiet Hours',
             subtitle: '10:00 PM - 7:00 AM',
-            value: _settings['quiet']!,
-            onChanged: (val) => setState(() => _settings['quiet'] = val),
+            value: settings.quietHoursEnabled,
+            onChanged: (val) => notifier.updateSettings(settings.copyWith(quietHoursEnabled: val)),
             isTop: true,
-            isBottom: false,
-          ),
-          _buildDivider(),
-          _buildSwitchTile(
-            title: 'Sound',
-            subtitle: null,
-            value: _settings['sound']!,
-            onChanged: (val) => setState(() => _settings['sound'] = val),
-            isTop: false,
-            isBottom: false,
-          ),
-          _buildDivider(),
-          _buildSwitchTile(
-            title: 'Vibration',
-            subtitle: null,
-            value: _settings['vibration']!,
-            onChanged: (val) => setState(() => _settings['vibration'] = val),
-            isTop: false,
             isBottom: true,
           ),
           
