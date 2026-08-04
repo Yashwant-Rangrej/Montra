@@ -136,10 +136,10 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
             value: settings.smsDetectionEnabled,
             onChanged: (val) async {
               if (val) {
-                final smsService = ref.read(smsServiceProvider);
-                final granted = await smsService.requestPermissions();
+                final interceptor = ref.read(smsInterceptorProvider);
+                final granted = await interceptor.requestPermissions();
                 if (granted) {
-                  smsService.startListening();
+                  await interceptor.initialize();
                   notifier.updateSettings(settings.copyWith(smsDetectionEnabled: true));
                 } else {
                   if (context.mounted) {

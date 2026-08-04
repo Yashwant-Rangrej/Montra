@@ -37,8 +37,8 @@ class _MontraAppState extends ConsumerState<MontraApp> {
   Future<void> _initSmsListener() async {
     final settings = ref.read(notificationSettingsProvider);
     if (settings.smsDetectionEnabled) {
-      final smsService = ref.read(smsServiceProvider);
-      smsService.startListening();
+      final interceptor = ref.read(smsInterceptorProvider);
+      await interceptor.initialize();
     }
   }
 
