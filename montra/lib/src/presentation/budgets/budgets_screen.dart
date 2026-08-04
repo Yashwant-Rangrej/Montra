@@ -28,6 +28,7 @@ class BudgetsScreen extends ConsumerWidget {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: _buildBudgetCard(
+                  context,
                   bp.category?.name ?? 'Overall',
                   bp.spentAmount,
                   bp.budget.amount,
@@ -49,7 +50,7 @@ class BudgetsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBudgetCard(String title, double spent, double total, Color color) {
+  Widget _buildBudgetCard(BuildContext context, String title, double spent, double total, Color color) {
     final double percentage = (spent / total).clamp(0.0, 1.0);
     final bool isOverBudget = spent > total;
 
@@ -88,7 +89,7 @@ class BudgetsScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 16),
-          Text('\$${spent.toStringAsFixed(0)} spent of \$${total.toStringAsFixed(0)}',
+          Text('₹${spent.toStringAsFixed(0)} spent of ₹${total.toStringAsFixed(0)}',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: 8),

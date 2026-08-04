@@ -70,7 +70,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                       color: _type == 'Expense' ? Theme.of(context).colorScheme.onTertiary : Theme.of(context).colorScheme.onSecondary
                     ),
                     decoration: InputDecoration(
-                      prefixText: '\$ ',
+                      prefixText: '₹ ',
                       prefixStyle: Theme.of(context).textTheme.displayLarge?.copyWith(
                         color: _type == 'Expense' ? Theme.of(context).colorScheme.onTertiary : Theme.of(context).colorScheme.onSecondary
                       ),

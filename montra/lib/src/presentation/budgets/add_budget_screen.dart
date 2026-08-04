@@ -33,7 +33,7 @@ class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
           child: Column(
             children: [
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Budget Amount (\$)'),
+                decoration: const InputDecoration(labelText: 'Budget Amount (₹)'),
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 validator: (value) => value == null || value.isEmpty ? 'Required' : null,
                 onSaved: (value) => _amount = double.parse(value!),

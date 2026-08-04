@@ -102,7 +102,7 @@ class TransactionsScreen extends ConsumerWidget {
                           title: Text(tx.merchant ?? tx.notes ?? 'Transaction', style: Theme.of(context).textTheme.titleMedium),
                           subtitle: Text('${tx.type} • ${tx.transactionDate.day}/${tx.transactionDate.month}/${tx.transactionDate.year}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                           trailing: Text(
-                            '${isIncome ? '+' : '-'}\$${tx.amount.toStringAsFixed(2)}',
+                            '${isIncome ? '+' : '-'}₹${tx.amount.toStringAsFixed(2)}',
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               color: isIncome ? AppTheme.income : AppTheme.expense,
                             ),

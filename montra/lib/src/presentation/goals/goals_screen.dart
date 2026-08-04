@@ -41,7 +41,7 @@ class GoalsScreen extends ConsumerWidget {
                         children: [
                           Text(goal.name, style: Theme.of(context).textTheme.titleLarge),
                           Text(
-                            '\$${goal.savedAmount.toStringAsFixed(0)} / \$${goal.targetAmount.toStringAsFixed(0)}',
+                            '₹${goal.savedAmount.toStringAsFixed(0)} / ₹${goal.targetAmount.toStringAsFixed(0)}',
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
                         ],

@@ -33,7 +33,7 @@ class AccountsScreen extends ConsumerWidget {
                 title: Text(account.name, style: Theme.of(context).textTheme.titleMedium),
                 subtitle: Text(account.type, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                 trailing: Text(
-                  '\$${account.initialBalance.toStringAsFixed(2)}',
+                  '₹${account.initialBalance.toStringAsFixed(2)}',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               );

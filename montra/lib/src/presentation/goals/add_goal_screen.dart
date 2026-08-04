@@ -34,14 +34,14 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Target Amount (\$)'),
+                decoration: const InputDecoration(labelText: 'Target Amount (₹)'),
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 validator: (value) => value == null || value.isEmpty ? 'Required' : null,
                 onSaved: (value) => _targetAmount = double.parse(value!),
               ),
               const SizedBox(height: 16),
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Already Saved Amount (\$)'),
+                decoration: const InputDecoration(labelText: 'Already Saved Amount (₹)'),
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 initialValue: '0',
                 onSaved: (value) => _savedAmount = double.tryParse(value ?? '0') ?? 0,

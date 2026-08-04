@@ -153,7 +153,7 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
           _buildDivider(),
           _buildSwitchTile(
             title: 'Large Expense Alerts',
-            subtitle: 'Transactions over \$500',
+            subtitle: 'Transactions over ₹500',
             value: settings.largeExpenseAlertsEnabled,
             onChanged: (val) => notifier.updateSettings(settings.copyWith(largeExpenseAlertsEnabled: val)),
             isTop: false,

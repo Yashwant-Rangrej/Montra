@@ -109,7 +109,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                         ListTile(
                           leading: CircleAvatar(backgroundColor: color, radius: 10),
                           title: Text(catName),
-                          trailing: Text('\$${sum.toStringAsFixed(2)}', style: Theme.of(context).textTheme.titleMedium),
+                          trailing: Text('₹${sum.toStringAsFixed(2)}', style: Theme.of(context).textTheme.titleMedium),
                         )
                       );
                     });
@@ -131,7 +131,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                                     const SizedBox(height: 16),
                                     Text('Most Visited: ${intelligence['mostFrequentMerchant']} (${intelligence['maxVisits']} visits)', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onPrimary)),
                                     const SizedBox(height: 8),
-                                    Text('Highest Spend: ${intelligence['topSpendingMerchant']} (\$${intelligence['maxSpent'].toStringAsFixed(2)})', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onPrimary)),
+                                    Text('Highest Spend: ${intelligence['topSpendingMerchant']} (₹${intelligence['maxSpent'].toStringAsFixed(2)})', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onPrimary)),
                                   ],
                                 ),
                               ),
