@@ -28,7 +28,7 @@ class MainScaffold extends StatelessWidget {
         shape: const CircleBorder(),
         child: const Icon(Icons.add),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 

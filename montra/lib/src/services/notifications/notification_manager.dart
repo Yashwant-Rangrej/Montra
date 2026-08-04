@@ -40,9 +40,10 @@ class NotificationManager {
     required int txCount,
     required String biggestExpense,
     required double remainingBudget,
+    bool force = false,
   }) async {
     final settings = _repository.getSettings();
-    if (!settings.dailySummaryEnabled || _isQuietHours()) return;
+    if (!force && (!settings.dailySummaryEnabled || _isQuietHours())) return;
 
     await _service.showNotification(
       id: _generateId(),
@@ -57,9 +58,10 @@ class NotificationManager {
     required String merchant,
     required double amount,
     required String category,
+    bool force = false,
   }) async {
     final settings = _repository.getSettings();
-    if (!settings.smsDetectionEnabled) return;
+    if (!force && !settings.smsDetectionEnabled) return;
 
     await _service.showNotification(
       id: _generateId(),
@@ -74,9 +76,10 @@ class NotificationManager {
     required String budgetName,
     required double used,
     required double remaining,
+    bool force = false,
   }) async {
     final settings = _repository.getSettings();
-    if (!settings.budgetAlertsEnabled) return;
+    if (!force && !settings.budgetAlertsEnabled) return;
 
     // Critical alerts bypass quiet hours!
     await _service.showNotification(
@@ -92,9 +95,10 @@ class NotificationManager {
     required String goalName,
     required double progress,
     required double remaining,
+    bool force = false,
   }) async {
     final settings = _repository.getSettings();
-    if (!settings.goalRemindersEnabled || _isQuietHours()) return;
+    if (!force && (!settings.goalRemindersEnabled || _isQuietHours())) return;
 
     await _service.showNotification(
       id: _generateId(),
@@ -107,9 +111,10 @@ class NotificationManager {
 
   Future<void> showSmartInsight({
     required String insight,
+    bool force = false,
   }) async {
     final settings = _repository.getSettings();
-    if (!settings.smartInsightsEnabled || _isQuietHours()) return;
+    if (!force && (!settings.smartInsightsEnabled || _isQuietHours())) return;
 
     await _service.showNotification(
       id: _generateId(),
@@ -124,9 +129,10 @@ class NotificationManager {
     required String merchant,
     required double amount,
     required String method,
+    bool force = false,
   }) async {
     final settings = _repository.getSettings();
-    if (!settings.largeExpenseAlertsEnabled) return;
+    if (!force && !settings.largeExpenseAlertsEnabled) return;
 
     await _service.showNotification(
       id: _generateId(),
