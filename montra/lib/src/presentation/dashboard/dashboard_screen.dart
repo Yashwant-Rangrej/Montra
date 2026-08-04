@@ -67,11 +67,26 @@ class DashboardScreen extends ConsumerWidget {
               const SizedBox(height: 8),
               Text('\$${stats['balance']?.toStringAsFixed(2)}', style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold)),
               const SizedBox(height: 32),
+              
+              const Text('Today', style: TextStyle(color: Colors.white54, fontSize: 12, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildIncomeExpenseStat('Income', stats['income'] ?? 0.0, true),
-                  _buildIncomeExpenseStat('Expenses', stats['expense'] ?? 0.0, false),
+                  _buildIncomeExpenseStat('Income', stats['todayIncome'] ?? 0.0, true),
+                  _buildIncomeExpenseStat('Expenses', stats['todayExpense'] ?? 0.0, false),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Divider(color: Colors.white24),
+              const SizedBox(height: 16),
+              const Text('This Month', style: TextStyle(color: Colors.white54, fontSize: 12, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildIncomeExpenseStat('Income', stats['monthlyIncome'] ?? 0.0, true),
+                  _buildIncomeExpenseStat('Expenses', stats['monthlyExpense'] ?? 0.0, false),
                 ],
               )
             ],

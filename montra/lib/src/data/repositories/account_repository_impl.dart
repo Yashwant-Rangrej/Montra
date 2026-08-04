@@ -28,37 +28,34 @@ class AccountRepositoryImpl implements AccountRepository {
 
   @override
   Future<AccountEntity?> getAccountById(int id) async {
-    final account = await (db.select(db.accounts)..where((a) => a.id.equals(id))).getSingleOrNull();
+    final query = db.select(db.accounts)..where((a) => a.id.equals(id));
+    final account = await query.getSingleOrNull();
     return account != null ? _mapToEntity(account) : null;
   }
 
   @override
   Future<int> insertAccount(AccountEntity account) async {
-    return await db.into(db.accounts).insert(
-      AccountsCompanion.insert(
-        name: account.name,
-        type: account.type,
-        initialBalance: account.initialBalance,
-        color: Value(account.color),
-        icon: Value(account.icon),
-        createdAt: account.createdAt,
-      ),
-    );
+    return await db.into(db.accounts).insert(AccountsCompanion.insert(
+      name: account.name,
+      type: account.type,
+      initialBalance: account.initialBalance,
+      color: Value(account.color),
+      icon: Value(account.icon),
+      createdAt: account.createdAt,
+    ));
   }
 
   @override
   Future<bool> updateAccount(AccountEntity account) async {
-    return await db.update(db.accounts).replace(
-      AccountsCompanion(
-        id: Value(account.id),
-        name: Value(account.name),
-        type: Value(account.type),
-        initialBalance: Value(account.initialBalance),
-        color: Value(account.color),
-        icon: Value(account.icon),
-        createdAt: Value(account.createdAt),
-      ),
-    );
+    return await db.update(db.accounts).replace(AccountsCompanion(
+      id: Value(account.id),
+      name: Value(account.name),
+      type: Value(account.type),
+      initialBalance: Value(account.initialBalance),
+      color: Value(account.color),
+      icon: Value(account.icon),
+      createdAt: Value(account.createdAt),
+    ));
   }
 
   @override

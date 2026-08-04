@@ -1,7 +1,7 @@
 class AccountEntity {
   final int id;
   final String name;
-  final String type; // Bank, Cash Wallet, Credit Card, Salary, Custom
+  final String type; // Bank, Cash, Credit Card, Salary, Custom
   final double initialBalance;
   final String? color;
   final String? icon;

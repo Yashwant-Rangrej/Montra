@@ -31,6 +31,7 @@ class Transactions extends Table {
   TextColumn get notes => text().nullable()();
   TextColumn get originalSms => text().nullable()();
   TextColumn get bankTransactionId => text().nullable()();
+  TextColumn get receiptAttachment => text().nullable()();
 }
 
 class Budgets extends Table {

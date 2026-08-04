@@ -1,9 +1,9 @@
 import 'package:telephony/telephony.dart';
 import '../../domain/entities/transaction_entity.dart';
-import '../../data/repositories/transaction_repository_impl.dart';
+import '../../domain/repositories/transaction_repository.dart';
 
 class SmsParserService {
-  final TransactionRepositoryImpl _transactionRepo;
+  final TransactionRepository _transactionRepo;
 
   SmsParserService(this._transactionRepo);
 
@@ -18,54 +18,106 @@ class SmsParserService {
   }
 
   TransactionEntity? _parseSmsToTransaction(String body) {
-    body = body.toLowerCase();
+    final lowerBody = body.toLowerCase();
 
-    // Ignore OTP and promotional messages
-    if (body.contains('otp') || body.contains('code') || body.contains('verification')) {
+    // 1. Explicitly ignore OTP and promotional
+    if (lowerBody.contains('otp') || 
+        lowerBody.contains('code') || 
+        lowerBody.contains('verification') ||
+        lowerBody.contains('offer') ||
+        lowerBody.contains('discount')) {
       return null;
     }
 
-    double? amount;
-    String type = 'Expense';
-    String merchant = 'Unknown Merchant';
+    // 2. Determine Type (Income or Expense)
+    String? type;
+    if (lowerBody.contains('debited') || 
+        lowerBody.contains('spent') || 
+        lowerBody.contains('paid') ||
+        lowerBody.contains('deducted')) {
+      type = 'Expense';
+    } else if (lowerBody.contains('credited') || 
+               lowerBody.contains('received') || 
+               lowerBody.contains('refund') ||
+               lowerBody.contains('added')) {
+      type = 'Income';
+    }
     
-    // Example regex for parsing amount (e.g., Rs. 500, INR 500)
-    final amountRegex = RegExp(r'(?:rs\.?|inr)\s*([\d,]+\.?\d*)', caseSensitive: false);
-    final match = amountRegex.firstMatch(body);
+    // Per User Feedback: Even if it doesn't match specific payment methods, 
+    // if we detect it as a financial transaction with an amount, we track it.
+    if (type == null) {
+      // If we can't even tell if it's income or expense, we must ignore it
+      // as we "never auto-merge uncertain transactions".
+      return null;
+    }
+
+    // 3. Detect Payment Method
+    String? paymentMethod;
+    if (lowerBody.contains('upi')) {
+      paymentMethod = 'UPI';
+    } else if (lowerBody.contains('debit card') || lowerBody.contains('atm')) {
+      paymentMethod = 'Debit Card';
+    } else if (lowerBody.contains('credit card')) {
+      paymentMethod = 'Credit Card';
+    } else if (lowerBody.contains('salary')) {
+      paymentMethod = 'Salary';
+    } else if (lowerBody.contains('cashback')) {
+      paymentMethod = 'Cashback';
+    } else if (lowerBody.contains('refund')) {
+      paymentMethod = 'Refund';
+    } else if (lowerBody.contains('interest')) {
+      paymentMethod = 'Interest';
+    } else if (lowerBody.contains('emi')) {
+      paymentMethod = 'EMI';
+    } else if (lowerBody.contains('charge') || lowerBody.contains('fee')) {
+      paymentMethod = 'Bank Charge';
+    } else if (lowerBody.contains('transfer') || lowerBody.contains('neft') || lowerBody.contains('imps') || lowerBody.contains('rtgs')) {
+      paymentMethod = 'Bank Transfer';
+    } else {
+      paymentMethod = 'Other';
+    }
+
+    // 4. Extract Amount
+    double? amount;
+    // Regex matches rs. 500, inr 500, rs 500.50, INR500
+    final amountRegex = RegExp(r'(?:rs\.?|inr|₹)\s*([\d,]+\.?\d*)', caseSensitive: false);
+    final match = amountRegex.firstMatch(lowerBody);
     
     if (match != null) {
       amount = double.tryParse(match.group(1)!.replaceAll(',', ''));
     }
     
-    if (amount == null) return null;
-
-    // Basic logic for Expense/Income
-    if (body.contains('debited') || body.contains('spent') || body.contains('paid')) {
-      type = 'Expense';
-    } else if (body.contains('credited') || body.contains('received') || body.contains('refund')) {
-      type = 'Income';
-    } else {
-      return null; // Don't auto-merge uncertain transactions per PRD
+    if (amount == null || amount <= 0) {
+      return null; // No valid amount found
     }
 
-    // Try to extract merchant (simplified for MVP)
-    if (body.contains('to ')) {
-      final merchantRegex = RegExp(r'to\s+([a-z0-9@]+)');
-      final merchantMatch = merchantRegex.firstMatch(body);
-      if (merchantMatch != null) {
-        merchant = merchantMatch.group(1)!;
+    // 5. Extract Merchant
+    String merchant = 'Unknown';
+    if (lowerBody.contains('to ')) {
+      final toRegex = RegExp(r'to\s+([a-zA-Z0-9@\.\s]+?)(?:\s+on|\s+ref|\.|\n|$)');
+      final toMatch = toRegex.firstMatch(lowerBody);
+      if (toMatch != null) {
+        merchant = toMatch.group(1)!.trim();
+      }
+    } else if (lowerBody.contains('from ')) {
+      final fromRegex = RegExp(r'from\s+([a-zA-Z0-9@\.\s]+?)(?:\s+on|\s+ref|\.|\n|$)');
+      final fromMatch = fromRegex.firstMatch(lowerBody);
+      if (fromMatch != null) {
+        merchant = fromMatch.group(1)!.trim();
       }
     }
 
+    // 6. Return Entity
     return TransactionEntity(
       id: 0,
       amount: amount,
       type: type,
       merchant: merchant,
-      accountId: 1, // Default to a bank account ID
+      accountId: 1, // Default to a bank account ID for SMS
+      paymentMethod: paymentMethod,
       transactionDate: DateTime.now(),
       originalSms: body,
-      notes: 'Auto-imported from SMS',
+      notes: 'Auto-imported via SMS',
     );
   }
 }

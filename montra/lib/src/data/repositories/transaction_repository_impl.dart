@@ -22,6 +22,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
       notes: transaction.notes,
       originalSms: transaction.originalSms,
       bankTransactionId: transaction.bankTransactionId,
+      receiptAttachment: transaction.receiptAttachment,
     );
   }
 

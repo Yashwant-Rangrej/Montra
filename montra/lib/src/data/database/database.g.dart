@@ -928,6 +928,18 @@ class $TransactionsTable extends Transactions
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _receiptAttachmentMeta = const VerificationMeta(
+    'receiptAttachment',
+  );
+  @override
+  late final GeneratedColumn<String> receiptAttachment =
+      GeneratedColumn<String>(
+        'receipt_attachment',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -942,6 +954,7 @@ class $TransactionsTable extends Transactions
     notes,
     originalSms,
     bankTransactionId,
+    receiptAttachment,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1047,6 +1060,15 @@ class $TransactionsTable extends Transactions
         ),
       );
     }
+    if (data.containsKey('receipt_attachment')) {
+      context.handle(
+        _receiptAttachmentMeta,
+        receiptAttachment.isAcceptableOrUnknown(
+          data['receipt_attachment']!,
+          _receiptAttachmentMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1104,6 +1126,10 @@ class $TransactionsTable extends Transactions
         DriftSqlType.string,
         data['${effectivePrefix}bank_transaction_id'],
       ),
+      receiptAttachment: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}receipt_attachment'],
+      ),
     );
   }
 
@@ -1126,6 +1152,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
   final String? notes;
   final String? originalSms;
   final String? bankTransactionId;
+  final String? receiptAttachment;
   const Transaction({
     required this.id,
     required this.amount,
@@ -1139,6 +1166,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     this.notes,
     this.originalSms,
     this.bankTransactionId,
+    this.receiptAttachment,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1168,6 +1196,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     }
     if (!nullToAbsent || bankTransactionId != null) {
       map['bank_transaction_id'] = Variable<String>(bankTransactionId);
+    }
+    if (!nullToAbsent || receiptAttachment != null) {
+      map['receipt_attachment'] = Variable<String>(receiptAttachment);
     }
     return map;
   }
@@ -1200,6 +1231,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       bankTransactionId: bankTransactionId == null && nullToAbsent
           ? const Value.absent()
           : Value(bankTransactionId),
+      receiptAttachment: receiptAttachment == null && nullToAbsent
+          ? const Value.absent()
+          : Value(receiptAttachment),
     );
   }
 
@@ -1223,6 +1257,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       bankTransactionId: serializer.fromJson<String?>(
         json['bankTransactionId'],
       ),
+      receiptAttachment: serializer.fromJson<String?>(
+        json['receiptAttachment'],
+      ),
     );
   }
   @override
@@ -1241,6 +1278,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       'notes': serializer.toJson<String?>(notes),
       'originalSms': serializer.toJson<String?>(originalSms),
       'bankTransactionId': serializer.toJson<String?>(bankTransactionId),
+      'receiptAttachment': serializer.toJson<String?>(receiptAttachment),
     };
   }
 
@@ -1257,6 +1295,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     Value<String?> notes = const Value.absent(),
     Value<String?> originalSms = const Value.absent(),
     Value<String?> bankTransactionId = const Value.absent(),
+    Value<String?> receiptAttachment = const Value.absent(),
   }) => Transaction(
     id: id ?? this.id,
     amount: amount ?? this.amount,
@@ -1276,6 +1315,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     bankTransactionId: bankTransactionId.present
         ? bankTransactionId.value
         : this.bankTransactionId,
+    receiptAttachment: receiptAttachment.present
+        ? receiptAttachment.value
+        : this.receiptAttachment,
   );
   Transaction copyWithCompanion(TransactionsCompanion data) {
     return Transaction(
@@ -1303,6 +1345,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       bankTransactionId: data.bankTransactionId.present
           ? data.bankTransactionId.value
           : this.bankTransactionId,
+      receiptAttachment: data.receiptAttachment.present
+          ? data.receiptAttachment.value
+          : this.receiptAttachment,
     );
   }
 
@@ -1320,7 +1365,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           ..write('transactionDate: $transactionDate, ')
           ..write('notes: $notes, ')
           ..write('originalSms: $originalSms, ')
-          ..write('bankTransactionId: $bankTransactionId')
+          ..write('bankTransactionId: $bankTransactionId, ')
+          ..write('receiptAttachment: $receiptAttachment')
           ..write(')'))
         .toString();
   }
@@ -1339,6 +1385,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     notes,
     originalSms,
     bankTransactionId,
+    receiptAttachment,
   );
   @override
   bool operator ==(Object other) =>
@@ -1355,7 +1402,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           other.transactionDate == this.transactionDate &&
           other.notes == this.notes &&
           other.originalSms == this.originalSms &&
-          other.bankTransactionId == this.bankTransactionId);
+          other.bankTransactionId == this.bankTransactionId &&
+          other.receiptAttachment == this.receiptAttachment);
 }
 
 class TransactionsCompanion extends UpdateCompanion<Transaction> {
@@ -1371,6 +1419,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
   final Value<String?> notes;
   final Value<String?> originalSms;
   final Value<String?> bankTransactionId;
+  final Value<String?> receiptAttachment;
   const TransactionsCompanion({
     this.id = const Value.absent(),
     this.amount = const Value.absent(),
@@ -1384,6 +1433,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     this.notes = const Value.absent(),
     this.originalSms = const Value.absent(),
     this.bankTransactionId = const Value.absent(),
+    this.receiptAttachment = const Value.absent(),
   });
   TransactionsCompanion.insert({
     this.id = const Value.absent(),
@@ -1398,6 +1448,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     this.notes = const Value.absent(),
     this.originalSms = const Value.absent(),
     this.bankTransactionId = const Value.absent(),
+    this.receiptAttachment = const Value.absent(),
   }) : amount = Value(amount),
        type = Value(type),
        accountId = Value(accountId),
@@ -1415,6 +1466,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     Expression<String>? notes,
     Expression<String>? originalSms,
     Expression<String>? bankTransactionId,
+    Expression<String>? receiptAttachment,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1429,6 +1481,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       if (notes != null) 'notes': notes,
       if (originalSms != null) 'original_sms': originalSms,
       if (bankTransactionId != null) 'bank_transaction_id': bankTransactionId,
+      if (receiptAttachment != null) 'receipt_attachment': receiptAttachment,
     });
   }
 
@@ -1445,6 +1498,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     Value<String?>? notes,
     Value<String?>? originalSms,
     Value<String?>? bankTransactionId,
+    Value<String?>? receiptAttachment,
   }) {
     return TransactionsCompanion(
       id: id ?? this.id,
@@ -1459,6 +1513,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       notes: notes ?? this.notes,
       originalSms: originalSms ?? this.originalSms,
       bankTransactionId: bankTransactionId ?? this.bankTransactionId,
+      receiptAttachment: receiptAttachment ?? this.receiptAttachment,
     );
   }
 
@@ -1501,6 +1556,9 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     if (bankTransactionId.present) {
       map['bank_transaction_id'] = Variable<String>(bankTransactionId.value);
     }
+    if (receiptAttachment.present) {
+      map['receipt_attachment'] = Variable<String>(receiptAttachment.value);
+    }
     return map;
   }
 
@@ -1518,7 +1576,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
           ..write('transactionDate: $transactionDate, ')
           ..write('notes: $notes, ')
           ..write('originalSms: $originalSms, ')
-          ..write('bankTransactionId: $bankTransactionId')
+          ..write('bankTransactionId: $bankTransactionId, ')
+          ..write('receiptAttachment: $receiptAttachment')
           ..write(')'))
         .toString();
   }
@@ -3401,6 +3460,7 @@ typedef $$TransactionsTableCreateCompanionBuilder =
       Value<String?> notes,
       Value<String?> originalSms,
       Value<String?> bankTransactionId,
+      Value<String?> receiptAttachment,
     });
 typedef $$TransactionsTableUpdateCompanionBuilder =
     TransactionsCompanion Function({
@@ -3416,6 +3476,7 @@ typedef $$TransactionsTableUpdateCompanionBuilder =
       Value<String?> notes,
       Value<String?> originalSms,
       Value<String?> bankTransactionId,
+      Value<String?> receiptAttachment,
     });
 
 class $$TransactionsTableFilterComposer
@@ -3484,6 +3545,11 @@ class $$TransactionsTableFilterComposer
 
   ColumnFilters<String> get bankTransactionId => $composableBuilder(
     column: $table.bankTransactionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get receiptAttachment => $composableBuilder(
+    column: $table.receiptAttachment,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -3556,6 +3622,11 @@ class $$TransactionsTableOrderingComposer
     column: $table.bankTransactionId,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get receiptAttachment => $composableBuilder(
+    column: $table.receiptAttachment,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$TransactionsTableAnnotationComposer
@@ -3614,6 +3685,11 @@ class $$TransactionsTableAnnotationComposer
     column: $table.bankTransactionId,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get receiptAttachment => $composableBuilder(
+    column: $table.receiptAttachment,
+    builder: (column) => column,
+  );
 }
 
 class $$TransactionsTableTableManager
@@ -3659,6 +3735,7 @@ class $$TransactionsTableTableManager
                 Value<String?> notes = const Value.absent(),
                 Value<String?> originalSms = const Value.absent(),
                 Value<String?> bankTransactionId = const Value.absent(),
+                Value<String?> receiptAttachment = const Value.absent(),
               }) => TransactionsCompanion(
                 id: id,
                 amount: amount,
@@ -3672,6 +3749,7 @@ class $$TransactionsTableTableManager
                 notes: notes,
                 originalSms: originalSms,
                 bankTransactionId: bankTransactionId,
+                receiptAttachment: receiptAttachment,
               ),
           createCompanionCallback:
               ({
@@ -3687,6 +3765,7 @@ class $$TransactionsTableTableManager
                 Value<String?> notes = const Value.absent(),
                 Value<String?> originalSms = const Value.absent(),
                 Value<String?> bankTransactionId = const Value.absent(),
+                Value<String?> receiptAttachment = const Value.absent(),
               }) => TransactionsCompanion.insert(
                 id: id,
                 amount: amount,
@@ -3700,6 +3779,7 @@ class $$TransactionsTableTableManager
                 notes: notes,
                 originalSms: originalSms,
                 bankTransactionId: bankTransactionId,
+                receiptAttachment: receiptAttachment,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

@@ -1,7 +1,7 @@
 class CategoryEntity {
   final int id;
   final String name;
-  final String type; // Income, Expense
+  final String type; // Expense, Income
   final String? color;
   final String? icon;
 

@@ -11,6 +11,7 @@ class TransactionEntity {
   final String? notes;
   final String? originalSms;
   final String? bankTransactionId;
+  final String? receiptAttachment;
 
   TransactionEntity({
     required this.id,
@@ -25,5 +26,6 @@ class TransactionEntity {
     this.notes,
     this.originalSms,
     this.bankTransactionId,
+    this.receiptAttachment,
   });
 }

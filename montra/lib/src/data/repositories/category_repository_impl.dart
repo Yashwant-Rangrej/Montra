@@ -25,34 +25,38 @@ class CategoryRepositoryImpl implements CategoryRepository {
   }
 
   @override
+  Future<List<CategoryEntity>> getCategoriesByType(String type) async {
+    final query = db.select(db.categories)..where((c) => c.type.equals(type));
+    final categories = await query.get();
+    return categories.map(_mapToEntity).toList();
+  }
+
+  @override
   Future<CategoryEntity?> getCategoryById(int id) async {
-    final category = await (db.select(db.categories)..where((c) => c.id.equals(id))).getSingleOrNull();
+    final query = db.select(db.categories)..where((c) => c.id.equals(id));
+    final category = await query.getSingleOrNull();
     return category != null ? _mapToEntity(category) : null;
   }
 
   @override
   Future<int> insertCategory(CategoryEntity category) async {
-    return await db.into(db.categories).insert(
-      CategoriesCompanion.insert(
-        name: category.name,
-        type: category.type,
-        color: Value(category.color),
-        icon: Value(category.icon),
-      ),
-    );
+    return await db.into(db.categories).insert(CategoriesCompanion.insert(
+      name: category.name,
+      type: category.type,
+      color: Value(category.color),
+      icon: Value(category.icon),
+    ));
   }
 
   @override
   Future<bool> updateCategory(CategoryEntity category) async {
-    return await db.update(db.categories).replace(
-      CategoriesCompanion(
-        id: Value(category.id),
-        name: Value(category.name),
-        type: Value(category.type),
-        color: Value(category.color),
-        icon: Value(category.icon),
-      ),
-    );
+    return await db.update(db.categories).replace(CategoriesCompanion(
+      id: Value(category.id),
+      name: Value(category.name),
+      type: Value(category.type),
+      color: Value(category.color),
+      icon: Value(category.icon),
+    ));
   }
 
   @override
