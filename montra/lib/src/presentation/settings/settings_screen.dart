@@ -118,7 +118,6 @@ class SettingsScreen extends ConsumerWidget {
   Widget _buildSettingsGroup(BuildContext context, {required List<Widget> children}) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).cardTheme.color ?? Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -128,8 +127,13 @@ class SettingsScreen extends ConsumerWidget {
           )
         ],
       ),
-      child: Column(
-        children: children,
+      child: Material(
+        color: Theme.of(context).cardTheme.color ?? Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(24),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          children: children,
+        ),
       ),
     );
   }
