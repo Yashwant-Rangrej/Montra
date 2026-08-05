@@ -44,13 +44,43 @@ class SmsPipeline {
 
 
 
+      final normalizedBankName = parsed.bankName.isNotEmpty ? parsed.bankName : 'Unknown Bank';
+      var account = await (_db.select(_db.accounts)..where((a) => a.bankName.equals(normalizedBankName))..limit(1)).getSingleOrNull();
+      
+      if (account == null) {
+        final accId = await _db.into(_db.accounts).insert(
+          AccountsCompanion.insert(
+            bankName: normalizedBankName,
+            totalTransactions: const drift.Value(0),
+            totalIncome: const drift.Value(0.0),
+            totalExpenses: const drift.Value(0.0),
+            icon: const drift.Value('account_balance'),
+            color: const drift.Value('blue'),
+          )
+        );
+        account = await (_db.select(_db.accounts)..where((a) => a.id.equals(accId))).getSingle();
+      }
+
+      final isCredit = parsed.transactionType == 'credit';
+      final isDebit = parsed.transactionType == 'debit';
+
+      await _db.update(_db.accounts).replace(
+        account.copyWith(
+          totalTransactions: account.totalTransactions + 1,
+          totalIncome: isCredit ? account.totalIncome + parsed.amount : account.totalIncome,
+          totalExpenses: isDebit ? account.totalExpenses + parsed.amount : account.totalExpenses,
+          lastTransactionDate: drift.Value(parsed.transactionDate),
+          availableBalance: parsed.availableBalance != null ? drift.Value(parsed.availableBalance!) : const drift.Value.absent(),
+        )
+      );
+
       final transactionCompanion = TransactionsCompanion(
         amount: drift.Value(parsed.amount),
-        type: drift.Value(parsed.transactionType == 'credit' ? 'Income' : 'Expense'),
+        type: drift.Value(isCredit ? 'Income' : 'Expense'),
         merchant: drift.Value(parsed.merchant),
         categoryId: drift.Value(categoryId),
         paymentMethod: drift.Value(parsed.paymentMethod),
-        bankName: drift.Value(parsed.bankName),
+        accountId: drift.Value(account.id),
         availableBalance: drift.Value(parsed.availableBalance),
         transactionDate: drift.Value(parsed.transactionDate),
         originalSms: drift.Value(message.body),

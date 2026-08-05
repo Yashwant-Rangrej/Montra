@@ -8,12 +8,12 @@ import 'tables.dart';
 
 part 'database.g.dart';
 
-@DriftDatabase(tables: [Categories, Transactions, Budgets, Goals, Notifications, Settings, Tags, TransactionTags, UnrecognizedSms])
+@DriftDatabase(tables: [Accounts, Categories, Transactions, Budgets, Goals, Notifications, Settings, Tags, TransactionTags, UnrecognizedSms])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration {
@@ -29,16 +29,18 @@ class AppDatabase extends _$AppDatabase {
           await m.createTable(goals);
         }
         if (from < 4) {
-          // Note: In SQLite dropping a table is easy, but dropping a column requires table recreation or Drift's TableMigration.
-          // Since this is local and we are fine with it, we use Drift's alterTable
-          await m.alterTable(TableMigration(transactions, columnRemovals: [
-            // Drift automatically handles column removals specified via schema diffs if we don't mention it,
-            // but we can just add the new columns here and let drift handle the rest, or recreate.
-          ]));
-          await m.addColumn(transactions, transactions.bankName);
-          await m.addColumn(transactions, transactions.availableBalance);
+          // Add new columns using raw statements to avoid compile errors before generation
+          await customStatement('ALTER TABLE transactions ADD COLUMN bank_name TEXT NOT NULL DEFAULT "Manual";');
+          await customStatement('ALTER TABLE transactions ADD COLUMN available_balance REAL;');
           // Drop accounts table raw query to avoid drift knowing about it
           await customStatement('DROP TABLE IF EXISTS accounts;');
+        }
+        if (from < 5) {
+          // Create new Accounts table
+          await m.createTable(accounts);
+          // Restore accountId in transactions, drop bankName if we could. Since sqlite doesn't easily drop, we just add accountId.
+          await customStatement('ALTER TABLE transactions ADD COLUMN account_id INTEGER NOT NULL DEFAULT 1;');
+          await customStatement('ALTER TABLE transactions ADD COLUMN target_account_id INTEGER;');
         }
       },
     );

@@ -5,7 +5,8 @@ class TransactionEntity {
   final String? merchant;
   final int? categoryId;
   final String? paymentMethod;
-  final String bankName;
+  final int accountId;
+  final int? targetAccountId;
   final double? availableBalance;
   final DateTime transactionDate;
   final String? notes;
@@ -20,7 +21,8 @@ class TransactionEntity {
     this.merchant,
     this.categoryId,
     this.paymentMethod,
-    required this.bankName,
+    required this.accountId,
+    this.targetAccountId,
     this.availableBalance,
     required this.transactionDate,
     this.notes,

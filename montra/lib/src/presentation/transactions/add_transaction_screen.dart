@@ -7,6 +7,7 @@ import '../../core/theme/app_theme.dart';
 import '../../domain/entities/transaction_entity.dart';
 import '../../providers/repository_providers.dart';
 import '../../providers/categories_provider.dart';
+import '../../providers/accounts_provider.dart';
 
 class AddTransactionScreen extends ConsumerStatefulWidget {
   const AddTransactionScreen({super.key});
@@ -22,7 +23,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   double _amount = 0.0;
   String _merchant = '';
   String _notes = '';
-  String _bankName = 'Cash';
+  int? _accountId;
   int? _categoryId;
   String? _paymentMethod;
   File? _receiptAttachment;
@@ -42,6 +43,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   @override
   Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(categoriesProvider);
+    final accountsAsync = ref.watch(accountsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -119,11 +121,20 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                         validator: (val) => val == null || val.isEmpty ? 'Required' : null,
                       ),
                       const SizedBox(height: 16),
-                      TextFormField(
-                        initialValue: _bankName,
-                        decoration: const InputDecoration(labelText: 'Bank / Source'),
-                        onChanged: (val) => _bankName = val,
-                        validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                      accountsAsync.when(
+                        data: (accounts) {
+                          final visibleAccounts = accounts.where((a) => !a.isHidden).toList();
+                          if (visibleAccounts.isEmpty) return const Text('No accounts found. They will appear automatically from SMS.');
+                          return DropdownButtonFormField<int>(
+                            initialValue: _accountId,
+                            decoration: const InputDecoration(labelText: 'Bank Account'),
+                            items: visibleAccounts.map((a) => DropdownMenuItem(value: a.id, child: Text(a.bankName))).toList(),
+                            onChanged: (val) => setState(() => _accountId = val),
+                            validator: (val) => val == null ? 'Select an account' : null,
+                          );
+                        },
+                        loading: () => const CircularProgressIndicator(),
+                        error: (_, _) => const Text('Error loading accounts'),
                       ),
                       const SizedBox(height: 16),
                       categoriesAsync.when(
@@ -186,6 +197,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
 
   void _saveTransaction() async {
     if (_formKey.currentState!.validate()) {
+      if (_accountId == null) return;
 
       final repo = ref.read(transactionRepositoryProvider);
       
@@ -195,7 +207,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
         type: _type,
         merchant: _merchant,
         notes: _notes,
-        bankName: _bankName,
+        accountId: _accountId!,
         availableBalance: null, // manual transactions don't set available balance
         categoryId: _categoryId,
         paymentMethod: _paymentMethod,

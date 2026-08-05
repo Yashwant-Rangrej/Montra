@@ -15,8 +15,8 @@ class TransactionRepositoryImpl implements TransactionRepository {
       type: transaction.type,
       merchant: transaction.merchant,
       categoryId: transaction.categoryId,
-      paymentMethod: transaction.paymentMethod,
-      bankName: transaction.bankName,
+      accountId: transaction.accountId,
+      targetAccountId: transaction.targetAccountId,
       availableBalance: transaction.availableBalance,
       transactionDate: transaction.transactionDate,
       notes: transaction.notes,
@@ -33,8 +33,8 @@ class TransactionRepositoryImpl implements TransactionRepository {
   }
 
   @override
-  Future<List<TransactionEntity>> getTransactionsByBank(String bankName) async {
-    final query = db.select(db.transactions)..where((t) => t.bankName.equals(bankName));
+  Future<List<TransactionEntity>> getTransactionsByAccount(int accountId) async {
+    final query = db.select(db.transactions)..where((t) => t.accountId.equals(accountId));
     final transactions = await query.get();
     return transactions.map(_mapToEntity).toList();
   }
@@ -54,7 +54,8 @@ class TransactionRepositoryImpl implements TransactionRepository {
         merchant: Value(transaction.merchant),
         categoryId: Value(transaction.categoryId),
         paymentMethod: Value(transaction.paymentMethod),
-        bankName: Value(transaction.bankName),
+        accountId: transaction.accountId,
+        targetAccountId: Value(transaction.targetAccountId),
         availableBalance: Value(transaction.availableBalance),
         transactionDate: transaction.transactionDate,
         notes: Value(transaction.notes),
@@ -74,7 +75,8 @@ class TransactionRepositoryImpl implements TransactionRepository {
         merchant: Value(transaction.merchant),
         categoryId: Value(transaction.categoryId),
         paymentMethod: Value(transaction.paymentMethod),
-        bankName: Value(transaction.bankName),
+        accountId: Value(transaction.accountId),
+        targetAccountId: Value(transaction.targetAccountId),
         availableBalance: Value(transaction.availableBalance),
         transactionDate: Value(transaction.transactionDate),
         notes: Value(transaction.notes),

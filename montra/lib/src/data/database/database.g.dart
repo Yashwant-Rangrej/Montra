@@ -3,453 +3,6 @@
 part of 'database.dart';
 
 // ignore_for_file: type=lint
-class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $AccountsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-    'id',
-    aliasedName,
-    false,
-    hasAutoIncrement: true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
-  );
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-    'name',
-    aliasedName,
-    false,
-    additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 1,
-      maxTextLength: 50,
-    ),
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _typeMeta = const VerificationMeta('type');
-  @override
-  late final GeneratedColumn<String> type = GeneratedColumn<String>(
-    'type',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _initialBalanceMeta = const VerificationMeta(
-    'initialBalance',
-  );
-  @override
-  late final GeneratedColumn<double> initialBalance = GeneratedColumn<double>(
-    'initial_balance',
-    aliasedName,
-    false,
-    type: DriftSqlType.double,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _colorMeta = const VerificationMeta('color');
-  @override
-  late final GeneratedColumn<String> color = GeneratedColumn<String>(
-    'color',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _iconMeta = const VerificationMeta('icon');
-  @override
-  late final GeneratedColumn<String> icon = GeneratedColumn<String>(
-    'icon',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    name,
-    type,
-    initialBalance,
-    color,
-    icon,
-    createdAt,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'accounts';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<Account> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('type')) {
-      context.handle(
-        _typeMeta,
-        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_typeMeta);
-    }
-    if (data.containsKey('initial_balance')) {
-      context.handle(
-        _initialBalanceMeta,
-        initialBalance.isAcceptableOrUnknown(
-          data['initial_balance']!,
-          _initialBalanceMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_initialBalanceMeta);
-    }
-    if (data.containsKey('color')) {
-      context.handle(
-        _colorMeta,
-        color.isAcceptableOrUnknown(data['color']!, _colorMeta),
-      );
-    }
-    if (data.containsKey('icon')) {
-      context.handle(
-        _iconMeta,
-        icon.isAcceptableOrUnknown(data['icon']!, _iconMeta),
-      );
-    }
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_createdAtMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  Account map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Account(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}id'],
-      )!,
-      name: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name'],
-      )!,
-      type: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}type'],
-      )!,
-      initialBalance: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}initial_balance'],
-      )!,
-      color: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}color'],
-      ),
-      icon: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}icon'],
-      ),
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-    );
-  }
-
-  @override
-  $AccountsTable createAlias(String alias) {
-    return $AccountsTable(attachedDatabase, alias);
-  }
-}
-
-class Account extends DataClass implements Insertable<Account> {
-  final int id;
-  final String name;
-  final String type;
-  final double initialBalance;
-  final String? color;
-  final String? icon;
-  final DateTime createdAt;
-  const Account({
-    required this.id,
-    required this.name,
-    required this.type,
-    required this.initialBalance,
-    this.color,
-    this.icon,
-    required this.createdAt,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['name'] = Variable<String>(name);
-    map['type'] = Variable<String>(type);
-    map['initial_balance'] = Variable<double>(initialBalance);
-    if (!nullToAbsent || color != null) {
-      map['color'] = Variable<String>(color);
-    }
-    if (!nullToAbsent || icon != null) {
-      map['icon'] = Variable<String>(icon);
-    }
-    map['created_at'] = Variable<DateTime>(createdAt);
-    return map;
-  }
-
-  AccountsCompanion toCompanion(bool nullToAbsent) {
-    return AccountsCompanion(
-      id: Value(id),
-      name: Value(name),
-      type: Value(type),
-      initialBalance: Value(initialBalance),
-      color: color == null && nullToAbsent
-          ? const Value.absent()
-          : Value(color),
-      icon: icon == null && nullToAbsent ? const Value.absent() : Value(icon),
-      createdAt: Value(createdAt),
-    );
-  }
-
-  factory Account.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Account(
-      id: serializer.fromJson<int>(json['id']),
-      name: serializer.fromJson<String>(json['name']),
-      type: serializer.fromJson<String>(json['type']),
-      initialBalance: serializer.fromJson<double>(json['initialBalance']),
-      color: serializer.fromJson<String?>(json['color']),
-      icon: serializer.fromJson<String?>(json['icon']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'name': serializer.toJson<String>(name),
-      'type': serializer.toJson<String>(type),
-      'initialBalance': serializer.toJson<double>(initialBalance),
-      'color': serializer.toJson<String?>(color),
-      'icon': serializer.toJson<String?>(icon),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-    };
-  }
-
-  Account copyWith({
-    int? id,
-    String? name,
-    String? type,
-    double? initialBalance,
-    Value<String?> color = const Value.absent(),
-    Value<String?> icon = const Value.absent(),
-    DateTime? createdAt,
-  }) => Account(
-    id: id ?? this.id,
-    name: name ?? this.name,
-    type: type ?? this.type,
-    initialBalance: initialBalance ?? this.initialBalance,
-    color: color.present ? color.value : this.color,
-    icon: icon.present ? icon.value : this.icon,
-    createdAt: createdAt ?? this.createdAt,
-  );
-  Account copyWithCompanion(AccountsCompanion data) {
-    return Account(
-      id: data.id.present ? data.id.value : this.id,
-      name: data.name.present ? data.name.value : this.name,
-      type: data.type.present ? data.type.value : this.type,
-      initialBalance: data.initialBalance.present
-          ? data.initialBalance.value
-          : this.initialBalance,
-      color: data.color.present ? data.color.value : this.color,
-      icon: data.icon.present ? data.icon.value : this.icon,
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('Account(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('type: $type, ')
-          ..write('initialBalance: $initialBalance, ')
-          ..write('color: $color, ')
-          ..write('icon: $icon, ')
-          ..write('createdAt: $createdAt')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(id, name, type, initialBalance, color, icon, createdAt);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Account &&
-          other.id == this.id &&
-          other.name == this.name &&
-          other.type == this.type &&
-          other.initialBalance == this.initialBalance &&
-          other.color == this.color &&
-          other.icon == this.icon &&
-          other.createdAt == this.createdAt);
-}
-
-class AccountsCompanion extends UpdateCompanion<Account> {
-  final Value<int> id;
-  final Value<String> name;
-  final Value<String> type;
-  final Value<double> initialBalance;
-  final Value<String?> color;
-  final Value<String?> icon;
-  final Value<DateTime> createdAt;
-  const AccountsCompanion({
-    this.id = const Value.absent(),
-    this.name = const Value.absent(),
-    this.type = const Value.absent(),
-    this.initialBalance = const Value.absent(),
-    this.color = const Value.absent(),
-    this.icon = const Value.absent(),
-    this.createdAt = const Value.absent(),
-  });
-  AccountsCompanion.insert({
-    this.id = const Value.absent(),
-    required String name,
-    required String type,
-    required double initialBalance,
-    this.color = const Value.absent(),
-    this.icon = const Value.absent(),
-    required DateTime createdAt,
-  }) : name = Value(name),
-       type = Value(type),
-       initialBalance = Value(initialBalance),
-       createdAt = Value(createdAt);
-  static Insertable<Account> custom({
-    Expression<int>? id,
-    Expression<String>? name,
-    Expression<String>? type,
-    Expression<double>? initialBalance,
-    Expression<String>? color,
-    Expression<String>? icon,
-    Expression<DateTime>? createdAt,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (name != null) 'name': name,
-      if (type != null) 'type': type,
-      if (initialBalance != null) 'initial_balance': initialBalance,
-      if (color != null) 'color': color,
-      if (icon != null) 'icon': icon,
-      if (createdAt != null) 'created_at': createdAt,
-    });
-  }
-
-  AccountsCompanion copyWith({
-    Value<int>? id,
-    Value<String>? name,
-    Value<String>? type,
-    Value<double>? initialBalance,
-    Value<String?>? color,
-    Value<String?>? icon,
-    Value<DateTime>? createdAt,
-  }) {
-    return AccountsCompanion(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      type: type ?? this.type,
-      initialBalance: initialBalance ?? this.initialBalance,
-      color: color ?? this.color,
-      icon: icon ?? this.icon,
-      createdAt: createdAt ?? this.createdAt,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (type.present) {
-      map['type'] = Variable<String>(type.value);
-    }
-    if (initialBalance.present) {
-      map['initial_balance'] = Variable<double>(initialBalance.value);
-    }
-    if (color.present) {
-      map['color'] = Variable<String>(color.value);
-    }
-    if (icon.present) {
-      map['icon'] = Variable<String>(icon.value);
-    }
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('AccountsCompanion(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('type: $type, ')
-          ..write('initialBalance: $initialBalance, ')
-          ..write('color: $color, ')
-          ..write('icon: $icon, ')
-          ..write('createdAt: $createdAt')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $CategoriesTable extends Categories
     with TableInfo<$CategoriesTable, Category> {
   @override
@@ -862,26 +415,27 @@ class $TransactionsTable extends Transactions
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _accountIdMeta = const VerificationMeta(
-    'accountId',
+  static const VerificationMeta _bankNameMeta = const VerificationMeta(
+    'bankName',
   );
   @override
-  late final GeneratedColumn<int> accountId = GeneratedColumn<int>(
-    'account_id',
+  late final GeneratedColumn<String> bankName = GeneratedColumn<String>(
+    'bank_name',
     aliasedName,
     false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('Manual'),
   );
-  static const VerificationMeta _targetAccountIdMeta = const VerificationMeta(
-    'targetAccountId',
+  static const VerificationMeta _availableBalanceMeta = const VerificationMeta(
+    'availableBalance',
   );
   @override
-  late final GeneratedColumn<int> targetAccountId = GeneratedColumn<int>(
-    'target_account_id',
+  late final GeneratedColumn<double> availableBalance = GeneratedColumn<double>(
+    'available_balance',
     aliasedName,
     true,
-    type: DriftSqlType.int,
+    type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
   static const VerificationMeta _transactionDateMeta = const VerificationMeta(
@@ -948,8 +502,8 @@ class $TransactionsTable extends Transactions
     merchant,
     categoryId,
     paymentMethod,
-    accountId,
-    targetAccountId,
+    bankName,
+    availableBalance,
     transactionDate,
     notes,
     originalSms,
@@ -1008,20 +562,18 @@ class $TransactionsTable extends Transactions
         ),
       );
     }
-    if (data.containsKey('account_id')) {
+    if (data.containsKey('bank_name')) {
       context.handle(
-        _accountIdMeta,
-        accountId.isAcceptableOrUnknown(data['account_id']!, _accountIdMeta),
+        _bankNameMeta,
+        bankName.isAcceptableOrUnknown(data['bank_name']!, _bankNameMeta),
       );
-    } else if (isInserting) {
-      context.missing(_accountIdMeta);
     }
-    if (data.containsKey('target_account_id')) {
+    if (data.containsKey('available_balance')) {
       context.handle(
-        _targetAccountIdMeta,
-        targetAccountId.isAcceptableOrUnknown(
-          data['target_account_id']!,
-          _targetAccountIdMeta,
+        _availableBalanceMeta,
+        availableBalance.isAcceptableOrUnknown(
+          data['available_balance']!,
+          _availableBalanceMeta,
         ),
       );
     }
@@ -1102,13 +654,13 @@ class $TransactionsTable extends Transactions
         DriftSqlType.string,
         data['${effectivePrefix}payment_method'],
       ),
-      accountId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}account_id'],
+      bankName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bank_name'],
       )!,
-      targetAccountId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}target_account_id'],
+      availableBalance: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}available_balance'],
       ),
       transactionDate: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -1146,8 +698,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
   final String? merchant;
   final int? categoryId;
   final String? paymentMethod;
-  final int accountId;
-  final int? targetAccountId;
+  final String bankName;
+  final double? availableBalance;
   final DateTime transactionDate;
   final String? notes;
   final String? originalSms;
@@ -1160,8 +712,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     this.merchant,
     this.categoryId,
     this.paymentMethod,
-    required this.accountId,
-    this.targetAccountId,
+    required this.bankName,
+    this.availableBalance,
     required this.transactionDate,
     this.notes,
     this.originalSms,
@@ -1183,9 +735,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     if (!nullToAbsent || paymentMethod != null) {
       map['payment_method'] = Variable<String>(paymentMethod);
     }
-    map['account_id'] = Variable<int>(accountId);
-    if (!nullToAbsent || targetAccountId != null) {
-      map['target_account_id'] = Variable<int>(targetAccountId);
+    map['bank_name'] = Variable<String>(bankName);
+    if (!nullToAbsent || availableBalance != null) {
+      map['available_balance'] = Variable<double>(availableBalance);
     }
     map['transaction_date'] = Variable<DateTime>(transactionDate);
     if (!nullToAbsent || notes != null) {
@@ -1217,10 +769,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       paymentMethod: paymentMethod == null && nullToAbsent
           ? const Value.absent()
           : Value(paymentMethod),
-      accountId: Value(accountId),
-      targetAccountId: targetAccountId == null && nullToAbsent
+      bankName: Value(bankName),
+      availableBalance: availableBalance == null && nullToAbsent
           ? const Value.absent()
-          : Value(targetAccountId),
+          : Value(availableBalance),
       transactionDate: Value(transactionDate),
       notes: notes == null && nullToAbsent
           ? const Value.absent()
@@ -1249,8 +801,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       merchant: serializer.fromJson<String?>(json['merchant']),
       categoryId: serializer.fromJson<int?>(json['categoryId']),
       paymentMethod: serializer.fromJson<String?>(json['paymentMethod']),
-      accountId: serializer.fromJson<int>(json['accountId']),
-      targetAccountId: serializer.fromJson<int?>(json['targetAccountId']),
+      bankName: serializer.fromJson<String>(json['bankName']),
+      availableBalance: serializer.fromJson<double?>(json['availableBalance']),
       transactionDate: serializer.fromJson<DateTime>(json['transactionDate']),
       notes: serializer.fromJson<String?>(json['notes']),
       originalSms: serializer.fromJson<String?>(json['originalSms']),
@@ -1272,8 +824,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       'merchant': serializer.toJson<String?>(merchant),
       'categoryId': serializer.toJson<int?>(categoryId),
       'paymentMethod': serializer.toJson<String?>(paymentMethod),
-      'accountId': serializer.toJson<int>(accountId),
-      'targetAccountId': serializer.toJson<int?>(targetAccountId),
+      'bankName': serializer.toJson<String>(bankName),
+      'availableBalance': serializer.toJson<double?>(availableBalance),
       'transactionDate': serializer.toJson<DateTime>(transactionDate),
       'notes': serializer.toJson<String?>(notes),
       'originalSms': serializer.toJson<String?>(originalSms),
@@ -1289,8 +841,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     Value<String?> merchant = const Value.absent(),
     Value<int?> categoryId = const Value.absent(),
     Value<String?> paymentMethod = const Value.absent(),
-    int? accountId,
-    Value<int?> targetAccountId = const Value.absent(),
+    String? bankName,
+    Value<double?> availableBalance = const Value.absent(),
     DateTime? transactionDate,
     Value<String?> notes = const Value.absent(),
     Value<String?> originalSms = const Value.absent(),
@@ -1305,10 +857,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     paymentMethod: paymentMethod.present
         ? paymentMethod.value
         : this.paymentMethod,
-    accountId: accountId ?? this.accountId,
-    targetAccountId: targetAccountId.present
-        ? targetAccountId.value
-        : this.targetAccountId,
+    bankName: bankName ?? this.bankName,
+    availableBalance: availableBalance.present
+        ? availableBalance.value
+        : this.availableBalance,
     transactionDate: transactionDate ?? this.transactionDate,
     notes: notes.present ? notes.value : this.notes,
     originalSms: originalSms.present ? originalSms.value : this.originalSms,
@@ -1331,10 +883,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       paymentMethod: data.paymentMethod.present
           ? data.paymentMethod.value
           : this.paymentMethod,
-      accountId: data.accountId.present ? data.accountId.value : this.accountId,
-      targetAccountId: data.targetAccountId.present
-          ? data.targetAccountId.value
-          : this.targetAccountId,
+      bankName: data.bankName.present ? data.bankName.value : this.bankName,
+      availableBalance: data.availableBalance.present
+          ? data.availableBalance.value
+          : this.availableBalance,
       transactionDate: data.transactionDate.present
           ? data.transactionDate.value
           : this.transactionDate,
@@ -1360,8 +912,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           ..write('merchant: $merchant, ')
           ..write('categoryId: $categoryId, ')
           ..write('paymentMethod: $paymentMethod, ')
-          ..write('accountId: $accountId, ')
-          ..write('targetAccountId: $targetAccountId, ')
+          ..write('bankName: $bankName, ')
+          ..write('availableBalance: $availableBalance, ')
           ..write('transactionDate: $transactionDate, ')
           ..write('notes: $notes, ')
           ..write('originalSms: $originalSms, ')
@@ -1379,8 +931,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     merchant,
     categoryId,
     paymentMethod,
-    accountId,
-    targetAccountId,
+    bankName,
+    availableBalance,
     transactionDate,
     notes,
     originalSms,
@@ -1397,8 +949,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           other.merchant == this.merchant &&
           other.categoryId == this.categoryId &&
           other.paymentMethod == this.paymentMethod &&
-          other.accountId == this.accountId &&
-          other.targetAccountId == this.targetAccountId &&
+          other.bankName == this.bankName &&
+          other.availableBalance == this.availableBalance &&
           other.transactionDate == this.transactionDate &&
           other.notes == this.notes &&
           other.originalSms == this.originalSms &&
@@ -1413,8 +965,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
   final Value<String?> merchant;
   final Value<int?> categoryId;
   final Value<String?> paymentMethod;
-  final Value<int> accountId;
-  final Value<int?> targetAccountId;
+  final Value<String> bankName;
+  final Value<double?> availableBalance;
   final Value<DateTime> transactionDate;
   final Value<String?> notes;
   final Value<String?> originalSms;
@@ -1427,8 +979,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     this.merchant = const Value.absent(),
     this.categoryId = const Value.absent(),
     this.paymentMethod = const Value.absent(),
-    this.accountId = const Value.absent(),
-    this.targetAccountId = const Value.absent(),
+    this.bankName = const Value.absent(),
+    this.availableBalance = const Value.absent(),
     this.transactionDate = const Value.absent(),
     this.notes = const Value.absent(),
     this.originalSms = const Value.absent(),
@@ -1442,8 +994,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     this.merchant = const Value.absent(),
     this.categoryId = const Value.absent(),
     this.paymentMethod = const Value.absent(),
-    required int accountId,
-    this.targetAccountId = const Value.absent(),
+    this.bankName = const Value.absent(),
+    this.availableBalance = const Value.absent(),
     required DateTime transactionDate,
     this.notes = const Value.absent(),
     this.originalSms = const Value.absent(),
@@ -1451,7 +1003,6 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     this.receiptAttachment = const Value.absent(),
   }) : amount = Value(amount),
        type = Value(type),
-       accountId = Value(accountId),
        transactionDate = Value(transactionDate);
   static Insertable<Transaction> custom({
     Expression<int>? id,
@@ -1460,8 +1011,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     Expression<String>? merchant,
     Expression<int>? categoryId,
     Expression<String>? paymentMethod,
-    Expression<int>? accountId,
-    Expression<int>? targetAccountId,
+    Expression<String>? bankName,
+    Expression<double>? availableBalance,
     Expression<DateTime>? transactionDate,
     Expression<String>? notes,
     Expression<String>? originalSms,
@@ -1475,8 +1026,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       if (merchant != null) 'merchant': merchant,
       if (categoryId != null) 'category_id': categoryId,
       if (paymentMethod != null) 'payment_method': paymentMethod,
-      if (accountId != null) 'account_id': accountId,
-      if (targetAccountId != null) 'target_account_id': targetAccountId,
+      if (bankName != null) 'bank_name': bankName,
+      if (availableBalance != null) 'available_balance': availableBalance,
       if (transactionDate != null) 'transaction_date': transactionDate,
       if (notes != null) 'notes': notes,
       if (originalSms != null) 'original_sms': originalSms,
@@ -1492,8 +1043,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     Value<String?>? merchant,
     Value<int?>? categoryId,
     Value<String?>? paymentMethod,
-    Value<int>? accountId,
-    Value<int?>? targetAccountId,
+    Value<String>? bankName,
+    Value<double?>? availableBalance,
     Value<DateTime>? transactionDate,
     Value<String?>? notes,
     Value<String?>? originalSms,
@@ -1507,8 +1058,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       merchant: merchant ?? this.merchant,
       categoryId: categoryId ?? this.categoryId,
       paymentMethod: paymentMethod ?? this.paymentMethod,
-      accountId: accountId ?? this.accountId,
-      targetAccountId: targetAccountId ?? this.targetAccountId,
+      bankName: bankName ?? this.bankName,
+      availableBalance: availableBalance ?? this.availableBalance,
       transactionDate: transactionDate ?? this.transactionDate,
       notes: notes ?? this.notes,
       originalSms: originalSms ?? this.originalSms,
@@ -1538,11 +1089,11 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     if (paymentMethod.present) {
       map['payment_method'] = Variable<String>(paymentMethod.value);
     }
-    if (accountId.present) {
-      map['account_id'] = Variable<int>(accountId.value);
+    if (bankName.present) {
+      map['bank_name'] = Variable<String>(bankName.value);
     }
-    if (targetAccountId.present) {
-      map['target_account_id'] = Variable<int>(targetAccountId.value);
+    if (availableBalance.present) {
+      map['available_balance'] = Variable<double>(availableBalance.value);
     }
     if (transactionDate.present) {
       map['transaction_date'] = Variable<DateTime>(transactionDate.value);
@@ -1571,8 +1122,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
           ..write('merchant: $merchant, ')
           ..write('categoryId: $categoryId, ')
           ..write('paymentMethod: $paymentMethod, ')
-          ..write('accountId: $accountId, ')
-          ..write('targetAccountId: $targetAccountId, ')
+          ..write('bankName: $bankName, ')
+          ..write('availableBalance: $availableBalance, ')
           ..write('transactionDate: $transactionDate, ')
           ..write('notes: $notes, ')
           ..write('originalSms: $originalSms, ')
@@ -3903,7 +3454,6 @@ class UnrecognizedSmsCompanion extends UpdateCompanion<UnrecognizedSm> {
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
-  late final $AccountsTable accounts = $AccountsTable(this);
   late final $CategoriesTable categories = $CategoriesTable(this);
   late final $TransactionsTable transactions = $TransactionsTable(this);
   late final $BudgetsTable budgets = $BudgetsTable(this);
@@ -3922,7 +3472,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
-    accounts,
     categories,
     transactions,
     budgets,
@@ -3935,234 +3484,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   ];
 }
 
-typedef $$AccountsTableCreateCompanionBuilder =
-    AccountsCompanion Function({
-      Value<int> id,
-      required String name,
-      required String type,
-      required double initialBalance,
-      Value<String?> color,
-      Value<String?> icon,
-      required DateTime createdAt,
-    });
-typedef $$AccountsTableUpdateCompanionBuilder =
-    AccountsCompanion Function({
-      Value<int> id,
-      Value<String> name,
-      Value<String> type,
-      Value<double> initialBalance,
-      Value<String?> color,
-      Value<String?> icon,
-      Value<DateTime> createdAt,
-    });
-
-class $$AccountsTableFilterComposer
-    extends Composer<_$AppDatabase, $AccountsTable> {
-  $$AccountsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get type => $composableBuilder(
-    column: $table.type,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get initialBalance => $composableBuilder(
-    column: $table.initialBalance,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get color => $composableBuilder(
-    column: $table.color,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get icon => $composableBuilder(
-    column: $table.icon,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-}
-
-class $$AccountsTableOrderingComposer
-    extends Composer<_$AppDatabase, $AccountsTable> {
-  $$AccountsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get type => $composableBuilder(
-    column: $table.type,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get initialBalance => $composableBuilder(
-    column: $table.initialBalance,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get color => $composableBuilder(
-    column: $table.color,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get icon => $composableBuilder(
-    column: $table.icon,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$AccountsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $AccountsTable> {
-  $$AccountsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<String> get type =>
-      $composableBuilder(column: $table.type, builder: (column) => column);
-
-  GeneratedColumn<double> get initialBalance => $composableBuilder(
-    column: $table.initialBalance,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get color =>
-      $composableBuilder(column: $table.color, builder: (column) => column);
-
-  GeneratedColumn<String> get icon =>
-      $composableBuilder(column: $table.icon, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-}
-
-class $$AccountsTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $AccountsTable,
-          Account,
-          $$AccountsTableFilterComposer,
-          $$AccountsTableOrderingComposer,
-          $$AccountsTableAnnotationComposer,
-          $$AccountsTableCreateCompanionBuilder,
-          $$AccountsTableUpdateCompanionBuilder,
-          (Account, BaseReferences<_$AppDatabase, $AccountsTable, Account>),
-          Account,
-          PrefetchHooks Function()
-        > {
-  $$AccountsTableTableManager(_$AppDatabase db, $AccountsTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$AccountsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$AccountsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$AccountsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                Value<String> name = const Value.absent(),
-                Value<String> type = const Value.absent(),
-                Value<double> initialBalance = const Value.absent(),
-                Value<String?> color = const Value.absent(),
-                Value<String?> icon = const Value.absent(),
-                Value<DateTime> createdAt = const Value.absent(),
-              }) => AccountsCompanion(
-                id: id,
-                name: name,
-                type: type,
-                initialBalance: initialBalance,
-                color: color,
-                icon: icon,
-                createdAt: createdAt,
-              ),
-          createCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                required String name,
-                required String type,
-                required double initialBalance,
-                Value<String?> color = const Value.absent(),
-                Value<String?> icon = const Value.absent(),
-                required DateTime createdAt,
-              }) => AccountsCompanion.insert(
-                id: id,
-                name: name,
-                type: type,
-                initialBalance: initialBalance,
-                color: color,
-                icon: icon,
-                createdAt: createdAt,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
-}
-
-typedef $$AccountsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $AccountsTable,
-      Account,
-      $$AccountsTableFilterComposer,
-      $$AccountsTableOrderingComposer,
-      $$AccountsTableAnnotationComposer,
-      $$AccountsTableCreateCompanionBuilder,
-      $$AccountsTableUpdateCompanionBuilder,
-      (Account, BaseReferences<_$AppDatabase, $AccountsTable, Account>),
-      Account,
-      PrefetchHooks Function()
-    >;
 typedef $$CategoriesTableCreateCompanionBuilder =
     CategoriesCompanion Function({
       Value<int> id,
@@ -4359,8 +3680,8 @@ typedef $$TransactionsTableCreateCompanionBuilder =
       Value<String?> merchant,
       Value<int?> categoryId,
       Value<String?> paymentMethod,
-      required int accountId,
-      Value<int?> targetAccountId,
+      Value<String> bankName,
+      Value<double?> availableBalance,
       required DateTime transactionDate,
       Value<String?> notes,
       Value<String?> originalSms,
@@ -4375,8 +3696,8 @@ typedef $$TransactionsTableUpdateCompanionBuilder =
       Value<String?> merchant,
       Value<int?> categoryId,
       Value<String?> paymentMethod,
-      Value<int> accountId,
-      Value<int?> targetAccountId,
+      Value<String> bankName,
+      Value<double?> availableBalance,
       Value<DateTime> transactionDate,
       Value<String?> notes,
       Value<String?> originalSms,
@@ -4423,13 +3744,13 @@ class $$TransactionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get accountId => $composableBuilder(
-    column: $table.accountId,
+  ColumnFilters<String> get bankName => $composableBuilder(
+    column: $table.bankName,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get targetAccountId => $composableBuilder(
-    column: $table.targetAccountId,
+  ColumnFilters<double> get availableBalance => $composableBuilder(
+    column: $table.availableBalance,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4498,13 +3819,13 @@ class $$TransactionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get accountId => $composableBuilder(
-    column: $table.accountId,
+  ColumnOrderings<String> get bankName => $composableBuilder(
+    column: $table.bankName,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get targetAccountId => $composableBuilder(
-    column: $table.targetAccountId,
+  ColumnOrderings<double> get availableBalance => $composableBuilder(
+    column: $table.availableBalance,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -4565,11 +3886,11 @@ class $$TransactionsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<int> get accountId =>
-      $composableBuilder(column: $table.accountId, builder: (column) => column);
+  GeneratedColumn<String> get bankName =>
+      $composableBuilder(column: $table.bankName, builder: (column) => column);
 
-  GeneratedColumn<int> get targetAccountId => $composableBuilder(
-    column: $table.targetAccountId,
+  GeneratedColumn<double> get availableBalance => $composableBuilder(
+    column: $table.availableBalance,
     builder: (column) => column,
   );
 
@@ -4634,8 +3955,8 @@ class $$TransactionsTableTableManager
                 Value<String?> merchant = const Value.absent(),
                 Value<int?> categoryId = const Value.absent(),
                 Value<String?> paymentMethod = const Value.absent(),
-                Value<int> accountId = const Value.absent(),
-                Value<int?> targetAccountId = const Value.absent(),
+                Value<String> bankName = const Value.absent(),
+                Value<double?> availableBalance = const Value.absent(),
                 Value<DateTime> transactionDate = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<String?> originalSms = const Value.absent(),
@@ -4648,8 +3969,8 @@ class $$TransactionsTableTableManager
                 merchant: merchant,
                 categoryId: categoryId,
                 paymentMethod: paymentMethod,
-                accountId: accountId,
-                targetAccountId: targetAccountId,
+                bankName: bankName,
+                availableBalance: availableBalance,
                 transactionDate: transactionDate,
                 notes: notes,
                 originalSms: originalSms,
@@ -4664,8 +3985,8 @@ class $$TransactionsTableTableManager
                 Value<String?> merchant = const Value.absent(),
                 Value<int?> categoryId = const Value.absent(),
                 Value<String?> paymentMethod = const Value.absent(),
-                required int accountId,
-                Value<int?> targetAccountId = const Value.absent(),
+                Value<String> bankName = const Value.absent(),
+                Value<double?> availableBalance = const Value.absent(),
                 required DateTime transactionDate,
                 Value<String?> notes = const Value.absent(),
                 Value<String?> originalSms = const Value.absent(),
@@ -4678,8 +3999,8 @@ class $$TransactionsTableTableManager
                 merchant: merchant,
                 categoryId: categoryId,
                 paymentMethod: paymentMethod,
-                accountId: accountId,
-                targetAccountId: targetAccountId,
+                bankName: bankName,
+                availableBalance: availableBalance,
                 transactionDate: transactionDate,
                 notes: notes,
                 originalSms: originalSms,
@@ -6015,8 +5336,6 @@ typedef $$UnrecognizedSmsTableProcessedTableManager =
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
-  $$AccountsTableTableManager get accounts =>
-      $$AccountsTableTableManager(_db, _db.accounts);
   $$CategoriesTableTableManager get categories =>
       $$CategoriesTableTableManager(_db, _db.categories);
   $$TransactionsTableTableManager get transactions =>

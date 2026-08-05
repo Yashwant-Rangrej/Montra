@@ -14,8 +14,7 @@ import '../../presentation/notifications/notification_settings_screen.dart';
 import '../../presentation/notifications/developer_notification_test_screen.dart';
 import '../../presentation/main_scaffold.dart';
 import '../../presentation/transactions/add_transaction_screen.dart';
-
-import '../../presentation/goals/goals_screen.dart';
+import '../../presentation/accounts/accounts_screen.dart';import '../../presentation/goals/goals_screen.dart';
 import '../../presentation/goals/add_goal_screen.dart';
 import '../../presentation/budgets/add_budget_screen.dart';
 
@@ -98,6 +97,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       path: '/add-transaction',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const AddTransactionScreen(),
+    ),
+    GoRoute(
+      path: '/accounts',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const AccountsScreen(),
     ),
 
     GoRoute(
