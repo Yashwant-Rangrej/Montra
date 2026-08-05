@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../presentation/auth/lock_screen.dart';
 import '../../presentation/onboarding/onboarding_screen.dart';
+import '../../presentation/splash/splash_screen.dart';
 
 import '../../presentation/dashboard/dashboard_screen.dart';
 import '../../presentation/transactions/transactions_screen.dart';
@@ -28,8 +29,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: '/',
+    initialLocation: '/splash',
     redirect: (context, state) {
+      if (state.matchedLocation == '/splash') {
+        return null;
+      }
       if (!isOnboardingCompleted && state.matchedLocation != '/onboarding') {
         return '/onboarding';
       }
@@ -54,6 +58,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/onboarding',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        path: '/splash',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const SplashScreen(),
       ),
     ShellRoute(
       navigatorKey: _shellNavigatorKey,

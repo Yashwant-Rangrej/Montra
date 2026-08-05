@@ -37,10 +37,16 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 5) {
           // Create new Accounts table
-          await m.createTable(accounts);
+          try {
+            await m.createTable(accounts);
+          } catch (_) {}
           // Restore accountId in transactions, drop bankName if we could. Since sqlite doesn't easily drop, we just add accountId.
-          await customStatement('ALTER TABLE transactions ADD COLUMN account_id INTEGER NOT NULL DEFAULT 1;');
-          await customStatement('ALTER TABLE transactions ADD COLUMN target_account_id INTEGER;');
+          try {
+            await customStatement('ALTER TABLE transactions ADD COLUMN account_id INTEGER NOT NULL DEFAULT 1;');
+          } catch (_) {}
+          try {
+            await customStatement('ALTER TABLE transactions ADD COLUMN target_account_id INTEGER;');
+          } catch (_) {}
         }
       },
     );

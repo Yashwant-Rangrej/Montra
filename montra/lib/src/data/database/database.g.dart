@@ -3,6 +3,631 @@
 part of 'database.dart';
 
 // ignore_for_file: type=lint
+class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AccountsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _bankNameMeta = const VerificationMeta(
+    'bankName',
+  );
+  @override
+  late final GeneratedColumn<String> bankName = GeneratedColumn<String>(
+    'bank_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _totalTransactionsMeta = const VerificationMeta(
+    'totalTransactions',
+  );
+  @override
+  late final GeneratedColumn<int> totalTransactions = GeneratedColumn<int>(
+    'total_transactions',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _totalIncomeMeta = const VerificationMeta(
+    'totalIncome',
+  );
+  @override
+  late final GeneratedColumn<double> totalIncome = GeneratedColumn<double>(
+    'total_income',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
+  static const VerificationMeta _totalExpensesMeta = const VerificationMeta(
+    'totalExpenses',
+  );
+  @override
+  late final GeneratedColumn<double> totalExpenses = GeneratedColumn<double>(
+    'total_expenses',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
+  static const VerificationMeta _lastTransactionDateMeta =
+      const VerificationMeta('lastTransactionDate');
+  @override
+  late final GeneratedColumn<DateTime> lastTransactionDate =
+      GeneratedColumn<DateTime>(
+        'last_transaction_date',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _availableBalanceMeta = const VerificationMeta(
+    'availableBalance',
+  );
+  @override
+  late final GeneratedColumn<double> availableBalance = GeneratedColumn<double>(
+    'available_balance',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _iconMeta = const VerificationMeta('icon');
+  @override
+  late final GeneratedColumn<String> icon = GeneratedColumn<String>(
+    'icon',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _colorMeta = const VerificationMeta('color');
+  @override
+  late final GeneratedColumn<String> color = GeneratedColumn<String>(
+    'color',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isHiddenMeta = const VerificationMeta(
+    'isHidden',
+  );
+  @override
+  late final GeneratedColumn<bool> isHidden = GeneratedColumn<bool>(
+    'is_hidden',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_hidden" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    bankName,
+    totalTransactions,
+    totalIncome,
+    totalExpenses,
+    lastTransactionDate,
+    availableBalance,
+    icon,
+    color,
+    isHidden,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'accounts';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Account> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('bank_name')) {
+      context.handle(
+        _bankNameMeta,
+        bankName.isAcceptableOrUnknown(data['bank_name']!, _bankNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bankNameMeta);
+    }
+    if (data.containsKey('total_transactions')) {
+      context.handle(
+        _totalTransactionsMeta,
+        totalTransactions.isAcceptableOrUnknown(
+          data['total_transactions']!,
+          _totalTransactionsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('total_income')) {
+      context.handle(
+        _totalIncomeMeta,
+        totalIncome.isAcceptableOrUnknown(
+          data['total_income']!,
+          _totalIncomeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('total_expenses')) {
+      context.handle(
+        _totalExpensesMeta,
+        totalExpenses.isAcceptableOrUnknown(
+          data['total_expenses']!,
+          _totalExpensesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_transaction_date')) {
+      context.handle(
+        _lastTransactionDateMeta,
+        lastTransactionDate.isAcceptableOrUnknown(
+          data['last_transaction_date']!,
+          _lastTransactionDateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('available_balance')) {
+      context.handle(
+        _availableBalanceMeta,
+        availableBalance.isAcceptableOrUnknown(
+          data['available_balance']!,
+          _availableBalanceMeta,
+        ),
+      );
+    }
+    if (data.containsKey('icon')) {
+      context.handle(
+        _iconMeta,
+        icon.isAcceptableOrUnknown(data['icon']!, _iconMeta),
+      );
+    }
+    if (data.containsKey('color')) {
+      context.handle(
+        _colorMeta,
+        color.isAcceptableOrUnknown(data['color']!, _colorMeta),
+      );
+    }
+    if (data.containsKey('is_hidden')) {
+      context.handle(
+        _isHiddenMeta,
+        isHidden.isAcceptableOrUnknown(data['is_hidden']!, _isHiddenMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Account map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Account(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      bankName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bank_name'],
+      )!,
+      totalTransactions: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}total_transactions'],
+      )!,
+      totalIncome: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}total_income'],
+      )!,
+      totalExpenses: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}total_expenses'],
+      )!,
+      lastTransactionDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_transaction_date'],
+      ),
+      availableBalance: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}available_balance'],
+      ),
+      icon: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}icon'],
+      ),
+      color: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}color'],
+      ),
+      isHidden: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_hidden'],
+      )!,
+    );
+  }
+
+  @override
+  $AccountsTable createAlias(String alias) {
+    return $AccountsTable(attachedDatabase, alias);
+  }
+}
+
+class Account extends DataClass implements Insertable<Account> {
+  final int id;
+  final String bankName;
+  final int totalTransactions;
+  final double totalIncome;
+  final double totalExpenses;
+  final DateTime? lastTransactionDate;
+  final double? availableBalance;
+  final String? icon;
+  final String? color;
+  final bool isHidden;
+  const Account({
+    required this.id,
+    required this.bankName,
+    required this.totalTransactions,
+    required this.totalIncome,
+    required this.totalExpenses,
+    this.lastTransactionDate,
+    this.availableBalance,
+    this.icon,
+    this.color,
+    required this.isHidden,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['bank_name'] = Variable<String>(bankName);
+    map['total_transactions'] = Variable<int>(totalTransactions);
+    map['total_income'] = Variable<double>(totalIncome);
+    map['total_expenses'] = Variable<double>(totalExpenses);
+    if (!nullToAbsent || lastTransactionDate != null) {
+      map['last_transaction_date'] = Variable<DateTime>(lastTransactionDate);
+    }
+    if (!nullToAbsent || availableBalance != null) {
+      map['available_balance'] = Variable<double>(availableBalance);
+    }
+    if (!nullToAbsent || icon != null) {
+      map['icon'] = Variable<String>(icon);
+    }
+    if (!nullToAbsent || color != null) {
+      map['color'] = Variable<String>(color);
+    }
+    map['is_hidden'] = Variable<bool>(isHidden);
+    return map;
+  }
+
+  AccountsCompanion toCompanion(bool nullToAbsent) {
+    return AccountsCompanion(
+      id: Value(id),
+      bankName: Value(bankName),
+      totalTransactions: Value(totalTransactions),
+      totalIncome: Value(totalIncome),
+      totalExpenses: Value(totalExpenses),
+      lastTransactionDate: lastTransactionDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastTransactionDate),
+      availableBalance: availableBalance == null && nullToAbsent
+          ? const Value.absent()
+          : Value(availableBalance),
+      icon: icon == null && nullToAbsent ? const Value.absent() : Value(icon),
+      color: color == null && nullToAbsent
+          ? const Value.absent()
+          : Value(color),
+      isHidden: Value(isHidden),
+    );
+  }
+
+  factory Account.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Account(
+      id: serializer.fromJson<int>(json['id']),
+      bankName: serializer.fromJson<String>(json['bankName']),
+      totalTransactions: serializer.fromJson<int>(json['totalTransactions']),
+      totalIncome: serializer.fromJson<double>(json['totalIncome']),
+      totalExpenses: serializer.fromJson<double>(json['totalExpenses']),
+      lastTransactionDate: serializer.fromJson<DateTime?>(
+        json['lastTransactionDate'],
+      ),
+      availableBalance: serializer.fromJson<double?>(json['availableBalance']),
+      icon: serializer.fromJson<String?>(json['icon']),
+      color: serializer.fromJson<String?>(json['color']),
+      isHidden: serializer.fromJson<bool>(json['isHidden']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'bankName': serializer.toJson<String>(bankName),
+      'totalTransactions': serializer.toJson<int>(totalTransactions),
+      'totalIncome': serializer.toJson<double>(totalIncome),
+      'totalExpenses': serializer.toJson<double>(totalExpenses),
+      'lastTransactionDate': serializer.toJson<DateTime?>(lastTransactionDate),
+      'availableBalance': serializer.toJson<double?>(availableBalance),
+      'icon': serializer.toJson<String?>(icon),
+      'color': serializer.toJson<String?>(color),
+      'isHidden': serializer.toJson<bool>(isHidden),
+    };
+  }
+
+  Account copyWith({
+    int? id,
+    String? bankName,
+    int? totalTransactions,
+    double? totalIncome,
+    double? totalExpenses,
+    Value<DateTime?> lastTransactionDate = const Value.absent(),
+    Value<double?> availableBalance = const Value.absent(),
+    Value<String?> icon = const Value.absent(),
+    Value<String?> color = const Value.absent(),
+    bool? isHidden,
+  }) => Account(
+    id: id ?? this.id,
+    bankName: bankName ?? this.bankName,
+    totalTransactions: totalTransactions ?? this.totalTransactions,
+    totalIncome: totalIncome ?? this.totalIncome,
+    totalExpenses: totalExpenses ?? this.totalExpenses,
+    lastTransactionDate: lastTransactionDate.present
+        ? lastTransactionDate.value
+        : this.lastTransactionDate,
+    availableBalance: availableBalance.present
+        ? availableBalance.value
+        : this.availableBalance,
+    icon: icon.present ? icon.value : this.icon,
+    color: color.present ? color.value : this.color,
+    isHidden: isHidden ?? this.isHidden,
+  );
+  Account copyWithCompanion(AccountsCompanion data) {
+    return Account(
+      id: data.id.present ? data.id.value : this.id,
+      bankName: data.bankName.present ? data.bankName.value : this.bankName,
+      totalTransactions: data.totalTransactions.present
+          ? data.totalTransactions.value
+          : this.totalTransactions,
+      totalIncome: data.totalIncome.present
+          ? data.totalIncome.value
+          : this.totalIncome,
+      totalExpenses: data.totalExpenses.present
+          ? data.totalExpenses.value
+          : this.totalExpenses,
+      lastTransactionDate: data.lastTransactionDate.present
+          ? data.lastTransactionDate.value
+          : this.lastTransactionDate,
+      availableBalance: data.availableBalance.present
+          ? data.availableBalance.value
+          : this.availableBalance,
+      icon: data.icon.present ? data.icon.value : this.icon,
+      color: data.color.present ? data.color.value : this.color,
+      isHidden: data.isHidden.present ? data.isHidden.value : this.isHidden,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Account(')
+          ..write('id: $id, ')
+          ..write('bankName: $bankName, ')
+          ..write('totalTransactions: $totalTransactions, ')
+          ..write('totalIncome: $totalIncome, ')
+          ..write('totalExpenses: $totalExpenses, ')
+          ..write('lastTransactionDate: $lastTransactionDate, ')
+          ..write('availableBalance: $availableBalance, ')
+          ..write('icon: $icon, ')
+          ..write('color: $color, ')
+          ..write('isHidden: $isHidden')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    bankName,
+    totalTransactions,
+    totalIncome,
+    totalExpenses,
+    lastTransactionDate,
+    availableBalance,
+    icon,
+    color,
+    isHidden,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Account &&
+          other.id == this.id &&
+          other.bankName == this.bankName &&
+          other.totalTransactions == this.totalTransactions &&
+          other.totalIncome == this.totalIncome &&
+          other.totalExpenses == this.totalExpenses &&
+          other.lastTransactionDate == this.lastTransactionDate &&
+          other.availableBalance == this.availableBalance &&
+          other.icon == this.icon &&
+          other.color == this.color &&
+          other.isHidden == this.isHidden);
+}
+
+class AccountsCompanion extends UpdateCompanion<Account> {
+  final Value<int> id;
+  final Value<String> bankName;
+  final Value<int> totalTransactions;
+  final Value<double> totalIncome;
+  final Value<double> totalExpenses;
+  final Value<DateTime?> lastTransactionDate;
+  final Value<double?> availableBalance;
+  final Value<String?> icon;
+  final Value<String?> color;
+  final Value<bool> isHidden;
+  const AccountsCompanion({
+    this.id = const Value.absent(),
+    this.bankName = const Value.absent(),
+    this.totalTransactions = const Value.absent(),
+    this.totalIncome = const Value.absent(),
+    this.totalExpenses = const Value.absent(),
+    this.lastTransactionDate = const Value.absent(),
+    this.availableBalance = const Value.absent(),
+    this.icon = const Value.absent(),
+    this.color = const Value.absent(),
+    this.isHidden = const Value.absent(),
+  });
+  AccountsCompanion.insert({
+    this.id = const Value.absent(),
+    required String bankName,
+    this.totalTransactions = const Value.absent(),
+    this.totalIncome = const Value.absent(),
+    this.totalExpenses = const Value.absent(),
+    this.lastTransactionDate = const Value.absent(),
+    this.availableBalance = const Value.absent(),
+    this.icon = const Value.absent(),
+    this.color = const Value.absent(),
+    this.isHidden = const Value.absent(),
+  }) : bankName = Value(bankName);
+  static Insertable<Account> custom({
+    Expression<int>? id,
+    Expression<String>? bankName,
+    Expression<int>? totalTransactions,
+    Expression<double>? totalIncome,
+    Expression<double>? totalExpenses,
+    Expression<DateTime>? lastTransactionDate,
+    Expression<double>? availableBalance,
+    Expression<String>? icon,
+    Expression<String>? color,
+    Expression<bool>? isHidden,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (bankName != null) 'bank_name': bankName,
+      if (totalTransactions != null) 'total_transactions': totalTransactions,
+      if (totalIncome != null) 'total_income': totalIncome,
+      if (totalExpenses != null) 'total_expenses': totalExpenses,
+      if (lastTransactionDate != null)
+        'last_transaction_date': lastTransactionDate,
+      if (availableBalance != null) 'available_balance': availableBalance,
+      if (icon != null) 'icon': icon,
+      if (color != null) 'color': color,
+      if (isHidden != null) 'is_hidden': isHidden,
+    });
+  }
+
+  AccountsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? bankName,
+    Value<int>? totalTransactions,
+    Value<double>? totalIncome,
+    Value<double>? totalExpenses,
+    Value<DateTime?>? lastTransactionDate,
+    Value<double?>? availableBalance,
+    Value<String?>? icon,
+    Value<String?>? color,
+    Value<bool>? isHidden,
+  }) {
+    return AccountsCompanion(
+      id: id ?? this.id,
+      bankName: bankName ?? this.bankName,
+      totalTransactions: totalTransactions ?? this.totalTransactions,
+      totalIncome: totalIncome ?? this.totalIncome,
+      totalExpenses: totalExpenses ?? this.totalExpenses,
+      lastTransactionDate: lastTransactionDate ?? this.lastTransactionDate,
+      availableBalance: availableBalance ?? this.availableBalance,
+      icon: icon ?? this.icon,
+      color: color ?? this.color,
+      isHidden: isHidden ?? this.isHidden,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (bankName.present) {
+      map['bank_name'] = Variable<String>(bankName.value);
+    }
+    if (totalTransactions.present) {
+      map['total_transactions'] = Variable<int>(totalTransactions.value);
+    }
+    if (totalIncome.present) {
+      map['total_income'] = Variable<double>(totalIncome.value);
+    }
+    if (totalExpenses.present) {
+      map['total_expenses'] = Variable<double>(totalExpenses.value);
+    }
+    if (lastTransactionDate.present) {
+      map['last_transaction_date'] = Variable<DateTime>(
+        lastTransactionDate.value,
+      );
+    }
+    if (availableBalance.present) {
+      map['available_balance'] = Variable<double>(availableBalance.value);
+    }
+    if (icon.present) {
+      map['icon'] = Variable<String>(icon.value);
+    }
+    if (color.present) {
+      map['color'] = Variable<String>(color.value);
+    }
+    if (isHidden.present) {
+      map['is_hidden'] = Variable<bool>(isHidden.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AccountsCompanion(')
+          ..write('id: $id, ')
+          ..write('bankName: $bankName, ')
+          ..write('totalTransactions: $totalTransactions, ')
+          ..write('totalIncome: $totalIncome, ')
+          ..write('totalExpenses: $totalExpenses, ')
+          ..write('lastTransactionDate: $lastTransactionDate, ')
+          ..write('availableBalance: $availableBalance, ')
+          ..write('icon: $icon, ')
+          ..write('color: $color, ')
+          ..write('isHidden: $isHidden')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $CategoriesTable extends Categories
     with TableInfo<$CategoriesTable, Category> {
   @override
@@ -415,17 +1040,27 @@ class $TransactionsTable extends Transactions
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _bankNameMeta = const VerificationMeta(
-    'bankName',
+  static const VerificationMeta _accountIdMeta = const VerificationMeta(
+    'accountId',
   );
   @override
-  late final GeneratedColumn<String> bankName = GeneratedColumn<String>(
-    'bank_name',
+  late final GeneratedColumn<int> accountId = GeneratedColumn<int>(
+    'account_id',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _targetAccountIdMeta = const VerificationMeta(
+    'targetAccountId',
+  );
+  @override
+  late final GeneratedColumn<int> targetAccountId = GeneratedColumn<int>(
+    'target_account_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultValue: const Constant('Manual'),
   );
   static const VerificationMeta _availableBalanceMeta = const VerificationMeta(
     'availableBalance',
@@ -502,7 +1137,8 @@ class $TransactionsTable extends Transactions
     merchant,
     categoryId,
     paymentMethod,
-    bankName,
+    accountId,
+    targetAccountId,
     availableBalance,
     transactionDate,
     notes,
@@ -562,10 +1198,21 @@ class $TransactionsTable extends Transactions
         ),
       );
     }
-    if (data.containsKey('bank_name')) {
+    if (data.containsKey('account_id')) {
       context.handle(
-        _bankNameMeta,
-        bankName.isAcceptableOrUnknown(data['bank_name']!, _bankNameMeta),
+        _accountIdMeta,
+        accountId.isAcceptableOrUnknown(data['account_id']!, _accountIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_accountIdMeta);
+    }
+    if (data.containsKey('target_account_id')) {
+      context.handle(
+        _targetAccountIdMeta,
+        targetAccountId.isAcceptableOrUnknown(
+          data['target_account_id']!,
+          _targetAccountIdMeta,
+        ),
       );
     }
     if (data.containsKey('available_balance')) {
@@ -654,10 +1301,14 @@ class $TransactionsTable extends Transactions
         DriftSqlType.string,
         data['${effectivePrefix}payment_method'],
       ),
-      bankName: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}bank_name'],
+      accountId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}account_id'],
       )!,
+      targetAccountId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}target_account_id'],
+      ),
       availableBalance: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}available_balance'],
@@ -698,7 +1349,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
   final String? merchant;
   final int? categoryId;
   final String? paymentMethod;
-  final String bankName;
+  final int accountId;
+  final int? targetAccountId;
   final double? availableBalance;
   final DateTime transactionDate;
   final String? notes;
@@ -712,7 +1364,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     this.merchant,
     this.categoryId,
     this.paymentMethod,
-    required this.bankName,
+    required this.accountId,
+    this.targetAccountId,
     this.availableBalance,
     required this.transactionDate,
     this.notes,
@@ -735,7 +1388,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     if (!nullToAbsent || paymentMethod != null) {
       map['payment_method'] = Variable<String>(paymentMethod);
     }
-    map['bank_name'] = Variable<String>(bankName);
+    map['account_id'] = Variable<int>(accountId);
+    if (!nullToAbsent || targetAccountId != null) {
+      map['target_account_id'] = Variable<int>(targetAccountId);
+    }
     if (!nullToAbsent || availableBalance != null) {
       map['available_balance'] = Variable<double>(availableBalance);
     }
@@ -769,7 +1425,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       paymentMethod: paymentMethod == null && nullToAbsent
           ? const Value.absent()
           : Value(paymentMethod),
-      bankName: Value(bankName),
+      accountId: Value(accountId),
+      targetAccountId: targetAccountId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(targetAccountId),
       availableBalance: availableBalance == null && nullToAbsent
           ? const Value.absent()
           : Value(availableBalance),
@@ -801,7 +1460,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       merchant: serializer.fromJson<String?>(json['merchant']),
       categoryId: serializer.fromJson<int?>(json['categoryId']),
       paymentMethod: serializer.fromJson<String?>(json['paymentMethod']),
-      bankName: serializer.fromJson<String>(json['bankName']),
+      accountId: serializer.fromJson<int>(json['accountId']),
+      targetAccountId: serializer.fromJson<int?>(json['targetAccountId']),
       availableBalance: serializer.fromJson<double?>(json['availableBalance']),
       transactionDate: serializer.fromJson<DateTime>(json['transactionDate']),
       notes: serializer.fromJson<String?>(json['notes']),
@@ -824,7 +1484,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       'merchant': serializer.toJson<String?>(merchant),
       'categoryId': serializer.toJson<int?>(categoryId),
       'paymentMethod': serializer.toJson<String?>(paymentMethod),
-      'bankName': serializer.toJson<String>(bankName),
+      'accountId': serializer.toJson<int>(accountId),
+      'targetAccountId': serializer.toJson<int?>(targetAccountId),
       'availableBalance': serializer.toJson<double?>(availableBalance),
       'transactionDate': serializer.toJson<DateTime>(transactionDate),
       'notes': serializer.toJson<String?>(notes),
@@ -841,7 +1502,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     Value<String?> merchant = const Value.absent(),
     Value<int?> categoryId = const Value.absent(),
     Value<String?> paymentMethod = const Value.absent(),
-    String? bankName,
+    int? accountId,
+    Value<int?> targetAccountId = const Value.absent(),
     Value<double?> availableBalance = const Value.absent(),
     DateTime? transactionDate,
     Value<String?> notes = const Value.absent(),
@@ -857,7 +1519,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     paymentMethod: paymentMethod.present
         ? paymentMethod.value
         : this.paymentMethod,
-    bankName: bankName ?? this.bankName,
+    accountId: accountId ?? this.accountId,
+    targetAccountId: targetAccountId.present
+        ? targetAccountId.value
+        : this.targetAccountId,
     availableBalance: availableBalance.present
         ? availableBalance.value
         : this.availableBalance,
@@ -883,7 +1548,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       paymentMethod: data.paymentMethod.present
           ? data.paymentMethod.value
           : this.paymentMethod,
-      bankName: data.bankName.present ? data.bankName.value : this.bankName,
+      accountId: data.accountId.present ? data.accountId.value : this.accountId,
+      targetAccountId: data.targetAccountId.present
+          ? data.targetAccountId.value
+          : this.targetAccountId,
       availableBalance: data.availableBalance.present
           ? data.availableBalance.value
           : this.availableBalance,
@@ -912,7 +1580,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           ..write('merchant: $merchant, ')
           ..write('categoryId: $categoryId, ')
           ..write('paymentMethod: $paymentMethod, ')
-          ..write('bankName: $bankName, ')
+          ..write('accountId: $accountId, ')
+          ..write('targetAccountId: $targetAccountId, ')
           ..write('availableBalance: $availableBalance, ')
           ..write('transactionDate: $transactionDate, ')
           ..write('notes: $notes, ')
@@ -931,7 +1600,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     merchant,
     categoryId,
     paymentMethod,
-    bankName,
+    accountId,
+    targetAccountId,
     availableBalance,
     transactionDate,
     notes,
@@ -949,7 +1619,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           other.merchant == this.merchant &&
           other.categoryId == this.categoryId &&
           other.paymentMethod == this.paymentMethod &&
-          other.bankName == this.bankName &&
+          other.accountId == this.accountId &&
+          other.targetAccountId == this.targetAccountId &&
           other.availableBalance == this.availableBalance &&
           other.transactionDate == this.transactionDate &&
           other.notes == this.notes &&
@@ -965,7 +1636,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
   final Value<String?> merchant;
   final Value<int?> categoryId;
   final Value<String?> paymentMethod;
-  final Value<String> bankName;
+  final Value<int> accountId;
+  final Value<int?> targetAccountId;
   final Value<double?> availableBalance;
   final Value<DateTime> transactionDate;
   final Value<String?> notes;
@@ -979,7 +1651,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     this.merchant = const Value.absent(),
     this.categoryId = const Value.absent(),
     this.paymentMethod = const Value.absent(),
-    this.bankName = const Value.absent(),
+    this.accountId = const Value.absent(),
+    this.targetAccountId = const Value.absent(),
     this.availableBalance = const Value.absent(),
     this.transactionDate = const Value.absent(),
     this.notes = const Value.absent(),
@@ -994,7 +1667,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     this.merchant = const Value.absent(),
     this.categoryId = const Value.absent(),
     this.paymentMethod = const Value.absent(),
-    this.bankName = const Value.absent(),
+    required int accountId,
+    this.targetAccountId = const Value.absent(),
     this.availableBalance = const Value.absent(),
     required DateTime transactionDate,
     this.notes = const Value.absent(),
@@ -1003,6 +1677,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     this.receiptAttachment = const Value.absent(),
   }) : amount = Value(amount),
        type = Value(type),
+       accountId = Value(accountId),
        transactionDate = Value(transactionDate);
   static Insertable<Transaction> custom({
     Expression<int>? id,
@@ -1011,7 +1686,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     Expression<String>? merchant,
     Expression<int>? categoryId,
     Expression<String>? paymentMethod,
-    Expression<String>? bankName,
+    Expression<int>? accountId,
+    Expression<int>? targetAccountId,
     Expression<double>? availableBalance,
     Expression<DateTime>? transactionDate,
     Expression<String>? notes,
@@ -1026,7 +1702,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       if (merchant != null) 'merchant': merchant,
       if (categoryId != null) 'category_id': categoryId,
       if (paymentMethod != null) 'payment_method': paymentMethod,
-      if (bankName != null) 'bank_name': bankName,
+      if (accountId != null) 'account_id': accountId,
+      if (targetAccountId != null) 'target_account_id': targetAccountId,
       if (availableBalance != null) 'available_balance': availableBalance,
       if (transactionDate != null) 'transaction_date': transactionDate,
       if (notes != null) 'notes': notes,
@@ -1043,7 +1720,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     Value<String?>? merchant,
     Value<int?>? categoryId,
     Value<String?>? paymentMethod,
-    Value<String>? bankName,
+    Value<int>? accountId,
+    Value<int?>? targetAccountId,
     Value<double?>? availableBalance,
     Value<DateTime>? transactionDate,
     Value<String?>? notes,
@@ -1058,7 +1736,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       merchant: merchant ?? this.merchant,
       categoryId: categoryId ?? this.categoryId,
       paymentMethod: paymentMethod ?? this.paymentMethod,
-      bankName: bankName ?? this.bankName,
+      accountId: accountId ?? this.accountId,
+      targetAccountId: targetAccountId ?? this.targetAccountId,
       availableBalance: availableBalance ?? this.availableBalance,
       transactionDate: transactionDate ?? this.transactionDate,
       notes: notes ?? this.notes,
@@ -1089,8 +1768,11 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     if (paymentMethod.present) {
       map['payment_method'] = Variable<String>(paymentMethod.value);
     }
-    if (bankName.present) {
-      map['bank_name'] = Variable<String>(bankName.value);
+    if (accountId.present) {
+      map['account_id'] = Variable<int>(accountId.value);
+    }
+    if (targetAccountId.present) {
+      map['target_account_id'] = Variable<int>(targetAccountId.value);
     }
     if (availableBalance.present) {
       map['available_balance'] = Variable<double>(availableBalance.value);
@@ -1122,7 +1804,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
           ..write('merchant: $merchant, ')
           ..write('categoryId: $categoryId, ')
           ..write('paymentMethod: $paymentMethod, ')
-          ..write('bankName: $bankName, ')
+          ..write('accountId: $accountId, ')
+          ..write('targetAccountId: $targetAccountId, ')
           ..write('availableBalance: $availableBalance, ')
           ..write('transactionDate: $transactionDate, ')
           ..write('notes: $notes, ')
@@ -3454,6 +4137,7 @@ class UnrecognizedSmsCompanion extends UpdateCompanion<UnrecognizedSm> {
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
+  late final $AccountsTable accounts = $AccountsTable(this);
   late final $CategoriesTable categories = $CategoriesTable(this);
   late final $TransactionsTable transactions = $TransactionsTable(this);
   late final $BudgetsTable budgets = $BudgetsTable(this);
@@ -3472,6 +4156,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
+    accounts,
     categories,
     transactions,
     budgets,
@@ -3484,6 +4169,299 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   ];
 }
 
+typedef $$AccountsTableCreateCompanionBuilder =
+    AccountsCompanion Function({
+      Value<int> id,
+      required String bankName,
+      Value<int> totalTransactions,
+      Value<double> totalIncome,
+      Value<double> totalExpenses,
+      Value<DateTime?> lastTransactionDate,
+      Value<double?> availableBalance,
+      Value<String?> icon,
+      Value<String?> color,
+      Value<bool> isHidden,
+    });
+typedef $$AccountsTableUpdateCompanionBuilder =
+    AccountsCompanion Function({
+      Value<int> id,
+      Value<String> bankName,
+      Value<int> totalTransactions,
+      Value<double> totalIncome,
+      Value<double> totalExpenses,
+      Value<DateTime?> lastTransactionDate,
+      Value<double?> availableBalance,
+      Value<String?> icon,
+      Value<String?> color,
+      Value<bool> isHidden,
+    });
+
+class $$AccountsTableFilterComposer
+    extends Composer<_$AppDatabase, $AccountsTable> {
+  $$AccountsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bankName => $composableBuilder(
+    column: $table.bankName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get totalTransactions => $composableBuilder(
+    column: $table.totalTransactions,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get totalIncome => $composableBuilder(
+    column: $table.totalIncome,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get totalExpenses => $composableBuilder(
+    column: $table.totalExpenses,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastTransactionDate => $composableBuilder(
+    column: $table.lastTransactionDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get availableBalance => $composableBuilder(
+    column: $table.availableBalance,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get icon => $composableBuilder(
+    column: $table.icon,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get color => $composableBuilder(
+    column: $table.color,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isHidden => $composableBuilder(
+    column: $table.isHidden,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AccountsTableOrderingComposer
+    extends Composer<_$AppDatabase, $AccountsTable> {
+  $$AccountsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get bankName => $composableBuilder(
+    column: $table.bankName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get totalTransactions => $composableBuilder(
+    column: $table.totalTransactions,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get totalIncome => $composableBuilder(
+    column: $table.totalIncome,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get totalExpenses => $composableBuilder(
+    column: $table.totalExpenses,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastTransactionDate => $composableBuilder(
+    column: $table.lastTransactionDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get availableBalance => $composableBuilder(
+    column: $table.availableBalance,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get icon => $composableBuilder(
+    column: $table.icon,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get color => $composableBuilder(
+    column: $table.color,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isHidden => $composableBuilder(
+    column: $table.isHidden,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AccountsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AccountsTable> {
+  $$AccountsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get bankName =>
+      $composableBuilder(column: $table.bankName, builder: (column) => column);
+
+  GeneratedColumn<int> get totalTransactions => $composableBuilder(
+    column: $table.totalTransactions,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get totalIncome => $composableBuilder(
+    column: $table.totalIncome,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get totalExpenses => $composableBuilder(
+    column: $table.totalExpenses,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastTransactionDate => $composableBuilder(
+    column: $table.lastTransactionDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get availableBalance => $composableBuilder(
+    column: $table.availableBalance,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get icon =>
+      $composableBuilder(column: $table.icon, builder: (column) => column);
+
+  GeneratedColumn<String> get color =>
+      $composableBuilder(column: $table.color, builder: (column) => column);
+
+  GeneratedColumn<bool> get isHidden =>
+      $composableBuilder(column: $table.isHidden, builder: (column) => column);
+}
+
+class $$AccountsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AccountsTable,
+          Account,
+          $$AccountsTableFilterComposer,
+          $$AccountsTableOrderingComposer,
+          $$AccountsTableAnnotationComposer,
+          $$AccountsTableCreateCompanionBuilder,
+          $$AccountsTableUpdateCompanionBuilder,
+          (Account, BaseReferences<_$AppDatabase, $AccountsTable, Account>),
+          Account,
+          PrefetchHooks Function()
+        > {
+  $$AccountsTableTableManager(_$AppDatabase db, $AccountsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AccountsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AccountsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AccountsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> bankName = const Value.absent(),
+                Value<int> totalTransactions = const Value.absent(),
+                Value<double> totalIncome = const Value.absent(),
+                Value<double> totalExpenses = const Value.absent(),
+                Value<DateTime?> lastTransactionDate = const Value.absent(),
+                Value<double?> availableBalance = const Value.absent(),
+                Value<String?> icon = const Value.absent(),
+                Value<String?> color = const Value.absent(),
+                Value<bool> isHidden = const Value.absent(),
+              }) => AccountsCompanion(
+                id: id,
+                bankName: bankName,
+                totalTransactions: totalTransactions,
+                totalIncome: totalIncome,
+                totalExpenses: totalExpenses,
+                lastTransactionDate: lastTransactionDate,
+                availableBalance: availableBalance,
+                icon: icon,
+                color: color,
+                isHidden: isHidden,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String bankName,
+                Value<int> totalTransactions = const Value.absent(),
+                Value<double> totalIncome = const Value.absent(),
+                Value<double> totalExpenses = const Value.absent(),
+                Value<DateTime?> lastTransactionDate = const Value.absent(),
+                Value<double?> availableBalance = const Value.absent(),
+                Value<String?> icon = const Value.absent(),
+                Value<String?> color = const Value.absent(),
+                Value<bool> isHidden = const Value.absent(),
+              }) => AccountsCompanion.insert(
+                id: id,
+                bankName: bankName,
+                totalTransactions: totalTransactions,
+                totalIncome: totalIncome,
+                totalExpenses: totalExpenses,
+                lastTransactionDate: lastTransactionDate,
+                availableBalance: availableBalance,
+                icon: icon,
+                color: color,
+                isHidden: isHidden,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AccountsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AccountsTable,
+      Account,
+      $$AccountsTableFilterComposer,
+      $$AccountsTableOrderingComposer,
+      $$AccountsTableAnnotationComposer,
+      $$AccountsTableCreateCompanionBuilder,
+      $$AccountsTableUpdateCompanionBuilder,
+      (Account, BaseReferences<_$AppDatabase, $AccountsTable, Account>),
+      Account,
+      PrefetchHooks Function()
+    >;
 typedef $$CategoriesTableCreateCompanionBuilder =
     CategoriesCompanion Function({
       Value<int> id,
@@ -3680,7 +4658,8 @@ typedef $$TransactionsTableCreateCompanionBuilder =
       Value<String?> merchant,
       Value<int?> categoryId,
       Value<String?> paymentMethod,
-      Value<String> bankName,
+      required int accountId,
+      Value<int?> targetAccountId,
       Value<double?> availableBalance,
       required DateTime transactionDate,
       Value<String?> notes,
@@ -3696,7 +4675,8 @@ typedef $$TransactionsTableUpdateCompanionBuilder =
       Value<String?> merchant,
       Value<int?> categoryId,
       Value<String?> paymentMethod,
-      Value<String> bankName,
+      Value<int> accountId,
+      Value<int?> targetAccountId,
       Value<double?> availableBalance,
       Value<DateTime> transactionDate,
       Value<String?> notes,
@@ -3744,8 +4724,13 @@ class $$TransactionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get bankName => $composableBuilder(
-    column: $table.bankName,
+  ColumnFilters<int> get accountId => $composableBuilder(
+    column: $table.accountId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get targetAccountId => $composableBuilder(
+    column: $table.targetAccountId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3819,8 +4804,13 @@ class $$TransactionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get bankName => $composableBuilder(
-    column: $table.bankName,
+  ColumnOrderings<int> get accountId => $composableBuilder(
+    column: $table.accountId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get targetAccountId => $composableBuilder(
+    column: $table.targetAccountId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -3886,8 +4876,13 @@ class $$TransactionsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get bankName =>
-      $composableBuilder(column: $table.bankName, builder: (column) => column);
+  GeneratedColumn<int> get accountId =>
+      $composableBuilder(column: $table.accountId, builder: (column) => column);
+
+  GeneratedColumn<int> get targetAccountId => $composableBuilder(
+    column: $table.targetAccountId,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<double> get availableBalance => $composableBuilder(
     column: $table.availableBalance,
@@ -3955,7 +4950,8 @@ class $$TransactionsTableTableManager
                 Value<String?> merchant = const Value.absent(),
                 Value<int?> categoryId = const Value.absent(),
                 Value<String?> paymentMethod = const Value.absent(),
-                Value<String> bankName = const Value.absent(),
+                Value<int> accountId = const Value.absent(),
+                Value<int?> targetAccountId = const Value.absent(),
                 Value<double?> availableBalance = const Value.absent(),
                 Value<DateTime> transactionDate = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
@@ -3969,7 +4965,8 @@ class $$TransactionsTableTableManager
                 merchant: merchant,
                 categoryId: categoryId,
                 paymentMethod: paymentMethod,
-                bankName: bankName,
+                accountId: accountId,
+                targetAccountId: targetAccountId,
                 availableBalance: availableBalance,
                 transactionDate: transactionDate,
                 notes: notes,
@@ -3985,7 +4982,8 @@ class $$TransactionsTableTableManager
                 Value<String?> merchant = const Value.absent(),
                 Value<int?> categoryId = const Value.absent(),
                 Value<String?> paymentMethod = const Value.absent(),
-                Value<String> bankName = const Value.absent(),
+                required int accountId,
+                Value<int?> targetAccountId = const Value.absent(),
                 Value<double?> availableBalance = const Value.absent(),
                 required DateTime transactionDate,
                 Value<String?> notes = const Value.absent(),
@@ -3999,7 +4997,8 @@ class $$TransactionsTableTableManager
                 merchant: merchant,
                 categoryId: categoryId,
                 paymentMethod: paymentMethod,
-                bankName: bankName,
+                accountId: accountId,
+                targetAccountId: targetAccountId,
                 availableBalance: availableBalance,
                 transactionDate: transactionDate,
                 notes: notes,
@@ -5336,6 +6335,8 @@ typedef $$UnrecognizedSmsTableProcessedTableManager =
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
+  $$AccountsTableTableManager get accounts =>
+      $$AccountsTableTableManager(_db, _db.accounts);
   $$CategoriesTableTableManager get categories =>
       $$CategoriesTableTableManager(_db, _db.categories);
   $$TransactionsTableTableManager get transactions =>
