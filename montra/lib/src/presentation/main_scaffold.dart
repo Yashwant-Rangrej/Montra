@@ -11,6 +11,7 @@ class MainScaffold extends StatelessWidget {
     return Scaffold(
       body: child,
       bottomNavigationBar: NavigationBar(
+        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         selectedIndex: _calculateSelectedIndex(context),
         onDestinationSelected: (int index) => _onItemTapped(index, context),
         destinations: const [

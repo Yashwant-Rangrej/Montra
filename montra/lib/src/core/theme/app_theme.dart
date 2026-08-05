@@ -109,6 +109,16 @@ class AppTheme {
         centerTitle: true,
         scrolledUnderElevation: 0,
       ),
+      navigationBarTheme: NavigationBarThemeData(
+        labelTextStyle: MaterialStateProperty.resolveWith((states) {
+          final isSelected = states.contains(MaterialState.selected);
+          return GoogleFonts.inter(
+            fontSize: 11,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+            color: isSelected ? textPrimary : textSecondary,
+          );
+        }),
+      ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primary,

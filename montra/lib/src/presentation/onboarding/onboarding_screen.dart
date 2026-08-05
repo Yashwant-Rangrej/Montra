@@ -274,8 +274,8 @@ class OnboardingStepView extends StatelessWidget {
   Widget _buildGraphic(int step) {
     switch (step) {
       case 0:
-        return Image.network(
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuBjCrO4MSgC3N_CVHZsgEBczEMcdBaSw-vplKsVW42K7U3_FMtmGZbTwotZncXV-lMOBRRI9dtOPnaFJ5LlIImlLpUFCl2CHoaVz3q3lqmMcfaLt7pwZTitEHOaMdCNOVid8m41w6WLMAzqL-t5DlShOrbYXdUvwmdlR2jVBDUY3phS6Rl0j12pfGDzOwbsR3K6faTxf8JI3DvrO7Xy5cWa8C6iz-8voPBydqkKY4C_XDsWbyh3MQ3A',
+        return Image.asset(
+          'assets/logo.png',
           fit: BoxFit.contain,
           height: 260,
           errorBuilder: (context, error, stackTrace) {

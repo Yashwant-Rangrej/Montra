@@ -100,8 +100,8 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
               // Decorative 3D Lock Illustration
               ClipRRect(
                 borderRadius: BorderRadius.circular(24),
-                child: Image.network(
-                  'https://lh3.googleusercontent.com/aida-public/AB6AXuBdqq4N_TsP8_HTvvw9liSDiDC1d2yMbDBtQqAbHOu2hHIT8g3t2tUxdiN3FoeUKgBCrmGWw5qUFfyC0T6bwjTFfB9jTrHcE6NecL74pEi3Hb0v8PT-ZrQPfx2Qif19GXAgR5alfNbjn6Np0DeZnYD8u7KIvTz1gR8EDuMfySIV-P5IRAi9eItHq1R4JkF0cP-_q99gH_16vVYOhCvT_DOFMpHL37RwV2ZEWO4eXbL9RI0t3lwPUOBp',
+                child: Image.asset(
+                  'assets/logo.png',
                   height: 180,
                   width: double.infinity,
                   fit: BoxFit.cover,
