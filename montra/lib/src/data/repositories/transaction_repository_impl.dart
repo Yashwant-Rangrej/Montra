@@ -16,8 +16,8 @@ class TransactionRepositoryImpl implements TransactionRepository {
       merchant: transaction.merchant,
       categoryId: transaction.categoryId,
       paymentMethod: transaction.paymentMethod,
-      accountId: transaction.accountId,
-      targetAccountId: transaction.targetAccountId,
+      bankName: transaction.bankName,
+      availableBalance: transaction.availableBalance,
       transactionDate: transaction.transactionDate,
       notes: transaction.notes,
       originalSms: transaction.originalSms,
@@ -33,8 +33,8 @@ class TransactionRepositoryImpl implements TransactionRepository {
   }
 
   @override
-  Future<List<TransactionEntity>> getTransactionsByAccountId(int accountId) async {
-    final query = db.select(db.transactions)..where((t) => t.accountId.equals(accountId) | t.targetAccountId.equals(accountId));
+  Future<List<TransactionEntity>> getTransactionsByBank(String bankName) async {
+    final query = db.select(db.transactions)..where((t) => t.bankName.equals(bankName));
     final transactions = await query.get();
     return transactions.map(_mapToEntity).toList();
   }
@@ -54,8 +54,8 @@ class TransactionRepositoryImpl implements TransactionRepository {
         merchant: Value(transaction.merchant),
         categoryId: Value(transaction.categoryId),
         paymentMethod: Value(transaction.paymentMethod),
-        accountId: transaction.accountId,
-        targetAccountId: Value(transaction.targetAccountId),
+        bankName: Value(transaction.bankName),
+        availableBalance: Value(transaction.availableBalance),
         transactionDate: transaction.transactionDate,
         notes: Value(transaction.notes),
         originalSms: Value(transaction.originalSms),
@@ -74,8 +74,8 @@ class TransactionRepositoryImpl implements TransactionRepository {
         merchant: Value(transaction.merchant),
         categoryId: Value(transaction.categoryId),
         paymentMethod: Value(transaction.paymentMethod),
-        accountId: Value(transaction.accountId),
-        targetAccountId: Value(transaction.targetAccountId),
+        bankName: Value(transaction.bankName),
+        availableBalance: Value(transaction.availableBalance),
         transactionDate: Value(transaction.transactionDate),
         notes: Value(transaction.notes),
         originalSms: Value(transaction.originalSms),

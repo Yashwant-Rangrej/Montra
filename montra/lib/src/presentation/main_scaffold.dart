@@ -22,13 +22,15 @@ class MainScaffold extends StatelessWidget {
           NavigationDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: 'Settings'),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => GoRouter.of(context).push('/add-transaction'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: _calculateSelectedIndex(context) == 0 
+          ? FloatingActionButton(
+              onPressed: () => GoRouter.of(context).push('/add-transaction'),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
+              shape: const CircleBorder(),
+              child: const Icon(Icons.add),
+            )
+          : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }

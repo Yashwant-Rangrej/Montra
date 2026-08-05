@@ -1,14 +1,5 @@
 import 'package:drift/drift.dart';
 
-class Accounts extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get name => text().withLength(min: 1, max: 50)();
-  TextColumn get type => text()(); 
-  RealColumn get initialBalance => real()();
-  TextColumn get color => text().nullable()();
-  TextColumn get icon => text().nullable()();
-  DateTimeColumn get createdAt => dateTime()();
-}
 
 class Categories extends Table {
   IntColumn get id => integer().autoIncrement()();
@@ -25,8 +16,8 @@ class Transactions extends Table {
   TextColumn get merchant => text().nullable()();
   IntColumn get categoryId => integer().nullable()();
   TextColumn get paymentMethod => text().nullable()();
-  IntColumn get accountId => integer()();
-  IntColumn get targetAccountId => integer().nullable()(); 
+  TextColumn get bankName => text().withDefault(const Constant('Manual'))();
+  RealColumn get availableBalance => real().nullable()(); 
   DateTimeColumn get transactionDate => dateTime()();
   TextColumn get notes => text().nullable()();
   TextColumn get originalSms => text().nullable()();

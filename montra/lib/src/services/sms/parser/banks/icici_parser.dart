@@ -9,6 +9,7 @@ class IciciParser extends BaseSmsParser {
   static final RegExp _amountRegex = RegExp(r'(?:INR|Rs\.?)\s*([\d,]+\.?\d*)', caseSensitive: false);
   static final RegExp _merchantRegex = RegExp(r'(?:Info\:?\s*|to\s*|at\s*)([a-zA-Z0-9\s\.\*]+)(?:\s*on|\.|\s*$)', caseSensitive: false);
   static final RegExp _refRegex = RegExp(r'(?:Ref\s*No\.?|UPI\s*Ref\.?)\s*[:\-]?\s*(\d+)', caseSensitive: false);
+  static final RegExp _balanceRegex = RegExp(r'(?:Bal|Balance|Avl Bal|Avail Bal)[^0-9]*(?:Rs\.?|INR)?\s*([\d,]+\.?\d*)', caseSensitive: false);
 
   @override
   bool canParse(SmsMessage message) {
@@ -42,6 +43,8 @@ class IciciParser extends BaseSmsParser {
     final paymentMethod = text.toLowerCase().contains('upi') ? 'UPI' :
                           text.toLowerCase().contains('card') ? 'Card' : 'Net Banking';
 
+    final availableBalance = extractAmount(text, _balanceRegex);
+
     return ParsedTransaction(
       amount: amount,
       merchant: merchant,
@@ -50,6 +53,7 @@ class IciciParser extends BaseSmsParser {
       transactionDate: message.receivedAt,
       bankName: bankName,
       referenceNumber: refNo,
+      availableBalance: availableBalance,
     );
   }
 }

@@ -6,6 +6,7 @@ class ParsedTransaction {
   final DateTime transactionDate;
   final String bankName;
   final String? referenceNumber;
+  final double? availableBalance;
 
   const ParsedTransaction({
     required this.amount,
@@ -15,5 +16,6 @@ class ParsedTransaction {
     required this.transactionDate,
     required this.bankName,
     this.referenceNumber,
+    this.availableBalance,
   });
 }

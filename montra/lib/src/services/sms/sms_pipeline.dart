@@ -42,33 +42,16 @@ class SmsPipeline {
       final category = await (_db.select(_db.categories)..where((c) => c.name.equals(categoryName))..limit(1)).getSingleOrNull();
       int? categoryId = category?.id;
 
-      // Same for account (we assume a default account for background parsing or map based on bank)
-      var account = await (_db.select(_db.accounts)..limit(1)).getSingleOrNull();
-      if (account == null) {
-        // Can't save without an account, create a generic "Main Account"
-        await _db.into(_db.accounts).insert(
-          AccountsCompanion(
-            name: const drift.Value('Main Account'),
-            type: const drift.Value('Bank'),
-            initialBalance: const drift.Value(0.0),
-            createdAt: drift.Value(DateTime.now()),
-          ),
-        );
-        account = await (_db.select(_db.accounts)..limit(1)).getSingleOrNull();
-      }
 
-      if (account == null) {
-        await _saveUnrecognized(message, "Failed to create or find an account");
-        return;
-      }
 
       final transactionCompanion = TransactionsCompanion(
         amount: drift.Value(parsed.amount),
-        type: drift.Value(parsed.transactionType),
+        type: drift.Value(parsed.transactionType == 'credit' ? 'Income' : 'Expense'),
         merchant: drift.Value(parsed.merchant),
         categoryId: drift.Value(categoryId),
         paymentMethod: drift.Value(parsed.paymentMethod),
-        accountId: drift.Value(account.id),
+        bankName: drift.Value(parsed.bankName),
+        availableBalance: drift.Value(parsed.availableBalance),
         transactionDate: drift.Value(parsed.transactionDate),
         originalSms: drift.Value(message.body),
         bankTransactionId: drift.Value(parsed.referenceNumber),

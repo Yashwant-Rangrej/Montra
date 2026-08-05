@@ -9,6 +9,7 @@ class HdfcParser extends BaseSmsParser {
   static final RegExp _amountRegex = RegExp(r'(?:Rs\.?|INR)\s*([\d,]+\.?\d*)', caseSensitive: false);
   static final RegExp _merchantRegex = RegExp(r'(?:VPA|to|at)\s+([a-zA-Z0-9\s\.\*]+?)(?:\s+on|\.|\s*$)', caseSensitive: false);
   static final RegExp _refRegex = RegExp(r'(?:UPI\s*Ref\.?|Ref\.?\s*No\.?)\s*(\d+)', caseSensitive: false);
+  static final RegExp _balanceRegex = RegExp(r'(?:Bal|Balance|Avl Bal|Avail Bal)[^0-9]*(?:Rs\.?|INR)?\s*([\d,]+\.?\d*)', caseSensitive: false);
 
   @override
   bool canParse(SmsMessage message) {
@@ -42,6 +43,8 @@ class HdfcParser extends BaseSmsParser {
     final paymentMethod = text.toLowerCase().contains('upi') ? 'UPI' :
                           text.toLowerCase().contains('card') ? 'Card' : 'Net Banking';
 
+    final availableBalance = extractAmount(text, _balanceRegex);
+
     return ParsedTransaction(
       amount: amount,
       merchant: merchant,
@@ -50,6 +53,7 @@ class HdfcParser extends BaseSmsParser {
       transactionDate: message.receivedAt,
       bankName: bankName,
       referenceNumber: refNo,
+      availableBalance: availableBalance,
     );
   }
 }
