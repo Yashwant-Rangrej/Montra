@@ -1,0 +1,251 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/app_theme.dart';
+import '../../providers/auth_provider.dart';
+import '../../data/repositories/notification_repository.dart';
+
+class PermissionsScreen extends ConsumerStatefulWidget {
+  const PermissionsScreen({super.key});
+
+  @override
+  ConsumerState<PermissionsScreen> createState() => _PermissionsScreenState();
+}
+
+class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
+  void _finishOnboarding() {
+    ref.read(onboardingCompletedProvider.notifier).complete();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final notificationSettings = ref.watch(notificationSettingsProvider);
+    final isAppLockEnabled = ref.watch(appLockEnabledProvider);
+
+    return Scaffold(
+      backgroundColor: AppTheme.background,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              const Text(
+                'One Last Step',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.primary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'To automatically detect your transactions, Montra needs permission to read financial SMS messages. Your messages never leave your device and are processed completely offline.',
+                style: TextStyle(
+                  fontSize: 15,
+                  color: AppTheme.onSurfaceVariant,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // Permission Cards
+              _PermissionCard(
+                icon: Icons.message_outlined,
+                title: 'SMS',
+                subtitle: 'Detect bank messages',
+                value: notificationSettings.smsDetectionEnabled,
+                onChanged: (val) {
+                  ref.read(notificationSettingsProvider.notifier)
+                     .updateSettings(notificationSettings.copyWith(smsDetectionEnabled: val));
+                },
+              ),
+              const SizedBox(height: 16),
+              _PermissionCard(
+                icon: Icons.notifications_none_outlined,
+                title: 'Alerts',
+                subtitle: 'Budget and summary alerts',
+                value: notificationSettings.budgetAlertsEnabled,
+                onChanged: (val) {
+                  ref.read(notificationSettingsProvider.notifier)
+                     .updateSettings(notificationSettings.copyWith(
+                       budgetAlertsEnabled: val,
+                       dailySummaryEnabled: val,
+                       goalRemindersEnabled: val,
+                     ));
+                },
+              ),
+              const SizedBox(height: 16),
+              _PermissionCard(
+                icon: Icons.fingerprint,
+                title: 'Biometrics',
+                subtitle: 'Secure your data with device biometrics',
+                badgeText: 'Optional',
+                value: isAppLockEnabled,
+                onChanged: (val) async {
+                  if (val) {
+                    final authService = ref.read(authServiceProvider);
+                    final success = await authService.authenticateUser();
+                    if (success) {
+                      ref.read(appLockEnabledProvider.notifier).toggle(true);
+                    }
+                  } else {
+                    ref.read(appLockEnabledProvider.notifier).toggle(false);
+                  }
+                },
+              ),
+
+              const SizedBox(height: 32),
+
+              // Decorative 3D Lock Illustration
+              ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Image.network(
+                  'https://lh3.googleusercontent.com/aida-public/AB6AXuBdqq4N_TsP8_HTvvw9liSDiDC1d2yMbDBtQqAbHOu2hHIT8g3t2tUxdiN3FoeUKgBCrmGWw5qUFfyC0T6bwjTFfB9jTrHcE6NecL74pEi3Hb0v8PT-ZrQPfx2Qif19GXAgR5alfNbjn6Np0DeZnYD8u7KIvTz1gR8EDuMfySIV-P5IRAi9eItHq1R4JkF0cP-_q99gH_16vVYOhCvT_DOFMpHL37RwV2ZEWO4eXbL9RI0t3lwPUOBp',
+                  height: 180,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 180,
+                      width: double.infinity,
+                      color: AppTheme.surfaceVariant,
+                      child: const Center(
+                        child: Icon(Icons.security, size: 64, color: AppTheme.primary),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 40),
+
+              // Continue Button
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: _finishOnboarding,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primary,
+                    foregroundColor: Colors.white,
+                    shape: const StadiumBorder(),
+                    elevation: 2,
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Continue',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(width: 8),
+                      Icon(Icons.arrow_forward, size: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PermissionCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final String? badgeText;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  const _PermissionCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    this.badgeText,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppTheme.surfaceVariant.withOpacity(0.5)),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: AppTheme.primaryContainer.withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: AppTheme.primary),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.onSurface,
+                      ),
+                    ),
+                    if (badgeText != null) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppTheme.surfaceVariant,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          badgeText!,
+                          style: const TextStyle(fontSize: 11, color: AppTheme.onSurfaceVariant),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppTheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Switch(
+            value: value,
+            activeColor: AppTheme.primary,
+            onChanged: onChanged,
+          ),
+        ],
+      ),
+    );
+  }
+}
