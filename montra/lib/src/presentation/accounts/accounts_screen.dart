@@ -4,6 +4,8 @@ import '../../providers/accounts_provider.dart';
 import '../../domain/entities/account_entity.dart';
 import 'edit_account_screen.dart'; // We will create this next
 
+import '../widgets/empty_state_widget.dart';
+
 class AccountsScreen extends ConsumerWidget {
   const AccountsScreen({super.key});
 
@@ -19,7 +21,11 @@ class AccountsScreen extends ConsumerWidget {
         data: (accounts) {
           final visibleAccounts = accounts.where((a) => !a.isHidden).toList();
           if (visibleAccounts.isEmpty) {
-            return const Center(child: Text('No accounts detected yet. They will appear automatically when SMS transactions are processed.'));
+            return const EmptyStateWidget(
+              icon: Icons.account_balance_outlined,
+              title: 'No Accounts Yet',
+              message: 'Your bank accounts will appear automatically when SMS transactions are processed.',
+            );
           }
           return ListView.builder(
             itemCount: visibleAccounts.length,

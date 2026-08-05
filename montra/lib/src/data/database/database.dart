@@ -8,7 +8,7 @@ import 'tables.dart';
 
 part 'database.g.dart';
 
-@DriftDatabase(tables: [Accounts, Categories, Transactions, Budgets, Goals, Notifications, Settings, Tags, TransactionTags, UnrecognizedSms])
+@DriftDatabase(tables: [Accounts, Categories, Transactions, Budgets, Notifications, Settings, Tags, TransactionTags, UnrecognizedSms])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -26,7 +26,8 @@ class AppDatabase extends _$AppDatabase {
           await m.addColumn(transactions, transactions.receiptAttachment);
         }
         if (from < 3) {
-          await m.createTable(goals);
+          // Add new columns using raw statements to avoid compile errors before generation
+          await customStatement('CREATE TABLE IF NOT EXISTS goals (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, target_amount REAL NOT NULL, saved_amount REAL NOT NULL DEFAULT 0.0, target_date INTEGER, color TEXT, icon TEXT, created_at INTEGER NOT NULL);');
         }
         if (from < 4) {
           // Add new columns using raw statements to avoid compile errors before generation

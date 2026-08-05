@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/transactions_provider.dart';
 import '../../providers/categories_provider.dart';
 import '../../core/theme/app_theme.dart';
+import '../widgets/empty_state_widget.dart';
 
 class AnalyticsScreen extends ConsumerStatefulWidget {
   const AnalyticsScreen({super.key});
@@ -49,7 +50,11 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                 final filtered = transactions.where((t) => t.type == _selectedType).toList();
                 
                 if (filtered.isEmpty) {
-                  return Center(child: Text('No $_selectedType data for analytics.'));
+                  return EmptyStateWidget(
+                    icon: Icons.analytics_outlined,
+                    title: 'No Data Available',
+                    message: 'There are no $_selectedType transactions to analyze yet.',
+                  );
                 }
 
                 return categoriesAsync.when(

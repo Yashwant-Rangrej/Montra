@@ -30,7 +30,6 @@ enum NotificationType {
   dailySummary,
   transactionDetected,
   budgetAlert,
-  goalReminder,
   weeklySummary,
   monthlySummary,
   largeExpense,

@@ -5,6 +5,7 @@ import '../../providers/transactions_provider.dart';
 import '../../providers/repository_providers.dart';
 import '../../providers/sms_providers.dart';
 import '../../core/theme/app_theme.dart';
+import '../widgets/empty_state_widget.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -157,7 +158,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           radius: 20,
           child: Icon(
             isIncome ? Icons.arrow_downward : Icons.arrow_upward,
-            color: isIncome ? AppTheme.income : AppTheme.expense,
+            color: isIncome ? Colors.white : AppTheme.expense,
             size: 20,
           ),
         ),
@@ -188,11 +189,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         transactionsAsync.when(
           data: (transactions) {
             if (transactions.isEmpty) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(32.0),
-                  child: Text('No transactions yet', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
-                ),
+              return const EmptyStateWidget(
+                icon: Icons.receipt_long_outlined,
+                title: 'No Transactions',
+                message: 'Your recent transactions will appear here.',
               );
             }
             return ListView.builder(

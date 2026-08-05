@@ -22,13 +22,6 @@ class NotificationChannels {
     importance: Importance.high,
   );
 
-  static const AndroidNotificationChannel goals = AndroidNotificationChannel(
-    'goals_channel',
-    'Goal Reminders',
-    description: 'Reminders and updates on savings goals',
-    importance: Importance.defaultImportance,
-  );
-
   static const AndroidNotificationChannel insights = AndroidNotificationChannel(
     'insights_channel',
     'Smart Insights',
@@ -54,7 +47,6 @@ class NotificationChannels {
         dailySummary,
         transactions,
         budgets,
-        goals,
         insights,
         backup,
         system,

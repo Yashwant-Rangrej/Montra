@@ -51,15 +51,7 @@ class DeveloperNotificationTestScreen extends ConsumerWidget {
             child: const Text('Trigger Budget Alert'),
           ),
           const SizedBox(height: 8),
-          ElevatedButton(
-            onPressed: () => manager.showGoalReminder(
-              goalName: 'Vacation',
-              progress: 75.5,
-              remaining: 24500,
-              force: true,
-            ),
-            child: const Text('Trigger Goal Reminder'),
-          ),
+
           const SizedBox(height: 8),
           ElevatedButton(
             onPressed: () => manager.showLargeExpenseAlert(

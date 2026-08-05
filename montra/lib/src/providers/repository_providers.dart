@@ -10,9 +10,6 @@ import '../domain/repositories/account_repository.dart';
 import '../domain/repositories/budget_repository.dart';
 import '../domain/repositories/category_repository.dart';
 import '../domain/repositories/transaction_repository.dart';
-import '../domain/repositories/goal_repository.dart';
-
-import '../data/repositories/goal_repository_impl.dart';
 
 // Database Provider
 final databaseProvider = Provider<AppDatabase>((ref) {
@@ -37,8 +34,3 @@ final transactionRepositoryProvider = Provider<TransactionRepository>((ref) {
 final budgetRepositoryProvider = Provider<BudgetRepository>((ref) {
   return BudgetRepositoryImpl(ref.watch(databaseProvider));
 });
-
-final goalRepositoryProvider = Provider<GoalRepository>((ref) {
-  return GoalRepositoryImpl(ref.watch(databaseProvider));
-});
-

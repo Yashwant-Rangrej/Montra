@@ -71,7 +71,6 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
                      .updateSettings(notificationSettings.copyWith(
                        budgetAlertsEnabled: val,
                        dailySummaryEnabled: val,
-                       goalRemindersEnabled: val,
                      ));
                 },
               ),

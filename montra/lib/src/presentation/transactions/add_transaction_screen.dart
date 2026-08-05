@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../domain/entities/transaction_entity.dart';
+import '../../domain/entities/category_entity.dart';
 import '../../providers/repository_providers.dart';
 import '../../providers/categories_provider.dart';
 import '../../providers/accounts_provider.dart';
@@ -25,6 +26,8 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   String _notes = '';
   int? _accountId;
   int? _categoryId;
+  bool _isCustomCategory = false;
+  String _customCategoryName = '';
   String? _paymentMethod;
   File? _receiptAttachment;
   final DateTime _date = DateTime.now();
@@ -110,6 +113,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                             setState(() {
                               _type = val;
                               _categoryId = null; // reset category on type change
+                              _isCustomCategory = false;
                             });
                           }
                         },
@@ -140,11 +144,32 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                       categoriesAsync.when(
                         data: (categories) {
                           final filtered = categories.where((c) => c.type == _type).toList();
-                          return DropdownButtonFormField<int>(
-                            initialValue: _categoryId,
-                            decoration: const InputDecoration(labelText: 'Category'),
-                            items: filtered.map((c) => DropdownMenuItem(value: c.id, child: Text(c.name))).toList(),
-                            onChanged: (val) => setState(() => _categoryId = val),
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              DropdownButtonFormField<int>(
+                                initialValue: _categoryId,
+                                decoration: const InputDecoration(labelText: 'Category'),
+                                items: [
+                                  ...filtered.map((c) => DropdownMenuItem(value: c.id, child: Text(c.name))),
+                                  const DropdownMenuItem(value: -1, child: Text('Other')),
+                                ],
+                                onChanged: (val) {
+                                  setState(() {
+                                    _categoryId = val;
+                                    _isCustomCategory = val == -1;
+                                  });
+                                },
+                              ),
+                              if (_isCustomCategory) ...[
+                                const SizedBox(height: 16),
+                                TextFormField(
+                                  decoration: const InputDecoration(labelText: 'Custom Category Name'),
+                                  onChanged: (val) => _customCategoryName = val,
+                                  validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
+                                ),
+                              ],
+                            ],
                           );
                         },
                         loading: () => const CircularProgressIndicator(),
@@ -199,6 +224,23 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     if (_formKey.currentState!.validate()) {
       if (_accountId == null) return;
 
+      int? finalCategoryId = _categoryId;
+      final categoryRepo = ref.read(categoryRepositoryProvider);
+
+      if (_isCustomCategory && _customCategoryName.trim().isNotEmpty) {
+        final newCategory = CategoryEntity(
+          id: 0,
+          name: _customCategoryName.trim(),
+          type: _type,
+          color: '#9E9E9E',
+          icon: 'category',
+        );
+        finalCategoryId = await categoryRepo.insertCategory(newCategory);
+        ref.invalidate(categoriesProvider);
+      } else if (_categoryId == -1) {
+        finalCategoryId = null;
+      }
+
       final repo = ref.read(transactionRepositoryProvider);
       
       final transaction = TransactionEntity(
@@ -209,7 +251,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
         notes: _notes,
         accountId: _accountId!,
         availableBalance: null, // manual transactions don't set available balance
-        categoryId: _categoryId,
+        categoryId: finalCategoryId,
         paymentMethod: _paymentMethod,
         transactionDate: _date,
         receiptAttachment: _receiptAttachment?.path,

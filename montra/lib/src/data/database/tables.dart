@@ -47,17 +47,6 @@ class Budgets extends Table {
   IntColumn get categoryId => integer().nullable()(); 
 }
 
-class Goals extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get name => text().withLength(min: 1, max: 100)();
-  RealColumn get targetAmount => real()();
-  RealColumn get savedAmount => real().withDefault(const Constant(0.0))();
-  DateTimeColumn get targetDate => dateTime().nullable()();
-  TextColumn get color => text().nullable()();
-  TextColumn get icon => text().nullable()();
-  DateTimeColumn get createdAt => dateTime()();
-}
-
 class Notifications extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get title => text()();

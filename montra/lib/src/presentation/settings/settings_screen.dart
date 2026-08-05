@@ -33,13 +33,7 @@ class SettingsScreen extends ConsumerWidget {
                 iconColor: theme.colorScheme.primary,
                 onTap: () => context.push('/accounts'),
               ),
-              _buildSettingsTile(
-                context,
-                title: 'Goals',
-                icon: Icons.flag,
-                iconColor: Colors.orange,
-                onTap: () => context.push('/goals'),
-              ),
+
               _buildSettingsTile(
                 context,
                 title: 'Budgets',

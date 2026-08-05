@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import '../../providers/transactions_provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../domain/entities/transaction_entity.dart';
+import '../widgets/empty_state_widget.dart';
 
 class TransactionsScreen extends ConsumerWidget {
   const TransactionsScreen({super.key});
@@ -81,7 +82,11 @@ class TransactionsScreen extends ConsumerWidget {
               child: transactionsAsync.when(
                 data: (transactions) {
                   if (transactions.isEmpty) {
-                    return const Center(child: Text('No transactions found.'));
+                    return const EmptyStateWidget(
+                      icon: Icons.receipt_long_outlined,
+                      title: 'No Transactions Found',
+                      message: 'We could not find any transactions matching your search criteria.',
+                    );
                   }
                   return ListView.builder(
                     padding: const EdgeInsets.all(16),

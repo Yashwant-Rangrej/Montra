@@ -91,24 +91,6 @@ class NotificationManager {
     );
   }
 
-  Future<void> showGoalReminder({
-    required String goalName,
-    required double progress,
-    required double remaining,
-    bool force = false,
-  }) async {
-    final settings = _repository.getSettings();
-    if (!force && (!settings.goalRemindersEnabled || _isQuietHours())) return;
-
-    await _service.showNotification(
-      id: _generateId(),
-      title: 'Goal Reminder: $goalName',
-      body: '${progress.toStringAsFixed(1)}% reached. ₹${remaining.toStringAsFixed(0)} remaining to hit your target!',
-      channel: NotificationChannels.goals,
-      payload: const NotificationPayload(type: 'goalReminder', route: '/goals'),
-    );
-  }
-
   Future<void> showSmartInsight({
     required String insight,
     bool force = false,

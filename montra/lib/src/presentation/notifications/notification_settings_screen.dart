@@ -171,14 +171,6 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
             isBottom: false,
           ),
           _buildDivider(),
-          _buildSwitchTile(
-            title: 'Goal Reminders',
-            subtitle: 'Updates on your savings goals',
-            value: settings.goalRemindersEnabled,
-            onChanged: (val) => notifier.updateSettings(settings.copyWith(goalRemindersEnabled: val)),
-            isTop: false,
-            isBottom: true,
-          ),
 
           const SizedBox(height: 24),
           _buildSectionHeader('Insights'),

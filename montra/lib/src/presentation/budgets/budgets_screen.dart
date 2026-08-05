@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import '../../providers/budgets_provider.dart';
+import '../widgets/empty_state_widget.dart';
 
 class BudgetsScreen extends ConsumerWidget {
   const BudgetsScreen({super.key});
@@ -18,7 +19,13 @@ class BudgetsScreen extends ConsumerWidget {
       body: budgetsProgressAsync.when(
         data: (budgets) {
           if (budgets.isEmpty) {
-            return const Center(child: Text('No budgets found.'));
+            return EmptyStateWidget(
+              icon: Icons.pie_chart_outline,
+              title: 'No Budgets Created',
+              message: 'Create budgets for different categories to start tracking your spending.',
+              buttonText: 'Create Budget',
+              onButtonPressed: () => context.push('/add-budget'),
+            );
           }
           return ListView.builder(
             padding: const EdgeInsets.all(24.0),
