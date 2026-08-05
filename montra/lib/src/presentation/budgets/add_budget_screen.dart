@@ -5,7 +5,7 @@ import '../../domain/entities/budget_entity.dart';
 import '../../domain/entities/category_entity.dart';
 import '../../providers/categories_provider.dart';
 import '../../providers/repository_providers.dart';
-
+import '../../providers/budgets_provider.dart';
 class AddBudgetScreen extends ConsumerStatefulWidget {
   final BudgetEntity? budgetToEdit;
 

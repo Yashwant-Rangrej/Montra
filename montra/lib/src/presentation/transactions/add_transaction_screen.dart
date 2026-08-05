@@ -9,7 +9,7 @@ import '../../domain/entities/category_entity.dart';
 import '../../providers/repository_providers.dart';
 import '../../providers/categories_provider.dart';
 import '../../providers/accounts_provider.dart';
-
+import '../../providers/transactions_provider.dart';
 class AddTransactionScreen extends ConsumerStatefulWidget {
   final TransactionEntity? transactionToEdit;
 
