@@ -51,6 +51,7 @@ class NotificationService {
       channelDescription: channel.description,
       importance: channel.importance,
       priority: Priority.high,
+      largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
     );
 
     final details = NotificationDetails(android: androidDetails);
