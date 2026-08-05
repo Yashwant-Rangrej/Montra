@@ -12,10 +12,15 @@ import '../domain/repositories/category_repository.dart';
 import '../domain/repositories/transaction_repository.dart';
 import '../domain/repositories/goal_repository.dart';
 
+import '../data/repositories/goal_repository_impl.dart';
+
 // Database Provider
 final databaseProvider = Provider<AppDatabase>((ref) {
   final db = AppDatabase();
   ref.onDispose(() => db.close());
+  return db;
+});
+
 // Repository Providers
 final accountRepositoryProvider = Provider<AccountRepository>((ref) {
   return AccountRepositoryImpl(ref.watch(databaseProvider));
