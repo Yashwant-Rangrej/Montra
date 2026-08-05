@@ -7,7 +7,9 @@ import '../../providers/categories_provider.dart';
 import '../../providers/repository_providers.dart';
 
 class AddBudgetScreen extends ConsumerStatefulWidget {
-  const AddBudgetScreen({super.key});
+  final BudgetEntity? budgetToEdit;
+
+  const AddBudgetScreen({super.key, this.budgetToEdit});
 
   @override
   ConsumerState<AddBudgetScreen> createState() => _AddBudgetScreenState();
@@ -16,16 +18,27 @@ class AddBudgetScreen extends ConsumerStatefulWidget {
 class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
   final _formKey = GlobalKey<FormState>();
   double _amount = 0.0;
-  CategoryEntity? _selectedCategory;
-  final int _selectedMonth = DateTime.now().month;
-  final int _selectedYear = DateTime.now().year;
+  int? _selectedCategoryId;
+  int _selectedMonth = DateTime.now().month;
+  int _selectedYear = DateTime.now().year;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.budgetToEdit != null) {
+      _amount = widget.budgetToEdit!.amount;
+      _selectedCategoryId = widget.budgetToEdit!.categoryId;
+      _selectedMonth = widget.budgetToEdit!.month;
+      _selectedYear = widget.budgetToEdit!.year;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(categoriesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Budget')),
+      appBar: AppBar(title: Text(widget.budgetToEdit == null ? 'Add Budget' : 'Edit Budget')),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Form(
@@ -33,6 +46,7 @@ class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
           child: Column(
             children: [
               TextFormField(
+                initialValue: _amount > 0 ? _amount.toStringAsFixed(2) : '',
                 decoration: const InputDecoration(labelText: 'Budget Amount (₹)'),
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 validator: (value) => value == null || value.isEmpty ? 'Required' : null,
@@ -41,14 +55,14 @@ class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
               const SizedBox(height: 16),
               categoriesAsync.when(
                 data: (categories) {
-                  return DropdownButtonFormField<CategoryEntity>(
+                  return DropdownButtonFormField<int?>(
                     decoration: const InputDecoration(labelText: 'Category (Optional)'),
-                    initialValue: _selectedCategory,
+                    initialValue: _selectedCategoryId,
                     items: [
                       const DropdownMenuItem(value: null, child: Text('Overall (All Categories)')),
-                      ...categories.map((c) => DropdownMenuItem(value: c, child: Text(c.name)))
+                      ...categories.map((c) => DropdownMenuItem(value: c.id, child: Text(c.name)))
                     ],
-                    onChanged: (val) => setState(() => _selectedCategory = val),
+                    onChanged: (val) => setState(() => _selectedCategoryId = val),
                   );
                 },
                 loading: () => const CircularProgressIndicator(),
@@ -63,14 +77,21 @@ class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
                       _formKey.currentState!.save();
                       
                       final budget = BudgetEntity(
-                        id: 0,
+                        id: widget.budgetToEdit?.id ?? 0,
                         amount: _amount,
                         month: _selectedMonth,
                         year: _selectedYear,
-                        categoryId: _selectedCategory?.id,
+                        categoryId: _selectedCategoryId,
                       );
                       
-                      await ref.read(budgetRepositoryProvider).insertBudget(budget);
+                      if (widget.budgetToEdit == null) {
+                        await ref.read(budgetRepositoryProvider).insertBudget(budget);
+                      } else {
+                        await ref.read(budgetRepositoryProvider).updateBudget(budget);
+                        // Also invalidate to refresh list
+                        ref.invalidate(budgetsProvider); // budgetsProgressProvider watches budgetsProvider
+                      }
+                      
                       if (context.mounted) context.pop();
                     }
                   },

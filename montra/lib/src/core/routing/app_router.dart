@@ -5,6 +5,8 @@ import '../../providers/auth_provider.dart';
 import '../../presentation/auth/lock_screen.dart';
 import '../../presentation/onboarding/onboarding_screen.dart';
 import '../../presentation/splash/splash_screen.dart';
+import '../../domain/entities/transaction_entity.dart';
+import '../../domain/entities/budget_entity.dart';
 
 import '../../presentation/dashboard/dashboard_screen.dart';
 import '../../presentation/transactions/transactions_screen.dart';
@@ -104,7 +106,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     GoRoute(
       path: '/add-transaction',
       parentNavigatorKey: _rootNavigatorKey,
-      builder: (context, state) => const AddTransactionScreen(),
+      builder: (context, state) {
+        final tx = state.extra as TransactionEntity?;
+        return AddTransactionScreen(transactionToEdit: tx);
+      },
     ),
     GoRoute(
       path: '/accounts',
@@ -116,7 +121,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     GoRoute(
       path: '/add-budget',
       parentNavigatorKey: _rootNavigatorKey,
-      builder: (context, state) => const AddBudgetScreen(),
+      builder: (context, state) {
+        final budget = state.extra as BudgetEntity?;
+        return AddBudgetScreen(budgetToEdit: budget);
+      },
     ),
   ],
 );

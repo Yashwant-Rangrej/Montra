@@ -34,12 +34,15 @@ class BudgetsScreen extends ConsumerWidget {
               final bp = budgets[index];
               return Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
-                child: _buildBudgetCard(
-                  context,
-                  bp.category?.name ?? 'Overall',
-                  bp.spentAmount,
-                  bp.budget.amount,
-                  bp.category?.color != null ? Color(int.parse(bp.category!.color!.replaceFirst('#', '0xFF'))) : Theme.of(context).colorScheme.primary,
+                child: GestureDetector(
+                  onTap: () => context.push('/add-budget', extra: bp.budget),
+                  child: _buildBudgetCard(
+                    context,
+                    bp.category?.name ?? 'Overall',
+                    bp.spentAmount,
+                    bp.budget.amount,
+                    bp.category?.color != null ? Color(int.parse(bp.category!.color!.replaceFirst('#', '0xFF'))) : Theme.of(context).colorScheme.primary,
+                  ),
                 ),
               );
             },

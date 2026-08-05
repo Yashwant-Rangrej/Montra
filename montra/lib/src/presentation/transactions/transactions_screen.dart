@@ -97,6 +97,7 @@ class TransactionsScreen extends ConsumerWidget {
                       return Card(
                         margin: const EdgeInsets.only(bottom: 12),
                         child: ListTile(
+                          onTap: () => context.push('/add-transaction', extra: tx),
                           leading: CircleAvatar(
                             backgroundColor: isIncome ? AppTheme.income.withValues(alpha: 0.1) : AppTheme.expense.withValues(alpha: 0.1),
                             child: Icon(

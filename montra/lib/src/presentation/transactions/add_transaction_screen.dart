@@ -11,7 +11,9 @@ import '../../providers/categories_provider.dart';
 import '../../providers/accounts_provider.dart';
 
 class AddTransactionScreen extends ConsumerStatefulWidget {
-  const AddTransactionScreen({super.key});
+  final TransactionEntity? transactionToEdit;
+
+  const AddTransactionScreen({super.key, this.transactionToEdit});
 
   @override
   ConsumerState<AddTransactionScreen> createState() => _AddTransactionScreenState();
@@ -30,9 +32,28 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   String _customCategoryName = '';
   String? _paymentMethod;
   File? _receiptAttachment;
-  final DateTime _date = DateTime.now();
+  DateTime _date = DateTime.now();
 
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.transactionToEdit != null) {
+      final t = widget.transactionToEdit!;
+      _type = t.type;
+      _amount = t.amount;
+      _merchant = t.merchant ?? '';
+      _notes = t.notes ?? '';
+      _accountId = t.accountId;
+      _categoryId = t.categoryId;
+      _paymentMethod = t.paymentMethod;
+      _date = t.transactionDate;
+      if (t.receiptAttachment != null) {
+        _receiptAttachment = File(t.receiptAttachment!);
+      }
+    }
+  }
 
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
@@ -50,7 +71,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New Transaction'),
+        title: Text(widget.transactionToEdit == null ? 'New Transaction' : 'Edit Transaction'),
         backgroundColor: _type == 'Expense' ? Theme.of(context).colorScheme.tertiary : Theme.of(context).colorScheme.secondary,
         foregroundColor: _type == 'Expense' ? Theme.of(context).colorScheme.onTertiary : Theme.of(context).colorScheme.onSecondary,
       ),
@@ -67,7 +88,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                     color: _type == 'Expense' ? Theme.of(context).colorScheme.onTertiary.withValues(alpha: 0.7) : Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7)
                   )),
                   TextFormField(
-                    initialValue: '',
+                    initialValue: _amount > 0 ? _amount.toStringAsFixed(2) : '',
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     style: Theme.of(context).textTheme.displayLarge?.copyWith(
                       color: _type == 'Expense' ? Theme.of(context).colorScheme.onTertiary : Theme.of(context).colorScheme.onSecondary
@@ -120,6 +141,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
+                        initialValue: _merchant,
                         decoration: const InputDecoration(labelText: 'Merchant / Description'),
                         onChanged: (val) => _merchant = val,
                         validator: (val) => val == null || val.isEmpty ? 'Required' : null,
@@ -186,6 +208,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
+                        initialValue: _notes,
                         decoration: const InputDecoration(labelText: 'Notes (Optional)'),
                         onChanged: (val) => _notes = val,
                       ),
@@ -244,20 +267,28 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       final repo = ref.read(transactionRepositoryProvider);
       
       final transaction = TransactionEntity(
-        id: 0, 
+        id: widget.transactionToEdit?.id ?? 0, 
         amount: _amount,
         type: _type,
         merchant: _merchant,
         notes: _notes,
         accountId: _accountId!,
-        availableBalance: null, // manual transactions don't set available balance
+        availableBalance: widget.transactionToEdit?.availableBalance, // preserve existing or null
         categoryId: finalCategoryId,
         paymentMethod: _paymentMethod,
         transactionDate: _date,
         receiptAttachment: _receiptAttachment?.path,
+        originalSms: widget.transactionToEdit?.originalSms,
+        bankTransactionId: widget.transactionToEdit?.bankTransactionId,
       );
       
-      await repo.insertTransaction(transaction);
+      if (widget.transactionToEdit == null) {
+        await repo.insertTransaction(transaction);
+      } else {
+        await repo.updateTransaction(transaction);
+        // Also invalidate to refresh list
+        ref.invalidate(transactionsProvider);
+      }
       
       if (context.mounted) {
         Navigator.of(context).pop();
