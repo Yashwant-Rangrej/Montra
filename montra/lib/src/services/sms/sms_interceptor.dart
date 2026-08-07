@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'sms_background_handler.dart';
 
@@ -14,6 +15,7 @@ class NativeSmsInterceptor implements SmsInterceptor {
   
   @override
   Future<bool> requestPermissions() async {
+    if (kIsWeb) return false;
     final status = await Permission.sms.request();
     return status.isGranted;
   }

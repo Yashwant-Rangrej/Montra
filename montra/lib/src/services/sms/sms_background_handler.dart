@@ -5,6 +5,7 @@ import '../../data/database/database.dart';
 import '../../domain/entities/sms_message.dart';
 import '../notifications/notification_service.dart';
 import '../notifications/notification_models.dart';
+import '../notifications/notification_channels.dart';
 import '../../core/network/api_client.dart';
 
 @pragma('vm:entry-point')
@@ -49,9 +50,11 @@ void smsBackgroundHandler() async {
           );
           
           await notificationService.showNotification(
+            id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
             title: 'New Transaction Logged',
             body: '${data['type'] == 'expense' ? 'Spent' : 'Received'} Rs ${data['amount']} at ${data['merchant']}',
-            payload: NotificationPayload(type: 'transaction_logged', id: '0').toJson(),
+            channel: NotificationChannels.transactions,
+            payload: NotificationPayload(type: 'transactionDetected', route: '/transactions'),
           );
         } else {
            await db.into(db.unrecognizedSms).insert(
