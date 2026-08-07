@@ -35,6 +35,14 @@
             android:name="flutterEmbedding"
             android:value="2" />
         
+        <!-- Default notification icon for all notifications -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/app_icon" />
+        <meta-data
+            android:name="flutter_local_notifications.default_icon"
+            android:resource="@drawable/app_icon" />
+        
         <receiver android:name=".SmsReceiver"
             android:permission="android.permission.BROADCAST_SMS" android:exported="true">
             <intent-filter android:priority="999">
