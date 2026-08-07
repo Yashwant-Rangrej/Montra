@@ -275,7 +275,7 @@ class OnboardingStepView extends StatelessWidget {
     switch (step) {
       case 0:
         return Image.asset(
-          'assets/logo.png',
+          'assets/images/logo.png',
           fit: BoxFit.contain,
           height: 260,
           errorBuilder: (context, error, stackTrace) {

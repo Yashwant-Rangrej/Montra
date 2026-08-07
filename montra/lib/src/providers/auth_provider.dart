@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/auth/auth_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final authServiceProvider = Provider<AuthService>((ref) {
   return AuthService();
@@ -48,6 +49,14 @@ class OnboardingNotifier extends StateNotifier<bool> {
   }
 
   Future<void> _init() async {
+    // Check if this is the first run after an install/reinstall
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('is_first_run') ?? true) {
+      // Clear secure storage on first run to reset onboarding and other states
+      await _storage.deleteAll();
+      await prefs.setBool('is_first_run', false);
+    }
+
     final value = await _storage.read(key: _key);
     state = value == 'true';
   }

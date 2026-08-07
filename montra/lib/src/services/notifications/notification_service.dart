@@ -7,7 +7,7 @@ class NotificationService {
   final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
 
   Future<void> init(Function(NotificationPayload) onNotificationTap) async {
-    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidInit = AndroidInitializationSettings('app_icon');
     const initSettings = InitializationSettings(android: androidInit);
 
     await _plugin.initialize(
@@ -51,7 +51,8 @@ class NotificationService {
       channelDescription: channel.description,
       importance: channel.importance,
       priority: Priority.high,
-      largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+      icon: 'app_icon',
+      largeIcon: const DrawableResourceAndroidBitmap('app_icon'),
     );
 
     final details = NotificationDetails(android: androidDetails);

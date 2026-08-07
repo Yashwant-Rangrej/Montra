@@ -100,7 +100,7 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(24),
                 child: Image.asset(
-                  'assets/logo.png',
+                  'assets/images/logo.png',
                   height: 180,
                   width: double.infinity,
                   fit: BoxFit.cover,

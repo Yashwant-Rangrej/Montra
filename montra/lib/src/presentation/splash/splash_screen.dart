@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/theme/app_theme.dart';
 
 class SplashScreen extends StatefulWidget {
   final Duration duration;
@@ -80,19 +81,12 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.background,
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1B265C),
-              Color(0xFF24389C),
-              Color(0xFF131C4B),
-            ],
-          ),
+          color: AppTheme.background,
         ),
         child: SafeArea(
           child: Padding(
@@ -107,7 +101,7 @@ class _SplashScreenState extends State<SplashScreen>
                     Text(
                       'MONTRA OS',
                       style: TextStyle(
-                        color: Colors.white54,
+                        color: AppTheme.primary,
                         fontSize: 12,
                         letterSpacing: 1.5,
                         fontWeight: FontWeight.bold,
@@ -116,7 +110,7 @@ class _SplashScreenState extends State<SplashScreen>
                     Text(
                       'v1.0.0',
                       style: TextStyle(
-                        color: Colors.white54,
+                        color: AppTheme.primary,
                         fontSize: 12,
                       ),
                     ),
@@ -136,18 +130,13 @@ class _SplashScreenState extends State<SplashScreen>
                           width: 100,
                           height: 100,
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF24389C), Color(0xFF3A52CC)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
+                            color: AppTheme.primary,
                             borderRadius: BorderRadius.circular(28),
-                            border: Border.all(color: Colors.white24, width: 1.5),
-                            boxShadow: const [
+                            boxShadow: [
                               BoxShadow(
-                                color: Colors.black26,
+                                color: AppTheme.primary.withValues(alpha: 0.2),
                                 blurRadius: 20,
-                                offset: Offset(0, 10),
+                                offset: const Offset(0, 10),
                               )
                             ],
                           ),
@@ -163,7 +152,7 @@ class _SplashScreenState extends State<SplashScreen>
                         const Text(
                           'Montra',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: AppTheme.onSurface,
                             fontSize: 42,
                             fontWeight: FontWeight.w800,
                             letterSpacing: -1.0,
@@ -173,7 +162,7 @@ class _SplashScreenState extends State<SplashScreen>
                         const Text(
                           'Expense Tracking & Financial Insights',
                           style: TextStyle(
-                            color: Colors.white70,
+                            color: AppTheme.onSurfaceVariant,
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                           ),
@@ -192,9 +181,9 @@ class _SplashScreenState extends State<SplashScreen>
                       child: LinearProgressIndicator(
                         value: _progress,
                         minHeight: 6,
-                        backgroundColor: Colors.white12,
+                        backgroundColor: AppTheme.surfaceVariant,
                         valueColor: const AlwaysStoppedAnimation<Color>(
-                          Color(0xFF34D399), // Emerald 400
+                          AppTheme.primary,
                         ),
                       ),
                     ),
@@ -204,11 +193,11 @@ class _SplashScreenState extends State<SplashScreen>
                       children: [
                         Text(
                           _progress >= 1.0 ? 'Ready!' : 'Initializing App...',
-                          style: const TextStyle(color: Colors.white54, fontSize: 12),
+                          style: const TextStyle(color: AppTheme.onSurfaceVariant, fontSize: 12),
                         ),
                         Text(
                           '${(_progress * 100).toInt()}%',
-                          style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
+                          style: const TextStyle(color: AppTheme.onSurface, fontSize: 12, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -216,7 +205,7 @@ class _SplashScreenState extends State<SplashScreen>
                     const Text(
                       'SECURED WITH 256-BIT ENCRYPTION',
                       style: TextStyle(
-                        color: Colors.white30,
+                        color: AppTheme.outline,
                         fontSize: 10,
                         letterSpacing: 1.5,
                       ),
