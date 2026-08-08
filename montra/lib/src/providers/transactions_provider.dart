@@ -27,9 +27,12 @@ final filteredTransactionsProvider = FutureProvider<List<TransactionEntity>>((re
   }).toList();
 });
 
+final selectedAccountIdProvider = StateProvider<int?>((ref) => null);
+
 final dashboardStatsProvider = FutureProvider<Map<String, double>>((ref) async {
   final transactions = await ref.watch(transactionsProvider.future);
   final accounts = await ref.watch(accountsProvider.future);
+  final selectedAccountId = ref.watch(selectedAccountIdProvider);
   
   double todayIncome = 0;
   double todayExpense = 0;
@@ -41,6 +44,10 @@ final dashboardStatsProvider = FutureProvider<Map<String, double>>((ref) async {
   final now = DateTime.now();
 
   for (var tx in transactions) {
+    if (selectedAccountId != null && tx.accountId != selectedAccountId) {
+      continue;
+    }
+
     if (tx.type == 'Income') {
       if (tx.transactionDate.year == now.year && tx.transactionDate.month == now.month) {
         monthlyIncome += tx.amount;
@@ -64,6 +71,9 @@ final dashboardStatsProvider = FutureProvider<Map<String, double>>((ref) async {
   double totalBalance = 0;
   for (var acc in accounts) {
     if (!acc.isHidden) {
+      if (selectedAccountId != null && acc.id != selectedAccountId) {
+        continue;
+      }
       if (acc.availableBalance != null) {
         totalBalance += acc.availableBalance!;
       } else {

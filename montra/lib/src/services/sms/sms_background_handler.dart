@@ -6,7 +6,7 @@ import '../../domain/entities/sms_message.dart';
 import '../notifications/notification_service.dart';
 import '../notifications/notification_models.dart';
 import '../notifications/notification_channels.dart';
-import '../../core/network/api_client.dart';
+import 'sms_parser.dart';
 
 @pragma('vm:entry-point')
 void smsBackgroundHandler() async {
@@ -21,17 +21,11 @@ void smsBackgroundHandler() async {
         final Map<dynamic, dynamic> args = call.arguments;
         final message = SmsMessage.fromMap(Map<String, dynamic>.from(args));
         
-        final apiClient = ApiClient();
         final db = AppDatabase();
         
-        // POST raw SMS to the stateless FastAPI backend
-        final response = await apiClient.client.post('/process-sms/', data: {
-          'sender': message.sender,
-          'body': message.body,
-        });
+        final parsed = SmsParser.parseSms(message.sender, message.body);
         
-        if (response.data != null && response.data['success'] == true) {
-          final data = response.data;
+        if (parsed != null) {
           
           // Ensure we have an account to tie it to
           final account = await db.select(db.accounts).getSingleOrNull();
@@ -40,9 +34,9 @@ void smsBackgroundHandler() async {
           // Insert parsed transaction into local Drift database
           await db.into(db.transactions).insert(
             TransactionsCompanion.insert(
-              amount: data['amount'] != null ? (data['amount'] as num).toDouble() : 0.0,
-              type: data['type'] ?? 'expense',
-              merchant: drift.Value(data['merchant'] ?? message.sender),
+              amount: parsed.amount,
+              type: parsed.type,
+              merchant: drift.Value(parsed.merchant),
               accountId: accountId,
               transactionDate: message.receivedAt,
               originalSms: drift.Value(message.body),
@@ -52,7 +46,7 @@ void smsBackgroundHandler() async {
           await notificationService.showNotification(
             id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
             title: 'New Transaction Logged',
-            body: '${data['type'] == 'expense' ? 'Spent' : 'Received'} Rs ${data['amount']} at ${data['merchant']}',
+            body: '${parsed.type == 'expense' ? 'Spent' : 'Received'} Rs ${parsed.amount} at ${parsed.merchant}',
             channel: NotificationChannels.transactions,
             payload: NotificationPayload(type: 'transactionDetected', route: '/transactions'),
           );
@@ -62,7 +56,7 @@ void smsBackgroundHandler() async {
               sender: message.sender,
               body: message.body,
               receivedAt: message.receivedAt,
-              reason: drift.Value(response.data?['message'] ?? 'Failed to parse API'),
+              reason: const drift.Value('Could not extract transaction details from SMS.'),
             )
           );
         }

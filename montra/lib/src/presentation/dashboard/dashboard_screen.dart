@@ -4,6 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../providers/transactions_provider.dart';
 import '../../providers/repository_providers.dart';
 import '../../providers/sms_providers.dart';
+import '../../providers/accounts_provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../widgets/empty_state_widget.dart';
 
@@ -15,12 +16,86 @@ class DashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  bool _isBalanceVisible = false;
+  int _tapCount = 0;
+  DateTime? _lastTapTime;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkAndRequestSmsPermission();
     });
+  }
+
+  void _handleBalanceTap() async {
+    final now = DateTime.now();
+    if (_lastTapTime == null || now.difference(_lastTapTime!).inMilliseconds > 500) {
+      _tapCount = 1;
+    } else {
+      _tapCount++;
+    }
+    _lastTapTime = now;
+
+    if (_tapCount >= 7) {
+      _tapCount = 0;
+      if (_isBalanceVisible) {
+        setState(() {
+          _isBalanceVisible = false;
+        });
+      } else {
+        await _showBankSelectionDialog();
+      }
+    }
+  }
+
+  Future<void> _showBankSelectionDialog() async {
+    final accounts = await ref.read(accountsProvider.future);
+    if (!mounted) return;
+
+    if (accounts.isEmpty) {
+      setState(() {
+        _isBalanceVisible = true;
+      });
+      return;
+    }
+
+    final selectedId = await showDialog<int>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Select Account'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.account_balance_wallet),
+                  title: const Text('Overall Balance'),
+                  onTap: () => Navigator.pop(context, -1),
+                ),
+                ...accounts.map((acc) => ListTile(
+                  leading: const Icon(Icons.account_balance),
+                  title: Text('${acc.bankName} Balance'),
+                  onTap: () => Navigator.pop(context, acc.id),
+                )),
+              ],
+            ),
+          ),
+        );
+      }
+    );
+
+    if (selectedId != null) {
+      if (selectedId == -1) {
+        ref.read(selectedAccountIdProvider.notifier).state = null;
+      } else {
+        ref.read(selectedAccountIdProvider.notifier).state = selectedId;
+      }
+      setState(() {
+        _isBalanceVisible = true;
+      });
+    }
   }
 
   Future<void> _checkAndRequestSmsPermission() async {
@@ -103,22 +178,27 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
+
   Widget _buildBalanceCard(AsyncValue<Map<String, double>> statsAsync) {
     return statsAsync.when(
       data: (stats) {
-        return Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary,
-            borderRadius: BorderRadius.circular(32),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text('Total Balance', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7))),
-              const SizedBox(height: 8),
-              Text('₹${stats['balance']?.toStringAsFixed(2)}', style: Theme.of(context).textTheme.displayMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary)),
-              const SizedBox(height: 32),
+        return GestureDetector(
+          onTap: _handleBalanceTap,
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.secondary,
+              borderRadius: BorderRadius.circular(32),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (_isBalanceVisible) ...[
+                  Text('Total Balance', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7))),
+                  const SizedBox(height: 8),
+                  Text('₹${stats['balance']?.toStringAsFixed(2)}', style: Theme.of(context).textTheme.displayMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary)),
+                  const SizedBox(height: 32),
+                ],
               
               Text('Today', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7))),
               const SizedBox(height: 8),
@@ -143,7 +223,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               )
             ],
           ),
-        );
+        ));
       },
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, stack) => Text('Error: $err'),
