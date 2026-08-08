@@ -7,6 +7,8 @@ import '../../providers/sms_providers.dart';
 import '../../providers/accounts_provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../widgets/empty_state_widget.dart';
+import '../notifications/notifications_screen.dart';
+import '../../providers/auth_provider.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -159,21 +161,108 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) {
+      return 'Good Morning,';
+    } else if (hour < 17) {
+      return 'Good Afternoon,';
+    } else {
+      return 'Good Evening,';
+    }
+  }
+
+  void _editUserName(String currentName) {
+    final controller = TextEditingController(text: currentName);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Name'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            hintText: 'Enter your name',
+          ),
+          autofocus: true,
+          textCapitalization: TextCapitalization.words,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              ref.read(usernameProvider.notifier).updateName(controller.text);
+              Navigator.pop(context);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showProfileModal() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircleAvatar(
+                radius: 40,
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                child: Icon(Icons.person, size: 40, color: Theme.of(context).colorScheme.primary),
+              ),
+              const SizedBox(height: 16),
+              Consumer(
+                builder: (context, ref, child) {
+                  final name = ref.watch(usernameProvider);
+                  return Text(name, style: Theme.of(context).textTheme.headlineSmall);
+                },
+              ),
+              const SizedBox(height: 32),
+              ListTile(
+                leading: const Icon(Icons.edit),
+                title: const Text('Edit Profile Name'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _editUserName(ref.read(usernameProvider));
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildHeader() {
+    final userName = ref.watch(usernameProvider);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Good Morning,', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
-            Text('Yashwant', style: Theme.of(context).textTheme.headlineMedium),
+            Text(_getGreeting(), style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+            Text(userName, style: Theme.of(context).textTheme.headlineMedium),
           ],
         ),
-        CircleAvatar(
-          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          child: Icon(Icons.person, color: Theme.of(context).colorScheme.primary),
-        ),
+        GestureDetector(
+          onTap: _showProfileModal,
+          child: CircleAvatar(
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+            child: Icon(Icons.person, color: Theme.of(context).colorScheme.primary),
+          ),
+        )
       ],
     );
   }

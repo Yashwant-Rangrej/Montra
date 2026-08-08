@@ -71,3 +71,31 @@ class OnboardingNotifier extends StateNotifier<bool> {
 
 // Global state indicating if app is unlocked for this session
 final authStateProvider = StateProvider<bool>((ref) => false);
+
+final usernameProvider = StateNotifierProvider<UsernameNotifier, String>((ref) {
+  return UsernameNotifier(ref.watch(secureStorageProvider));
+});
+
+class UsernameNotifier extends StateNotifier<String> {
+  final FlutterSecureStorage _storage;
+  static const _key = 'user_name';
+
+  UsernameNotifier(this._storage) : super('User') {
+    _init();
+  }
+
+  Future<void> _init() async {
+    final value = await _storage.read(key: _key);
+    if (value != null && value.isNotEmpty) {
+      state = value;
+    }
+  }
+
+  Future<void> updateName(String newName) async {
+    if (newName.trim().isEmpty) return;
+    try {
+      await _storage.write(key: _key, value: newName.trim());
+    } catch (_) {}
+    state = newName.trim();
+  }
+}

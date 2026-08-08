@@ -66,6 +66,8 @@ class NotificationService {
         priority: Priority.high,
         icon: 'app_icon',
         largeIcon: const DrawableResourceAndroidBitmap('app_icon'),
+        visibility: NotificationVisibility.public,
+        category: AndroidNotificationCategory.message,
       );
 
       final details = NotificationDetails(android: androidDetails);
