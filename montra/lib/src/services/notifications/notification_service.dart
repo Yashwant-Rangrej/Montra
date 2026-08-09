@@ -10,7 +10,7 @@ class NotificationService {
 
   Future<void> init(Function(NotificationPayload) onNotificationTap) async {
     try {
-      const androidInit = AndroidInitializationSettings('app_logo');
+      const androidInit = AndroidInitializationSettings('ic_notification');
       const initSettings = InitializationSettings(android: androidInit);
 
       final result = await _plugin.initialize(
@@ -69,7 +69,7 @@ class NotificationService {
         channelDescription: channel.description,
         importance: channel.importance,
         priority: Priority.high,
-        icon: 'app_logo',
+        icon: 'ic_notification',
         largeIcon: const DrawableResourceAndroidBitmap('app_logo'),
         visibility: NotificationVisibility.public,
         category: AndroidNotificationCategory.message,
