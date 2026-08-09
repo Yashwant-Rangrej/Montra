@@ -5,11 +5,12 @@ import 'notification_channels.dart';
 import 'notification_models.dart';
 
 class NotificationService {
-  final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _plugin =
+      FlutterLocalNotificationsPlugin();
 
   Future<void> init(Function(NotificationPayload) onNotificationTap) async {
     try {
-      const androidInit = AndroidInitializationSettings('app_icon');
+      const androidInit = AndroidInitializationSettings('app_logo');
       const initSettings = InitializationSettings(android: androidInit);
 
       final result = await _plugin.initialize(
@@ -17,7 +18,9 @@ class NotificationService {
         onDidReceiveNotificationResponse: (NotificationResponse response) {
           if (response.payload != null) {
             try {
-              final payload = NotificationPayload.fromJson(jsonDecode(response.payload!));
+              final payload = NotificationPayload.fromJson(
+                jsonDecode(response.payload!),
+              );
               onNotificationTap(payload);
             } catch (e) {
               debugPrint('NotificationService: Error parsing payload: $e');
@@ -28,9 +31,11 @@ class NotificationService {
       debugPrint('NotificationService: initialize returned: $result');
 
       // Create Android channels
-      final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>();
-      
+      final androidPlugin = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+
       if (androidPlugin != null) {
         try {
           final granted = await androidPlugin.requestNotificationsPermission();
@@ -64,8 +69,8 @@ class NotificationService {
         channelDescription: channel.description,
         importance: channel.importance,
         priority: Priority.high,
-        icon: 'app_icon',
-        largeIcon: const DrawableResourceAndroidBitmap('app_icon'),
+        icon: 'app_logo',
+        largeIcon: const DrawableResourceAndroidBitmap('app_logo'),
         visibility: NotificationVisibility.public,
         category: AndroidNotificationCategory.message,
       );
@@ -79,7 +84,9 @@ class NotificationService {
         notificationDetails: details,
         payload: jsonEncode(payload.toJson()),
       );
-      debugPrint('NotificationService: Notification shown (id=$id, title=$title)');
+      debugPrint(
+        'NotificationService: Notification shown (id=$id, title=$title)',
+      );
     } catch (e, st) {
       debugPrint('NotificationService: showNotification FAILED: $e\n$st');
     }
