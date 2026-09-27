@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/entities/transaction_entity.dart';
 import 'repository_providers.dart';
-import 'accounts_provider.dart';
 
 final transactionsProvider = StreamProvider<List<TransactionEntity>>((ref) {
   final repository = ref.watch(transactionRepositoryProvider);

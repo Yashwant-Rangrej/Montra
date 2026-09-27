@@ -5,10 +5,8 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../domain/entities/transaction_entity.dart';
 import '../../domain/entities/category_entity.dart';
-import '../../domain/entities/account_entity.dart';
 import '../../providers/repository_providers.dart';
 import '../../providers/categories_provider.dart';
-import '../../providers/accounts_provider.dart';
 import '../../providers/transactions_provider.dart';
 import '../../services/notifications/notification_manager.dart';
 
@@ -69,7 +67,6 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   @override
   Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(categoriesProvider);
-    final accountsAsync = ref.watch(accountsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -310,8 +307,8 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       
       // Invalidate to refresh all relevant lists and stats immediately
       ref.invalidate(transactionsProvider);
+      ref.invalidate(transactionsProvider);
       ref.invalidate(dashboardStatsProvider);
-      ref.invalidate(accountsProvider);
       
       if (mounted) {
         Navigator.of(context).pop();
@@ -326,7 +323,6 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       
       ref.invalidate(transactionsProvider);
       ref.invalidate(dashboardStatsProvider);
-      ref.invalidate(accountsProvider);
       
       if (mounted) {
         Navigator.of(context).pop();
