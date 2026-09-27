@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../providers/transactions_provider.dart';
-import '../../providers/repository_providers.dart';
 import '../../providers/sms_providers.dart';
 import '../../providers/accounts_provider.dart';
 import '../../core/theme/app_theme.dart';
@@ -291,25 +290,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               
               Text('Today', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7))),
               const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildIncomeExpenseStat('Income', stats['todayIncome'] ?? 0.0, true),
-                  _buildIncomeExpenseStat('Expenses', stats['todayExpense'] ?? 0.0, false),
-                ],
-              ),
+              _buildIncomeExpenseStat('Total Expenses', stats['todayExpense'] ?? 0.0, false),
               const SizedBox(height: 16),
               Divider(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.2)),
               const SizedBox(height: 16),
               Text('This Month', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7))),
               const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildIncomeExpenseStat('Income', stats['monthlyIncome'] ?? 0.0, true),
-                  _buildIncomeExpenseStat('Expenses', stats['monthlyExpense'] ?? 0.0, false),
-                ],
-              )
+              _buildIncomeExpenseStat('Total Expenses', stats['monthlyExpense'] ?? 0.0, false),
             ],
           ),
         ));
@@ -370,22 +357,22 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               itemCount: transactions.length > 5 ? 5 : transactions.length,
               itemBuilder: (context, index) {
                 final tx = transactions[index];
-                final isIncome = tx.type == 'Income';
+                final isIncome = false; // Forced expense
                 return ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: CircleAvatar(
-                    backgroundColor: isIncome ? AppTheme.income.withValues(alpha: 0.1) : AppTheme.expense.withValues(alpha: 0.1),
+                    backgroundColor: AppTheme.expense.withValues(alpha: 0.1),
                     child: Icon(
-                      isIncome ? Icons.attach_money : Icons.shopping_bag,
-                      color: isIncome ? AppTheme.income : AppTheme.expense,
+                      Icons.shopping_bag,
+                      color: AppTheme.expense,
                     ),
                   ),
                   title: Text(tx.merchant ?? tx.notes ?? 'Transaction', style: Theme.of(context).textTheme.titleMedium),
                   subtitle: Text(tx.type, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                   trailing: Text(
-                    '${isIncome ? '+' : '-'}₹${tx.amount.toStringAsFixed(2)}',
+                    '-₹${tx.amount.toStringAsFixed(2)}',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: isIncome ? AppTheme.income : AppTheme.expense,
+                      color: AppTheme.expense,
                     ),
                   ),
                 );

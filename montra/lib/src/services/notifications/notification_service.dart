@@ -69,7 +69,7 @@ class NotificationService {
         channelDescription: channel.description,
         importance: channel.importance,
         priority: Priority.high,
-        icon: 'app_logo',
+        icon: 'ic_notification',
         largeIcon: const DrawableResourceAndroidBitmap('app_logo'),
         visibility: NotificationVisibility.public,
         category: AndroidNotificationCategory.message,

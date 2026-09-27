@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/accounts_provider.dart';
-import '../../domain/entities/account_entity.dart';
 import 'edit_account_screen.dart'; // We will create this next
 
 import '../widgets/empty_state_widget.dart';

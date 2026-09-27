@@ -29,11 +29,7 @@ class SmsParser {
     double? amount = double.tryParse(amountStr);
     if (amount == null) return null;
     
-    // Determine type
     String transactionType = "expense";
-    if (RegExp(r'credited|received|added|deposited', caseSensitive: false).hasMatch(body)) {
-      transactionType = "income";
-    }
     
     // Extract merchant
     String merchant = sender; // Default to sender

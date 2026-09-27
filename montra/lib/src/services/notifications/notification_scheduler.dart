@@ -1,14 +1,7 @@
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import 'dart:math';
-
-import 'notification_service.dart';
-import 'notification_channels.dart';
-import 'notification_channels.dart';
 
 class NotificationScheduler {
-  final Random _random = Random();
 
   NotificationScheduler() {
     tz.initializeTimeZones();

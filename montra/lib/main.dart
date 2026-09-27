@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -36,9 +37,13 @@ class _MontraAppState extends ConsumerState<MontraApp> {
 
   Future<void> _initSmsListener() async {
     final settings = ref.read(notificationSettingsProvider);
-    if (settings.smsDetectionEnabled) {
-      final interceptor = ref.read(smsInterceptorProvider);
-      await interceptor.initialize();
+    if (settings.smsDetectionEnabled && defaultTargetPlatform == TargetPlatform.android) {
+      try {
+        final interceptor = ref.read(smsInterceptorProvider);
+        await interceptor.initialize();
+      } catch (e) {
+        debugPrint('SMS interceptor initialization error: $e');
+      }
     }
   }
 

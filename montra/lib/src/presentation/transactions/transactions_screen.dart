@@ -94,24 +94,24 @@ class TransactionsScreen extends ConsumerWidget {
                     itemCount: transactions.length,
                     itemBuilder: (context, index) {
                       final tx = transactions[index];
-                      final isIncome = tx.type == 'Income';
+                      final isIncome = false; // Forced expense
                       return Card(
                         margin: const EdgeInsets.only(bottom: 12),
                         child: ListTile(
                           onTap: () => context.push('/add-transaction', extra: tx),
                           leading: CircleAvatar(
-                            backgroundColor: isIncome ? AppTheme.income.withValues(alpha: 0.1) : AppTheme.expense.withValues(alpha: 0.1),
+                            backgroundColor: AppTheme.expense.withValues(alpha: 0.1),
                             child: Icon(
-                              isIncome ? Icons.attach_money : Icons.shopping_bag,
-                              color: isIncome ? AppTheme.income : AppTheme.expense,
+                              Icons.shopping_bag,
+                              color: AppTheme.expense,
                             ),
                           ),
                           title: Text(tx.merchant ?? tx.notes ?? 'Transaction', style: Theme.of(context).textTheme.titleMedium),
                           subtitle: Text('${tx.type} • ${tx.transactionDate.day}/${tx.transactionDate.month}/${tx.transactionDate.year}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                           trailing: Text(
-                            '${isIncome ? '+' : '-'}₹${tx.amount.toStringAsFixed(2)}',
+                            '-₹${tx.amount.toStringAsFixed(2)}',
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: isIncome ? AppTheme.income : AppTheme.expense,
+                              color: AppTheme.expense,
                             ),
                           ),
                         ),

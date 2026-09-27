@@ -29,21 +29,6 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-            child: SegmentedButton<String>(
-              segments: const [
-                ButtonSegment(value: 'Expense', label: Text('Expense')),
-                ButtonSegment(value: 'Income', label: Text('Income')),
-              ],
-              selected: {_selectedType},
-              onSelectionChanged: (Set<String> newSelection) {
-                setState(() {
-                  _selectedType = newSelection.first;
-                });
-              },
-            ),
-          ),
           Expanded(
             child: transactionsAsync.when(
               data: (transactions) {

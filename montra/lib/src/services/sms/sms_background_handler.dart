@@ -45,11 +45,12 @@ void smsBackgroundHandler() async {
           
           await notificationService.showNotification(
             id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
-            title: 'New Transaction Logged',
-            body: '${parsed.type == 'expense' ? 'Spent' : 'Received'} Rs ${parsed.amount} at ${parsed.merchant}',
+            title: '💳 Expense Detected',
+            body: 'Spent ₹${parsed.amount.toStringAsFixed(0)} at ${parsed.merchant} (${parsed.category})',
             channel: NotificationChannels.transactions,
             payload: NotificationPayload(type: 'transactionDetected', route: '/transactions'),
           );
+          await db.close();
         } else {
            await db.into(db.unrecognizedSms).insert(
             UnrecognizedSmsCompanion.insert(
@@ -59,6 +60,7 @@ void smsBackgroundHandler() async {
               reason: const drift.Value('Could not extract transaction details from SMS.'),
             )
           );
+          await db.close();
         }
       } catch (e) {
         debugPrint("Background SMS processing error: $e");
@@ -66,5 +68,6 @@ void smsBackgroundHandler() async {
     }
   });
 
+  // Signal Kotlin that Dart handler is registered and ready to receive SMS
   channel.invokeMethod('backgroundChannelReady');
 }

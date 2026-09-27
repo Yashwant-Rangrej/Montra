@@ -13,59 +13,89 @@ import io.flutter.FlutterInjector
 
 class SmsReceiver : BroadcastReceiver() {
     companion object {
+        private const val TAG = "SmsReceiver"
         var backgroundEngine: FlutterEngine? = null
         var backgroundChannel: MethodChannel? = null
+        private var isChannelReady = false
+        private val pendingSmsQueue = mutableListOf<Map<String, Any>>()
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action == Telephony.Sms.Intents.SMS_RECEIVED_ACTION) {
-            val messages = Telephony.Sms.Intents.getMessagesFromIntent(intent)
-            for (sms in messages) {
-                val sender = sms.displayOriginatingAddress ?: ""
-                val body = sms.displayMessageBody ?: ""
-                val receivedAt = sms.timestampMillis
+        if (intent.action != Telephony.Sms.Intents.SMS_RECEIVED_ACTION) return
 
-                Log.d("SmsReceiver", "Received SMS from $sender")
+        val messages = Telephony.Sms.Intents.getMessagesFromIntent(intent)
+        for (sms in messages) {
+            val sender = sms.displayOriginatingAddress ?: ""
+            val body = sms.displayMessageBody ?: ""
+            val receivedAt = sms.timestampMillis
 
-                sendToFlutter(context, sender, body, receivedAt)
+            Log.d(TAG, "Received SMS from: $sender")
+
+            val args = mapOf(
+                "sender" to sender,
+                "body" to body,
+                "receivedAt" to receivedAt
+            )
+
+            if (isChannelReady && backgroundChannel != null) {
+                backgroundChannel!!.invokeMethod("onSmsReceived", args)
+            } else {
+                pendingSmsQueue.add(args)
+                startBackgroundEngine(context)
             }
         }
     }
 
-    private fun sendToFlutter(context: Context, sender: String, body: String, receivedAt: Long) {
+    private fun startBackgroundEngine(context: Context) {
+        if (backgroundEngine != null) return // Already starting
+
         val sharedPrefs = context.getSharedPreferences("sms_prefs", Context.MODE_PRIVATE)
         val callbackHandle = sharedPrefs.getLong("callbackHandle", -1L)
 
         if (callbackHandle == -1L) {
-            Log.e("SmsReceiver", "No callback handle found. Flutter background handler not initialized.")
+            Log.e(TAG, "No callback handle stored. App must be opened at least once first.")
             return
         }
 
-        if (backgroundEngine == null) {
-            Log.d("SmsReceiver", "Initializing Flutter engine for background execution")
-            val loader = FlutterInjector.instance().flutterLoader()
-            loader.startInitialization(context)
-            loader.ensureInitializationComplete(context, null)
+        Log.d(TAG, "Spinning up background Flutter engine...")
+        val loader = FlutterInjector.instance().flutterLoader()
+        loader.startInitialization(context)
+        loader.ensureInitializationComplete(context, null)
 
-            backgroundEngine = FlutterEngine(context)
-            val callbackInfo = FlutterCallbackInformation.lookupCallbackInformation(callbackHandle)
-            if (callbackInfo == null) {
-                Log.e("SmsReceiver", "Fatal: failed to find callback")
-                return
-            }
+        backgroundEngine = FlutterEngine(context)
 
-            val args = DartExecutor.DartCallback(context.assets, loader.findAppBundlePath(), callbackInfo)
-            backgroundEngine?.dartExecutor?.executeDartCallback(args)
-
-            backgroundChannel = MethodChannel(backgroundEngine!!.dartExecutor.binaryMessenger, "com.montra.app/sms_background")
+        val callbackInfo = FlutterCallbackInformation.lookupCallbackInformation(callbackHandle)
+        if (callbackInfo == null) {
+            Log.e(TAG, "Could not find Dart callback. Re-open the app to re-register.")
+            backgroundEngine = null
+            return
         }
 
-        val arguments = mapOf(
-            "sender" to sender,
-            "body" to body,
-            "receivedAt" to receivedAt
+        val dartCallback = DartExecutor.DartCallback(
+            context.assets,
+            loader.findAppBundlePath(),
+            callbackInfo
         )
-        
-        backgroundChannel?.invokeMethod("onSmsReceived", arguments)
+        backgroundEngine!!.dartExecutor.executeDartCallback(dartCallback)
+
+        backgroundChannel = MethodChannel(
+            backgroundEngine!!.dartExecutor.binaryMessenger,
+            "com.montra.app/sms_background"
+        )
+
+        // Listen for the Dart side to signal it is ready
+        backgroundChannel!!.setMethodCallHandler { call, result ->
+            if (call.method == "backgroundChannelReady") {
+                Log.d(TAG, "Background channel ready. Flushing ${pendingSmsQueue.size} queued SMS(es).")
+                isChannelReady = true
+                for (sms in pendingSmsQueue) {
+                    backgroundChannel!!.invokeMethod("onSmsReceived", sms)
+                }
+                pendingSmsQueue.clear()
+                result.success(null)
+            } else {
+                result.notImplemented()
+            }
+        }
     }
 }

@@ -19,7 +19,7 @@ class AuthService {
         // For offline-first privacy, we assume true if unsupported in dev
         authenticated = true; 
       }
-    } on PlatformException catch (e) {
+    } on PlatformException catch (_) {
       // Handle error (e.g. no biometrics enrolled on emulator)
       // For development/testing, fallback to true so the app lock can be toggled
       authenticated = true;

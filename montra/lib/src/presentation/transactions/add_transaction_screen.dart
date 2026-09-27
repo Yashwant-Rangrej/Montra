@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../core/theme/app_theme.dart';
 import '../../domain/entities/transaction_entity.dart';
 import '../../domain/entities/category_entity.dart';
 import '../../providers/repository_providers.dart';
 import '../../providers/categories_provider.dart';
 import '../../providers/accounts_provider.dart';
 import '../../providers/transactions_provider.dart';
+import '../../services/notifications/notification_manager.dart';
+
 class AddTransactionScreen extends ConsumerStatefulWidget {
   final TransactionEntity? transactionToEdit;
 
@@ -126,7 +127,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                       DropdownButtonFormField<String>(
                         initialValue: _type,
                         decoration: const InputDecoration(labelText: 'Type'),
-                        items: ['Expense', 'Income', 'Transfer']
+                        items: ['Expense', 'Transfer']
                             .map((t) => DropdownMenuItem(value: t, child: Text(t)))
                             .toList(),
                         onChanged: (val) {
@@ -284,13 +285,40 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       
       if (widget.transactionToEdit == null) {
         await repo.insertTransaction(transaction);
+        
+        // --- Notification Triggers for Real Testing ---
+        final manager = ref.read(notificationManagerProvider);
+        
+        // 1. Large Expense Alert (Trigger if amount >= 10,000)
+        if (_type == 'expense' && _amount >= 10000) {
+          manager.showLargeExpenseAlert(
+            merchant: _merchant.isEmpty ? 'Unknown Merchant' : _merchant,
+            amount: _amount,
+            method: _paymentMethod ?? 'Unknown Method',
+          );
+        }
+
+        // 2. Budget Alert (Basic Check)
+        if (_type == 'expense' && finalCategoryId != null) {
+          final budgetRepo = ref.read(budgetRepositoryProvider);
+          final budgets = await budgetRepo.getAllBudgets();
+          for (var budget in budgets) {
+            if (budget.categoryId == finalCategoryId) {
+              manager.showBudgetAlert(
+                budgetName: 'Category Budget',
+                used: _amount, // In a real app, this would sum up all category expenses
+                remaining: budget.amount - _amount,
+              );
+            }
+          }
+        }
       } else {
         await repo.updateTransaction(transaction);
         // Also invalidate to refresh list
         ref.invalidate(transactionsProvider);
       }
       
-      if (context.mounted) {
+      if (mounted) {
         Navigator.of(context).pop();
       }
     }
