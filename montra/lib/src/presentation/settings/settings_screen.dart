@@ -28,14 +28,6 @@ class SettingsScreen extends ConsumerWidget {
             children: [
               _buildSettingsTile(
                 context,
-                title: 'Accounts',
-                icon: Icons.account_balance_wallet,
-                iconColor: theme.colorScheme.primary,
-                onTap: () => context.push('/accounts'),
-              ),
-
-              _buildSettingsTile(
-                context,
                 title: 'Budgets',
                 icon: Icons.pie_chart,
                 iconColor: Colors.purple,
@@ -71,24 +63,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ],
           ),
-          if (kDebugMode) ...[
-            const SizedBox(height: 32),
-            _buildSectionHeader(context, 'Developer'),
-            _buildSettingsGroup(
-              context,
-              children: [
-                _buildSettingsTile(
-                  context,
-                  title: 'Developer Notification Test',
-                  icon: Icons.bug_report,
-                  iconColor: theme.colorScheme.error,
-                  textColor: theme.colorScheme.error,
-                  onTap: () => context.push('/developer-notification-test'),
-                  isLast: true,
-                ),
-              ],
-            ),
-          ],
+
           const SizedBox(height: 48),
         ],
       ),

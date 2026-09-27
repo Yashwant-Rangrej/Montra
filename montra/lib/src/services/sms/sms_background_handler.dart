@@ -27,9 +27,8 @@ void smsBackgroundHandler() async {
         
         if (parsed != null) {
           
-          // Ensure we have an account to tie it to
-          final account = await db.select(db.accounts).getSingleOrNull();
-          final accountId = account?.id ?? 1;
+          // Banks concept removed; default to accountId 1
+          final accountId = 1;
           
           // Insert parsed transaction into local Drift database
           await db.into(db.transactions).insert(

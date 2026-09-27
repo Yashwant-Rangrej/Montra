@@ -10,7 +10,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(impl.openConnection());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration {
@@ -23,28 +23,27 @@ class AppDatabase extends _$AppDatabase {
           await m.addColumn(transactions, transactions.receiptAttachment);
         }
         if (from < 3) {
-          // Add new columns using raw statements to avoid compile errors before generation
           await customStatement('CREATE TABLE IF NOT EXISTS goals (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, target_amount REAL NOT NULL, saved_amount REAL NOT NULL DEFAULT 0.0, target_date INTEGER, color TEXT, icon TEXT, created_at INTEGER NOT NULL);');
         }
         if (from < 4) {
-          // Add new columns using raw statements to avoid compile errors before generation
           await customStatement('ALTER TABLE transactions ADD COLUMN bank_name TEXT NOT NULL DEFAULT "Manual";');
           await customStatement('ALTER TABLE transactions ADD COLUMN available_balance REAL;');
-          // Drop accounts table raw query to avoid drift knowing about it
           await customStatement('DROP TABLE IF EXISTS accounts;');
         }
         if (from < 5) {
-          // Create new Accounts table
           try {
             await m.createTable(accounts);
           } catch (_) {}
-          // Restore accountId in transactions, drop bankName if we could. Since sqlite doesn't easily drop, we just add accountId.
           try {
             await customStatement('ALTER TABLE transactions ADD COLUMN account_id INTEGER NOT NULL DEFAULT 1;');
           } catch (_) {}
           try {
             await customStatement('ALTER TABLE transactions ADD COLUMN target_account_id INTEGER;');
           } catch (_) {}
+        }
+        if (from < 6) {
+          await m.addColumn(budgets, budgets.startDate);
+          await m.addColumn(budgets, budgets.endDate);
         }
       },
     );

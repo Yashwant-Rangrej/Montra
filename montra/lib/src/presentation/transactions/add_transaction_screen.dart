@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../domain/entities/transaction_entity.dart';
 import '../../domain/entities/category_entity.dart';
+import '../../domain/entities/account_entity.dart';
 import '../../providers/repository_providers.dart';
 import '../../providers/categories_provider.dart';
 import '../../providers/accounts_provider.dart';
@@ -148,21 +149,6 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                         validator: (val) => val == null || val.isEmpty ? 'Required' : null,
                       ),
                       const SizedBox(height: 16),
-                      accountsAsync.when(
-                        data: (accounts) {
-                          final visibleAccounts = accounts.where((a) => !a.isHidden).toList();
-                          if (visibleAccounts.isEmpty) return const Text('No accounts found. They will appear automatically from SMS.');
-                          return DropdownButtonFormField<int>(
-                            initialValue: _accountId,
-                            decoration: const InputDecoration(labelText: 'Bank Account'),
-                            items: visibleAccounts.map((a) => DropdownMenuItem(value: a.id, child: Text(a.bankName))).toList(),
-                            onChanged: (val) => setState(() => _accountId = val),
-                            validator: (val) => val == null ? 'Select an account' : null,
-                          );
-                        },
-                        loading: () => const CircularProgressIndicator(),
-                        error: (_, _) => const Text('Error loading accounts'),
-                      ),
                       const SizedBox(height: 16),
                       categoriesAsync.when(
                         data: (categories) {
@@ -232,7 +218,15 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                       ElevatedButton(
                         onPressed: _saveTransaction,
                         child: const Text('Continue'),
-                      )
+                      ),
+                      if (widget.transactionToEdit != null) ...[
+                        const SizedBox(height: 16),
+                        TextButton(
+                          onPressed: _deleteTransaction,
+                          style: TextButton.styleFrom(foregroundColor: Colors.red),
+                          child: const Text('Delete Transaction'),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -246,8 +240,6 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
 
   void _saveTransaction() async {
     if (_formKey.currentState!.validate()) {
-      if (_accountId == null) return;
-
       int? finalCategoryId = _categoryId;
       final categoryRepo = ref.read(categoryRepositoryProvider);
 
@@ -273,7 +265,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
         type: _type,
         merchant: _merchant,
         notes: _notes,
-        accountId: _accountId!,
+        accountId: _accountId ?? 1,
         availableBalance: widget.transactionToEdit?.availableBalance, // preserve existing or null
         categoryId: finalCategoryId,
         paymentMethod: _paymentMethod,
@@ -314,9 +306,27 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
         }
       } else {
         await repo.updateTransaction(transaction);
-        // Also invalidate to refresh list
-        ref.invalidate(transactionsProvider);
       }
+      
+      // Invalidate to refresh all relevant lists and stats immediately
+      ref.invalidate(transactionsProvider);
+      ref.invalidate(dashboardStatsProvider);
+      ref.invalidate(accountsProvider);
+      
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    }
+  }
+
+  void _deleteTransaction() async {
+    if (widget.transactionToEdit != null) {
+      final repo = ref.read(transactionRepositoryProvider);
+      await repo.deleteTransaction(widget.transactionToEdit!.id);
+      
+      ref.invalidate(transactionsProvider);
+      ref.invalidate(dashboardStatsProvider);
+      ref.invalidate(accountsProvider);
       
       if (mounted) {
         Navigator.of(context).pop();

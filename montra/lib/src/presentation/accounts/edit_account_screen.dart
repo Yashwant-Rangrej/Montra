@@ -66,8 +66,18 @@ class _EditAccountScreenState extends ConsumerState<EditAccountScreen> {
             const SizedBox(height: 16),
             TextButton(
               onPressed: _hide,
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              style: TextButton.styleFrom(foregroundColor: Colors.orange),
               child: const Text('Hide Account'),
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () async {
+                await ref.read(accountRepositoryProvider).deleteAccount(widget.account.id);
+                ref.invalidate(accountsProvider);
+                if (mounted) Navigator.pop(context);
+              },
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: const Text('Delete Account'),
             ),
           ],
         ),

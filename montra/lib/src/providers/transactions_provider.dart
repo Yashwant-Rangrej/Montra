@@ -27,36 +27,17 @@ final filteredTransactionsProvider = FutureProvider<List<TransactionEntity>>((re
   }).toList();
 });
 
-final selectedAccountIdProvider = StateProvider<int?>((ref) => null);
-
 final dashboardStatsProvider = FutureProvider<Map<String, double>>((ref) async {
   final transactions = await ref.watch(transactionsProvider.future);
-  final accounts = await ref.watch(accountsProvider.future);
-  final selectedAccountId = ref.watch(selectedAccountIdProvider);
   
-  double todayIncome = 0;
   double todayExpense = 0;
-  double monthlyIncome = 0;
   double monthlyExpense = 0;
-  double totalIncome = 0;
   double totalExpense = 0;
 
   final now = DateTime.now();
 
   for (var tx in transactions) {
-    if (selectedAccountId != null && tx.accountId != selectedAccountId) {
-      continue;
-    }
-
-    if (tx.type == 'Income') {
-      if (tx.transactionDate.year == now.year && tx.transactionDate.month == now.month) {
-        monthlyIncome += tx.amount;
-        if (tx.transactionDate.day == now.day) {
-          todayIncome += tx.amount;
-        }
-      }
-      totalIncome += tx.amount;
-    } else if (tx.type == 'Expense') {
+    if (tx.type.toLowerCase() == 'expense') {
       if (tx.transactionDate.year == now.year && tx.transactionDate.month == now.month) {
         monthlyExpense += tx.amount;
         if (tx.transactionDate.day == now.day) {
@@ -67,28 +48,9 @@ final dashboardStatsProvider = FutureProvider<Map<String, double>>((ref) async {
     }
   }
   
-  // Calculate total balance from all active accounts
-  double totalBalance = 0;
-  for (var acc in accounts) {
-    if (!acc.isHidden) {
-      if (selectedAccountId != null && acc.id != selectedAccountId) {
-        continue;
-      }
-      if (acc.availableBalance != null) {
-        totalBalance += acc.availableBalance!;
-      } else {
-        totalBalance += (acc.totalIncome - acc.totalExpenses);
-      }
-    }
-  }
-  
   return {
-    'income': totalIncome,
-    'expense': totalExpense,
-    'balance': totalBalance,
-    'todayIncome': todayIncome,
+    'balance': totalExpense, // Total spend
     'todayExpense': todayExpense,
-    'monthlyIncome': monthlyIncome,
     'monthlyExpense': monthlyExpense,
   };
 });

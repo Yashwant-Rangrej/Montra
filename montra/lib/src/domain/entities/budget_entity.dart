@@ -4,6 +4,8 @@ class BudgetEntity {
   final int month;
   final int year;
   final int? categoryId; // If null, this is the total budget for the month
+  final DateTime? startDate;
+  final DateTime? endDate;
 
   BudgetEntity({
     required this.id,
@@ -11,5 +13,7 @@ class BudgetEntity {
     required this.month,
     required this.year,
     this.categoryId,
+    this.startDate,
+    this.endDate,
   });
 }

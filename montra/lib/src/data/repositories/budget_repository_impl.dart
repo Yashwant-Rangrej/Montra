@@ -15,6 +15,8 @@ class BudgetRepositoryImpl implements BudgetRepository {
       month: budget.month,
       year: budget.year,
       categoryId: budget.categoryId,
+      startDate: budget.startDate,
+      endDate: budget.endDate,
     );
   }
 
@@ -45,6 +47,8 @@ class BudgetRepositoryImpl implements BudgetRepository {
         month: budget.month,
         year: budget.year,
         categoryId: Value(budget.categoryId),
+        startDate: Value(budget.startDate),
+        endDate: Value(budget.endDate),
       ),
     );
   }
@@ -58,6 +62,8 @@ class BudgetRepositoryImpl implements BudgetRepository {
         month: Value(budget.month),
         year: Value(budget.year),
         categoryId: Value(budget.categoryId),
+        startDate: Value(budget.startDate),
+        endDate: Value(budget.endDate),
       ),
     );
   }

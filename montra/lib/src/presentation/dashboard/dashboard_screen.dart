@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../providers/transactions_provider.dart';
 import '../../providers/sms_providers.dart';
-import '../../providers/accounts_provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../widgets/empty_state_widget.dart';
 import '../notifications/notifications_screen.dart';
@@ -29,74 +28,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     });
   }
 
-  void _handleBalanceTap() async {
-    final now = DateTime.now();
-    if (_lastTapTime == null || now.difference(_lastTapTime!).inMilliseconds > 500) {
-      _tapCount = 1;
-    } else {
-      _tapCount++;
-    }
-    _lastTapTime = now;
-
-    if (_tapCount >= 7) {
-      _tapCount = 0;
-      if (_isBalanceVisible) {
-        setState(() {
-          _isBalanceVisible = false;
-        });
-      } else {
-        await _showBankSelectionDialog();
-      }
-    }
-  }
-
-  Future<void> _showBankSelectionDialog() async {
-    final accounts = await ref.read(accountsProvider.future);
-    if (!mounted) return;
-
-    if (accounts.isEmpty) {
-      setState(() {
-        _isBalanceVisible = true;
-      });
-      return;
-    }
-
-    final selectedId = await showDialog<int>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Select Account'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.account_balance_wallet),
-                  title: const Text('Overall Balance'),
-                  onTap: () => Navigator.pop(context, -1),
-                ),
-                ...accounts.map((acc) => ListTile(
-                  leading: const Icon(Icons.account_balance),
-                  title: Text('${acc.bankName} Balance'),
-                  onTap: () => Navigator.pop(context, acc.id),
-                )),
-              ],
-            ),
-          ),
-        );
-      }
-    );
-
-    if (selectedId != null) {
-      if (selectedId == -1) {
-        ref.read(selectedAccountIdProvider.notifier).state = null;
-      } else {
-        ref.read(selectedAccountIdProvider.notifier).state = selectedId;
-      }
-      setState(() {
-        _isBalanceVisible = true;
-      });
-    }
+  void _handleBalanceTap() {
+    setState(() {
+      _isBalanceVisible = !_isBalanceVisible;
+    });
   }
 
   Future<void> _checkAndRequestSmsPermission() async {
@@ -282,7 +217,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 if (_isBalanceVisible) ...[
-                  Text('Total Balance', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7))),
+                  Text('Total Spend', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7))),
                   const SizedBox(height: 8),
                   Text('₹${stats['balance']?.toStringAsFixed(2)}', style: Theme.of(context).textTheme.displayMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary)),
                   const SizedBox(height: 32),

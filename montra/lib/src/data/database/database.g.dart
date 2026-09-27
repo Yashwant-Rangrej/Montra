@@ -1873,8 +1873,38 @@ class $BudgetsTable extends Budgets with TableInfo<$BudgetsTable, Budget> {
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _startDateMeta = const VerificationMeta(
+    'startDate',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, amount, month, year, categoryId];
+  late final GeneratedColumn<DateTime> startDate = GeneratedColumn<DateTime>(
+    'start_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _endDateMeta = const VerificationMeta(
+    'endDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> endDate = GeneratedColumn<DateTime>(
+    'end_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    amount,
+    month,
+    year,
+    categoryId,
+    startDate,
+    endDate,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1920,6 +1950,18 @@ class $BudgetsTable extends Budgets with TableInfo<$BudgetsTable, Budget> {
         categoryId.isAcceptableOrUnknown(data['category_id']!, _categoryIdMeta),
       );
     }
+    if (data.containsKey('start_date')) {
+      context.handle(
+        _startDateMeta,
+        startDate.isAcceptableOrUnknown(data['start_date']!, _startDateMeta),
+      );
+    }
+    if (data.containsKey('end_date')) {
+      context.handle(
+        _endDateMeta,
+        endDate.isAcceptableOrUnknown(data['end_date']!, _endDateMeta),
+      );
+    }
     return context;
   }
 
@@ -1949,6 +1991,14 @@ class $BudgetsTable extends Budgets with TableInfo<$BudgetsTable, Budget> {
         DriftSqlType.int,
         data['${effectivePrefix}category_id'],
       ),
+      startDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}start_date'],
+      ),
+      endDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}end_date'],
+      ),
     );
   }
 
@@ -1964,12 +2014,16 @@ class Budget extends DataClass implements Insertable<Budget> {
   final int month;
   final int year;
   final int? categoryId;
+  final DateTime? startDate;
+  final DateTime? endDate;
   const Budget({
     required this.id,
     required this.amount,
     required this.month,
     required this.year,
     this.categoryId,
+    this.startDate,
+    this.endDate,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1980,6 +2034,12 @@ class Budget extends DataClass implements Insertable<Budget> {
     map['year'] = Variable<int>(year);
     if (!nullToAbsent || categoryId != null) {
       map['category_id'] = Variable<int>(categoryId);
+    }
+    if (!nullToAbsent || startDate != null) {
+      map['start_date'] = Variable<DateTime>(startDate);
+    }
+    if (!nullToAbsent || endDate != null) {
+      map['end_date'] = Variable<DateTime>(endDate);
     }
     return map;
   }
@@ -1993,6 +2053,12 @@ class Budget extends DataClass implements Insertable<Budget> {
       categoryId: categoryId == null && nullToAbsent
           ? const Value.absent()
           : Value(categoryId),
+      startDate: startDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(startDate),
+      endDate: endDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endDate),
     );
   }
 
@@ -2007,6 +2073,8 @@ class Budget extends DataClass implements Insertable<Budget> {
       month: serializer.fromJson<int>(json['month']),
       year: serializer.fromJson<int>(json['year']),
       categoryId: serializer.fromJson<int?>(json['categoryId']),
+      startDate: serializer.fromJson<DateTime?>(json['startDate']),
+      endDate: serializer.fromJson<DateTime?>(json['endDate']),
     );
   }
   @override
@@ -2018,6 +2086,8 @@ class Budget extends DataClass implements Insertable<Budget> {
       'month': serializer.toJson<int>(month),
       'year': serializer.toJson<int>(year),
       'categoryId': serializer.toJson<int?>(categoryId),
+      'startDate': serializer.toJson<DateTime?>(startDate),
+      'endDate': serializer.toJson<DateTime?>(endDate),
     };
   }
 
@@ -2027,12 +2097,16 @@ class Budget extends DataClass implements Insertable<Budget> {
     int? month,
     int? year,
     Value<int?> categoryId = const Value.absent(),
+    Value<DateTime?> startDate = const Value.absent(),
+    Value<DateTime?> endDate = const Value.absent(),
   }) => Budget(
     id: id ?? this.id,
     amount: amount ?? this.amount,
     month: month ?? this.month,
     year: year ?? this.year,
     categoryId: categoryId.present ? categoryId.value : this.categoryId,
+    startDate: startDate.present ? startDate.value : this.startDate,
+    endDate: endDate.present ? endDate.value : this.endDate,
   );
   Budget copyWithCompanion(BudgetsCompanion data) {
     return Budget(
@@ -2043,6 +2117,8 @@ class Budget extends DataClass implements Insertable<Budget> {
       categoryId: data.categoryId.present
           ? data.categoryId.value
           : this.categoryId,
+      startDate: data.startDate.present ? data.startDate.value : this.startDate,
+      endDate: data.endDate.present ? data.endDate.value : this.endDate,
     );
   }
 
@@ -2053,13 +2129,16 @@ class Budget extends DataClass implements Insertable<Budget> {
           ..write('amount: $amount, ')
           ..write('month: $month, ')
           ..write('year: $year, ')
-          ..write('categoryId: $categoryId')
+          ..write('categoryId: $categoryId, ')
+          ..write('startDate: $startDate, ')
+          ..write('endDate: $endDate')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, amount, month, year, categoryId);
+  int get hashCode =>
+      Object.hash(id, amount, month, year, categoryId, startDate, endDate);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2068,7 +2147,9 @@ class Budget extends DataClass implements Insertable<Budget> {
           other.amount == this.amount &&
           other.month == this.month &&
           other.year == this.year &&
-          other.categoryId == this.categoryId);
+          other.categoryId == this.categoryId &&
+          other.startDate == this.startDate &&
+          other.endDate == this.endDate);
 }
 
 class BudgetsCompanion extends UpdateCompanion<Budget> {
@@ -2077,12 +2158,16 @@ class BudgetsCompanion extends UpdateCompanion<Budget> {
   final Value<int> month;
   final Value<int> year;
   final Value<int?> categoryId;
+  final Value<DateTime?> startDate;
+  final Value<DateTime?> endDate;
   const BudgetsCompanion({
     this.id = const Value.absent(),
     this.amount = const Value.absent(),
     this.month = const Value.absent(),
     this.year = const Value.absent(),
     this.categoryId = const Value.absent(),
+    this.startDate = const Value.absent(),
+    this.endDate = const Value.absent(),
   });
   BudgetsCompanion.insert({
     this.id = const Value.absent(),
@@ -2090,6 +2175,8 @@ class BudgetsCompanion extends UpdateCompanion<Budget> {
     required int month,
     required int year,
     this.categoryId = const Value.absent(),
+    this.startDate = const Value.absent(),
+    this.endDate = const Value.absent(),
   }) : amount = Value(amount),
        month = Value(month),
        year = Value(year);
@@ -2099,6 +2186,8 @@ class BudgetsCompanion extends UpdateCompanion<Budget> {
     Expression<int>? month,
     Expression<int>? year,
     Expression<int>? categoryId,
+    Expression<DateTime>? startDate,
+    Expression<DateTime>? endDate,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2106,6 +2195,8 @@ class BudgetsCompanion extends UpdateCompanion<Budget> {
       if (month != null) 'month': month,
       if (year != null) 'year': year,
       if (categoryId != null) 'category_id': categoryId,
+      if (startDate != null) 'start_date': startDate,
+      if (endDate != null) 'end_date': endDate,
     });
   }
 
@@ -2115,6 +2206,8 @@ class BudgetsCompanion extends UpdateCompanion<Budget> {
     Value<int>? month,
     Value<int>? year,
     Value<int?>? categoryId,
+    Value<DateTime?>? startDate,
+    Value<DateTime?>? endDate,
   }) {
     return BudgetsCompanion(
       id: id ?? this.id,
@@ -2122,6 +2215,8 @@ class BudgetsCompanion extends UpdateCompanion<Budget> {
       month: month ?? this.month,
       year: year ?? this.year,
       categoryId: categoryId ?? this.categoryId,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
     );
   }
 
@@ -2143,6 +2238,12 @@ class BudgetsCompanion extends UpdateCompanion<Budget> {
     if (categoryId.present) {
       map['category_id'] = Variable<int>(categoryId.value);
     }
+    if (startDate.present) {
+      map['start_date'] = Variable<DateTime>(startDate.value);
+    }
+    if (endDate.present) {
+      map['end_date'] = Variable<DateTime>(endDate.value);
+    }
     return map;
   }
 
@@ -2153,7 +2254,9 @@ class BudgetsCompanion extends UpdateCompanion<Budget> {
           ..write('amount: $amount, ')
           ..write('month: $month, ')
           ..write('year: $year, ')
-          ..write('categoryId: $categoryId')
+          ..write('categoryId: $categoryId, ')
+          ..write('startDate: $startDate, ')
+          ..write('endDate: $endDate')
           ..write(')'))
         .toString();
   }
@@ -4526,6 +4629,8 @@ typedef $$BudgetsTableCreateCompanionBuilder =
       required int month,
       required int year,
       Value<int?> categoryId,
+      Value<DateTime?> startDate,
+      Value<DateTime?> endDate,
     });
 typedef $$BudgetsTableUpdateCompanionBuilder =
     BudgetsCompanion Function({
@@ -4534,6 +4639,8 @@ typedef $$BudgetsTableUpdateCompanionBuilder =
       Value<int> month,
       Value<int> year,
       Value<int?> categoryId,
+      Value<DateTime?> startDate,
+      Value<DateTime?> endDate,
     });
 
 class $$BudgetsTableFilterComposer
@@ -4567,6 +4674,16 @@ class $$BudgetsTableFilterComposer
 
   ColumnFilters<int> get categoryId => $composableBuilder(
     column: $table.categoryId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startDate => $composableBuilder(
+    column: $table.startDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get endDate => $composableBuilder(
+    column: $table.endDate,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -4604,6 +4721,16 @@ class $$BudgetsTableOrderingComposer
     column: $table.categoryId,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get startDate => $composableBuilder(
+    column: $table.startDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get endDate => $composableBuilder(
+    column: $table.endDate,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$BudgetsTableAnnotationComposer
@@ -4631,6 +4758,12 @@ class $$BudgetsTableAnnotationComposer
     column: $table.categoryId,
     builder: (column) => column,
   );
+
+  GeneratedColumn<DateTime> get startDate =>
+      $composableBuilder(column: $table.startDate, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get endDate =>
+      $composableBuilder(column: $table.endDate, builder: (column) => column);
 }
 
 class $$BudgetsTableTableManager
@@ -4666,12 +4799,16 @@ class $$BudgetsTableTableManager
                 Value<int> month = const Value.absent(),
                 Value<int> year = const Value.absent(),
                 Value<int?> categoryId = const Value.absent(),
+                Value<DateTime?> startDate = const Value.absent(),
+                Value<DateTime?> endDate = const Value.absent(),
               }) => BudgetsCompanion(
                 id: id,
                 amount: amount,
                 month: month,
                 year: year,
                 categoryId: categoryId,
+                startDate: startDate,
+                endDate: endDate,
               ),
           createCompanionCallback:
               ({
@@ -4680,12 +4817,16 @@ class $$BudgetsTableTableManager
                 required int month,
                 required int year,
                 Value<int?> categoryId = const Value.absent(),
+                Value<DateTime?> startDate = const Value.absent(),
+                Value<DateTime?> endDate = const Value.absent(),
               }) => BudgetsCompanion.insert(
                 id: id,
                 amount: amount,
                 month: month,
                 year: year,
                 categoryId: categoryId,
+                startDate: startDate,
+                endDate: endDate,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

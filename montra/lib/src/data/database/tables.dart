@@ -45,6 +45,8 @@ class Budgets extends Table {
   IntColumn get month => integer()(); 
   IntColumn get year => integer()();
   IntColumn get categoryId => integer().nullable()(); 
+  DateTimeColumn get startDate => dateTime().nullable()();
+  DateTimeColumn get endDate => dateTime().nullable()();
 }
 
 class Notifications extends Table {
