@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/theme_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -28,12 +29,27 @@ class SettingsScreen extends ConsumerWidget {
             children: [
               _buildSettingsTile(
                 context,
+                title: 'Categories',
+                icon: Icons.category,
+                iconColor: Colors.blue,
+                onTap: () => context.push('/categories'),
+              ),
+              _buildSettingsTile(
+                context,
                 title: 'Budgets',
                 icon: Icons.pie_chart,
                 iconColor: Colors.purple,
                 onTap: () => context.push('/budgets'),
                 isLast: true,
               ),
+            ],
+          ),
+          const SizedBox(height: 32),
+          _buildSectionHeader(context, 'Appearance'),
+          _buildSettingsGroup(
+            context,
+            children: [
+              _buildThemeSelectorTile(context, ref),
             ],
           ),
           const SizedBox(height: 32),
@@ -214,6 +230,41 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
       ],
+    );
+  }
+
+  Widget _buildThemeSelectorTile(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      leading: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.amber.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Icon(Icons.brightness_6, color: Colors.amber, size: 24),
+      ),
+      title: Text(
+        'App Theme',
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+      ),
+      trailing: DropdownButton<ThemeMode>(
+        value: themeMode,
+        underline: const SizedBox(),
+        items: const [
+          DropdownMenuItem(value: ThemeMode.system, child: Text('System Default')),
+          DropdownMenuItem(value: ThemeMode.light, child: Text('Light')),
+          DropdownMenuItem(value: ThemeMode.dark, child: Text('Dark')),
+        ],
+        onChanged: (mode) {
+          if (mode != null) {
+            ref.read(themeModeProvider.notifier).updateThemeMode(mode);
+          }
+        },
+      ),
     );
   }
 }

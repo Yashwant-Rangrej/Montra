@@ -42,8 +42,12 @@ class AppDatabase extends _$AppDatabase {
           } catch (_) {}
         }
         if (from < 6) {
-          await m.addColumn(budgets, budgets.startDate);
-          await m.addColumn(budgets, budgets.endDate);
+          try {
+            await customStatement('ALTER TABLE "budgets" ADD COLUMN "start_date" INTEGER NULL;');
+          } catch (_) {}
+          try {
+            await customStatement('ALTER TABLE "budgets" ADD COLUMN "end_date" INTEGER NULL;');
+          } catch (_) {}
         }
       },
     );

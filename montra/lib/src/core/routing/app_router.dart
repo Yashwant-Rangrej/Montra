@@ -17,8 +17,12 @@ import '../../presentation/notifications/notification_settings_screen.dart';
 import '../../presentation/notifications/developer_notification_test_screen.dart';
 import '../../presentation/main_scaffold.dart';
 import '../../presentation/transactions/add_transaction_screen.dart';
-
+import '../../presentation/categories/categories_screen.dart';
+import '../../presentation/categories/add_category_screen.dart';
 import '../../presentation/budgets/add_budget_screen.dart';
+import '../../domain/entities/category_entity.dart';
+import '../../domain/entities/budget_entity.dart';
+import '../../domain/entities/transaction_entity.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
@@ -119,6 +123,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       builder: (context, state) {
         final budget = state.extra as BudgetEntity?;
         return AddBudgetScreen(budgetToEdit: budget);
+      },
+    ),
+    GoRoute(
+      path: '/categories',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const CategoriesScreen(),
+    ),
+    GoRoute(
+      path: '/add-category',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final category = state.extra as CategoryEntity?;
+        return AddCategoryScreen(categoryToEdit: category);
       },
     ),
   ],

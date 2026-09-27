@@ -90,4 +90,11 @@ class TransactionRepositoryImpl implements TransactionRepository {
   Future<int> deleteTransaction(int id) async {
     return await (db.delete(db.transactions)..where((t) => t.id.equals(id))).go();
   }
+
+  @override
+  Stream<List<TransactionEntity>> watchTransactions() {
+    return db.select(db.transactions).watch().map((transactions) {
+      return transactions.map(_mapToEntity).toList();
+    });
+  }
 }

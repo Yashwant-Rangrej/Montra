@@ -200,4 +200,70 @@ class AppTheme {
       ),
     );
   }
+
+  static ThemeData get darkTheme {
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: const ColorScheme.dark(
+        primary: Color(0xFFCACFFF),
+        onPrimary: Color(0xFF00115A),
+        primaryContainer: Color(0xFF24389C),
+        onPrimaryContainer: Color(0xFFE0E0FF),
+        secondary: Color(0xFFB8EBD1),
+        onSecondary: Color(0xFF073822),
+        secondaryContainer: Color(0xFF214E3C),
+        onSecondaryContainer: Color(0xFFD4F8E2),
+        tertiary: Color(0xFFFFC4B5),
+        onTertiary: Color(0xFF450900),
+        tertiaryContainer: Color(0xFF762A15),
+        onTertiaryContainer: Color(0xFFFFDBD1),
+        surface: Color(0xFF131313),
+        onSurface: Color(0xFFE6E3D0),
+        surfaceContainerHighest: Color(0xFF454652),
+        onSurfaceVariant: Color(0xFFC5C5D4),
+        outline: Color(0xFF8F909A),
+        error: Color(0xFFFFB4AB),
+        onError: Color(0xFF690005),
+        background: Color(0xFF131313),
+        onBackground: Color(0xFFE6E3D0),
+      ),
+      scaffoldBackgroundColor: const Color(0xFF131313),
+      dividerColor: const Color(0xFF454652),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Color(0xFF131313),
+        foregroundColor: Color(0xFFE6E3D0),
+        elevation: 0,
+        centerTitle: true,
+        scrolledUnderElevation: 0,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFCACFFF),
+          foregroundColor: const Color(0xFF00115A),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radiusPill),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: spacingLg, vertical: spacingMd),
+        ),
+      ),
+      cardTheme: CardThemeData(
+        color: const Color(0xFF1E1E1E),
+        elevation: 1,
+        shadowColor: Colors.black.withValues(alpha: 0.2),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusXl),
+        ),
+        margin: const EdgeInsets.all(0),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: const Color(0xFF1E1E1E),
+        contentPadding: const EdgeInsets.symmetric(horizontal: spacingMd, vertical: spacingMd),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusLg),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
 }

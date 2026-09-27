@@ -3,6 +3,41 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'notification_channels.dart';
 import 'notification_models.dart';
+import '../../data/database/database.dart';
+import 'package:drift/drift.dart' as drift;
+
+@pragma('vm:entry-point')
+void notificationTapBackground(NotificationResponse response) async {
+  if (response.actionId != null && response.payload != null) {
+    try {
+      final payload = NotificationPayload.fromJson(jsonDecode(response.payload!));
+      final txIdStr = payload.data?['transactionId'];
+      if (txIdStr != null) {
+        final txId = int.parse(txIdStr.toString());
+        final action = response.actionId;
+        
+        String? categoryName;
+        if (action == 'ACTION_FOOD') categoryName = 'Food';
+        else if (action == 'ACTION_TRANSPORT') categoryName = 'Transportation';
+
+        if (categoryName != null) {
+          final db = AppDatabase();
+          // Find category ID
+          final categoryRow = await (db.select(db.categories)..where((c) => c.name.equals(categoryName!))).getSingleOrNull();
+          
+          if (categoryRow != null) {
+            // Update transaction
+            await (db.update(db.transactions)..where((t) => t.id.equals(txId)))
+                .write(TransactionsCompanion(categoryId: drift.Value(categoryRow.id)));
+          }
+          await db.close();
+        }
+      }
+    } catch (e) {
+      debugPrint('Background notification action error: $e');
+    }
+  }
+}
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin _plugin =
@@ -21,12 +56,16 @@ class NotificationService {
               final payload = NotificationPayload.fromJson(
                 jsonDecode(response.payload!),
               );
-              onNotificationTap(payload);
+              // Only trigger foreground tap if it wasn't an action button
+              if (response.actionId == null) {
+                onNotificationTap(payload);
+              }
             } catch (e) {
               debugPrint('NotificationService: Error parsing payload: $e');
             }
           }
         },
+        onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
       );
       debugPrint('NotificationService: initialize returned: $result');
 
@@ -61,6 +100,7 @@ class NotificationService {
     required String body,
     required AndroidNotificationChannel channel,
     required NotificationPayload payload,
+    List<AndroidNotificationAction>? actions,
   }) async {
     try {
       final androidDetails = AndroidNotificationDetails(
@@ -73,6 +113,7 @@ class NotificationService {
         largeIcon: const DrawableResourceAndroidBitmap('app_logo'),
         visibility: NotificationVisibility.public,
         category: AndroidNotificationCategory.message,
+        actions: actions,
       );
 
       final details = NotificationDetails(android: androidDetails);

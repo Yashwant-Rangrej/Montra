@@ -9,6 +9,7 @@ import 'src/data/repositories/notification_repository.dart';
 
 import 'src/core/routing/app_router.dart';
 import 'src/core/theme/app_theme.dart';
+import 'src/providers/theme_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,10 +60,13 @@ class _MontraAppState extends ConsumerState<MontraApp> {
   @override
   Widget build(BuildContext context) {
     final goRouter = ref.watch(appRouterProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
       title: 'Montra',
       theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeMode,
       routerConfig: goRouter,
       debugShowCheckedModeBanner: false,
     );

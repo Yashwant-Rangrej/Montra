@@ -29,7 +29,7 @@ class SmsParser {
     double? amount = double.tryParse(amountStr);
     if (amount == null) return null;
     
-    String transactionType = "expense";
+    String transactionType = "Expense";
     
     // Extract merchant
     String merchant = sender; // Default to sender
