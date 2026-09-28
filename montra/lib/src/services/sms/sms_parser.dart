@@ -14,12 +14,22 @@ class SmsParsedResult {
 
 class SmsParser {
   static SmsParsedResult? parseSms(String sender, String body) {
+    final lowerBody = body.toLowerCase();
+    
+    // Ignore any credit/income related messages completely
+    if (lowerBody.contains('credited') || 
+        lowerBody.contains('received') || 
+        lowerBody.contains('refunded') || 
+        lowerBody.contains('deposited')) {
+      return null;
+    }
+
     // Extract amount
     RegExp amountRegex = RegExp(r'(?:rs\.?|inr|usd|\$)\s*([\d,]+\.?\d*)', caseSensitive: false);
     Match? amountMatch = amountRegex.firstMatch(body);
     
     if (amountMatch == null) {
-      RegExp fallbackRegex = RegExp(r'(?:debited|credited|spent).*?(?:rs\.?|inr|usd|\$)\s*([\d,]+\.?\d*)', caseSensitive: false);
+      RegExp fallbackRegex = RegExp(r'(?:debited|spent|paid|withdrawn).*?(?:rs\.?|inr|usd|\$)\s*([\d,]+\.?\d*)', caseSensitive: false);
       amountMatch = fallbackRegex.firstMatch(body);
     }
     
@@ -29,7 +39,10 @@ class SmsParser {
     double? amount = double.tryParse(amountStr);
     if (amount == null) return null;
     
-    String transactionType = "Expense";
+    String transactionType = 'Expense';
+    // income detection removed
+
+
     
     // Extract merchant
     String merchant = sender; // Default to sender

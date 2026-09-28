@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:drift/drift.dart' as drift;
@@ -11,6 +12,11 @@ import 'sms_parser.dart';
 
 @pragma('vm:entry-point')
 void smsBackgroundHandler() async {
+  // CRITICAL: This runs in a background isolate started by the Kotlin SmsReceiver.
+  // WidgetsFlutterBinding must be initialized before using MethodChannels,
+  // path_provider, or any plugin that depends on the Flutter engine.
+  WidgetsFlutterBinding.ensureInitialized();
+
   const MethodChannel channel = MethodChannel('com.montra.app/sms_background');
   
   final notificationService = NotificationService();
@@ -22,11 +28,14 @@ void smsBackgroundHandler() async {
         final Map<dynamic, dynamic> args = call.arguments;
         final message = SmsMessage.fromMap(Map<String, dynamic>.from(args));
         
+        debugPrint("Background SMS received from: ${message.sender}");
+        
         final db = AppDatabase();
         
         final parsed = SmsParser.parseSms(message.sender, message.body);
         
         if (parsed != null) {
+          debugPrint("SMS parsed: ${parsed.merchant} - ₹${parsed.amount}");
           
           // Banks concept removed; default to accountId 1
           final accountId = 1;
@@ -48,6 +57,8 @@ void smsBackgroundHandler() async {
             )
           );
           
+          debugPrint("Transaction inserted with id: $insertedId");
+          
           await notificationService.showNotification(
             id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
             title: '💳 Expense Detected',
@@ -64,7 +75,9 @@ void smsBackgroundHandler() async {
             ],
           );
           await db.close();
+          await channel.invokeMethod('smsProcessed');
         } else {
+          debugPrint("SMS could not be parsed, saving as unrecognized: ${message.body}");
            await db.into(db.unrecognizedSms).insert(
             UnrecognizedSmsCompanion.insert(
               sender: message.sender,
@@ -75,12 +88,15 @@ void smsBackgroundHandler() async {
           );
           await db.close();
         }
-      } catch (e) {
+      } catch (e, stackTrace) {
         debugPrint("Background SMS processing error: $e");
+        debugPrint("Stack trace: $stackTrace");
       }
     }
   });
 
-  // Signal Kotlin that Dart handler is registered and ready to receive SMS
-  channel.invokeMethod('backgroundChannelReady');
+  // Signal Kotlin that Dart handler is registered and ready to receive SMS.
+  // Must be awaited to ensure proper sequencing with the Kotlin side.
+  await channel.invokeMethod('backgroundChannelReady');
+  debugPrint("Background SMS handler initialized and ready.");
 }

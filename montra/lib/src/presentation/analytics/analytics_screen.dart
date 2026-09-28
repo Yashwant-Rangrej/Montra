@@ -15,7 +15,6 @@ class AnalyticsScreen extends ConsumerStatefulWidget {
 }
 
 class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
-  String _selectedType = 'Expense'; // 'Income' or 'Expense'
 
   @override
   Widget build(BuildContext context) {
@@ -32,13 +31,13 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
           Expanded(
             child: transactionsAsync.when(
               data: (transactions) {
-                final filtered = transactions.where((t) => t.type == _selectedType).toList();
+                final filtered = transactions.where((t) => t.type == 'Expense').toList();
                 
                 if (filtered.isEmpty) {
-                  return EmptyStateWidget(
+                  return const EmptyStateWidget(
                     icon: Icons.analytics_outlined,
                     title: 'No Data Available',
-                    message: 'There are no $_selectedType transactions to analyze yet.',
+                    message: 'There are no expense transactions to analyze yet.',
                   );
                 }
 
@@ -169,7 +168,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                                     barRods: [
                                       BarChartRodData(
                                         toY: dailySums[i] ?? 0,
-                                        color: _selectedType == 'Income' ? AppTheme.income : AppTheme.expense,
+                                        color: AppTheme.expense,
                                         width: 16,
                                         borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
                                       ),

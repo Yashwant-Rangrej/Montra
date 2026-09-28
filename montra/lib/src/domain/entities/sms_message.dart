@@ -16,7 +16,7 @@ class SmsMessage {
       sender: map['sender'] ?? '',
       body: map['body'] ?? '',
       receivedAt: map['receivedAt'] != null 
-          ? DateTime.fromMillisecondsSinceEpoch(map['receivedAt'] as int)
+          ? DateTime.fromMillisecondsSinceEpoch((map['receivedAt'] as num).toInt())
           : DateTime.now(),
       subscriptionId: map['subscriptionId']?.toString(),
     );

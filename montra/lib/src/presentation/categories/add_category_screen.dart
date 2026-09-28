@@ -52,7 +52,6 @@ class _AddCategoryScreenState extends ConsumerState<AddCategoryScreen> {
                 decoration: const InputDecoration(labelText: 'Type'),
                 items: const [
                   DropdownMenuItem(value: 'Expense', child: Text('Expense')),
-                  DropdownMenuItem(value: 'Income', child: Text('Income')),
                 ],
                 onChanged: (val) {
                   if (val != null) setState(() => _type = val);

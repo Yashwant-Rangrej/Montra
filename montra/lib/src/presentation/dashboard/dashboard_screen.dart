@@ -7,6 +7,7 @@ import '../../core/theme/app_theme.dart';
 import '../widgets/empty_state_widget.dart';
 import '../notifications/notifications_screen.dart';
 import '../../providers/auth_provider.dart';
+import 'package:flutter/services.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -15,7 +16,7 @@ class DashboardScreen extends ConsumerStatefulWidget {
   ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsBindingObserver {
   bool _isBalanceVisible = false;
   int _tapCount = 0;
   DateTime? _lastTapTime;
@@ -23,9 +24,36 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkAndRequestSmsPermission();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _checkAndRequestSmsPermission();
+      // Refresh transactions when screen first loads
+      ref.refresh(transactionsProvider);
+
+      // Listen for background SMS processing notifications
+      const MethodChannel _bgChannel = MethodChannel('com.montra.app/sms_background');
+      _bgChannel.setMethodCallHandler((call) async {
+        if (call.method == 'smsProcessed') {
+          // Refresh transactions when a new SMS is processed
+          ref.refresh(transactionsProvider);
+        }
+        return null;
+      });
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Refresh transactions when returning to the app
+      ref.refresh(transactionsProvider);
+    }
   }
 
   void _handleBalanceTap() {
@@ -292,7 +320,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               itemCount: transactions.length > 5 ? 5 : transactions.length,
               itemBuilder: (context, index) {
                 final tx = transactions[index];
-                final isIncome = false; // Forced expense
                 return ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: CircleAvatar(

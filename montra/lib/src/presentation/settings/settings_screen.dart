@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/theme_provider.dart';
+import '../../providers/repository_providers.dart';
+import '../../services/update/update_service.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -40,7 +42,18 @@ class SettingsScreen extends ConsumerWidget {
                 icon: Icons.pie_chart,
                 iconColor: Colors.purple,
                 onTap: () => context.push('/budgets'),
+              ),
+              _buildSettingsTile(
+                context,
+                title: 'Check for Updates',
+                icon: Icons.system_update,
+                iconColor: Colors.orange,
                 isLast: true,
+                onTap: () {
+                  // This checks github pages for the version.json
+                  final updateService = UpdateService();
+                  updateService.checkForUpdates(context, showNoUpdateMessage: true);
+                },
               ),
             ],
           ),
@@ -76,6 +89,48 @@ class SettingsScreen extends ConsumerWidget {
                   }
                 },
                 isLast: true,
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+          _buildSectionHeader(context, 'Data Management'),
+          _buildSettingsGroup(
+            context,
+            children: [
+              _buildSettingsTile(
+                context,
+                title: 'Clear Database',
+                icon: Icons.delete_forever,
+                iconColor: Colors.red,
+                textColor: Colors.red,
+                isLast: true,
+                onTap: () async {
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Clear All Data?'),
+                      content: const Text('This will permanently delete all transactions, budgets, categories, and settings. This cannot be undone.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Cancel'),
+                        ),
+                        FilledButton(
+                          style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text('Clear Data'),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (confirm == true) {
+                    final db = ref.read(databaseProvider);
+                    await db.clearAllData();
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Database cleared successfully.')));
+                    }
+                  }
+                },
               ),
             ],
           ),

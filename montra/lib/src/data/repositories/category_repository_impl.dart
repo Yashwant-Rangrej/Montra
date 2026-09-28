@@ -32,9 +32,6 @@ class CategoryRepositoryImpl implements CategoryRepository {
         CategoriesCompanion.insert(name: 'Groceries', type: 'Expense', icon: const Value('local_grocery_store'), color: const Value('#4CAF50')),
         CategoriesCompanion.insert(name: 'Utilities', type: 'Expense', icon: const Value('bolt'), color: const Value('#FFC107')),
         CategoriesCompanion.insert(name: 'Health', type: 'Expense', icon: const Value('favorite'), color: const Value('#F44336')),
-        CategoriesCompanion.insert(name: 'Salary', type: 'Income', icon: const Value('payments'), color: const Value('#4CAF50')),
-        CategoriesCompanion.insert(name: 'Investment', type: 'Income', icon: const Value('trending_up'), color: const Value('#8BC34A')),
-        CategoriesCompanion.insert(name: 'Freelance', type: 'Income', icon: const Value('work'), color: const Value('#03A9F4')),
         CategoriesCompanion.insert(name: 'Transfer', type: 'Transfer', icon: const Value('swap_horiz'), color: const Value('#9E9E9E')),
       ];
       
