@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'src/providers/notification_providers.dart';
 import 'src/services/notifications/notification_models.dart';
 import 'src/providers/sms_providers.dart';
-import 'src/data/repositories/notification_repository.dart';
 
 import 'src/core/routing/app_router.dart';
 import 'src/core/theme/app_theme.dart';
@@ -32,19 +31,25 @@ class _MontraAppState extends ConsumerState<MontraApp> {
   @override
   void initState() {
     super.initState();
-    _initNotifications();
-    _initSmsListener();
+    // Use addPostFrameCallback to ensure ref.read works after the widget tree
+    // is fully built. This guarantees the callback handle is always stored
+    // on every app launch — even after updates — so the background SMS receiver
+    // can spin up a Dart engine without needing the main app to be running.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initNotifications();
+      _initSmsListener();
+    });
   }
 
   Future<void> _initSmsListener() async {
-    final settings = ref.read(notificationSettingsProvider);
-    if (settings.smsDetectionEnabled && defaultTargetPlatform == TargetPlatform.android) {
-      try {
-        final interceptor = ref.read(smsInterceptorProvider);
-        await interceptor.initialize();
-      } catch (e) {
-        debugPrint('SMS interceptor initialization error: $e');
-      }
+    if (defaultTargetPlatform != TargetPlatform.android) return;
+    try {
+      // Always re-register the callback handle on every launch so the
+      // background SmsReceiver always has a valid handle even after app updates.
+      final interceptor = ref.read(smsInterceptorProvider);
+      await interceptor.initialize();
+    } catch (e) {
+      debugPrint('SMS interceptor initialization error: $e');
     }
   }
 

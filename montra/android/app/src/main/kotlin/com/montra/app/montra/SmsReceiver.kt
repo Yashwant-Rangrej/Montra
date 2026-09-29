@@ -10,21 +10,42 @@ import io.flutter.embedding.engine.dart.DartExecutor
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.view.FlutterCallbackInformation
 import io.flutter.FlutterInjector
-import io.flutter.embedding.engine.loader.FlutterLoader
 
 class SmsReceiver : BroadcastReceiver() {
     companion object {
         private const val TAG = "SmsReceiver"
-        var backgroundEngine: FlutterEngine? = null
-        var backgroundChannel: MethodChannel? = null
-        private var isChannelReady = false
+
+        private val lock = Any()
+
+        @Volatile private var backgroundEngine: FlutterEngine? = null
+        @Volatile private var backgroundChannel: MethodChannel? = null
+        @Volatile private var isChannelReady = false
+
+        // Tracks how many SMS have been sent to Dart but not yet confirmed done.
+        private var pendingProcessingCount = 0
+
+        // SMS received before the Dart engine is ready.
         private val pendingSmsQueue = mutableListOf<Map<String, Any>>()
+
+        fun resetEngine() {
+            synchronized(lock) {
+                Log.d(TAG, "Resetting background engine state.")
+                backgroundChannel?.setMethodCallHandler(null)
+                backgroundChannel = null
+                backgroundEngine?.destroy()
+                backgroundEngine = null
+                isChannelReady = false
+                pendingProcessingCount = 0
+            }
+        }
     }
 
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != Telephony.Sms.Intents.SMS_RECEIVED_ACTION) return
 
         val messages = Telephony.Sms.Intents.getMessagesFromIntent(intent)
+        if (messages.isNullOrEmpty()) return
+
         for (sms in messages) {
             val sender = sms.displayOriginatingAddress ?: ""
             val body = sms.displayMessageBody ?: ""
@@ -38,20 +59,23 @@ class SmsReceiver : BroadcastReceiver() {
                 "receivedAt" to receivedAt
             )
 
-            if (isChannelReady && backgroundChannel != null) {
-                Log.d(TAG, "Channel ready, sending SMS to Dart immediately")
-                backgroundChannel!!.invokeMethod("onSmsReceived", args)
-            } else {
-                Log.d(TAG, "Channel not ready, queueing SMS and starting engine")
-                pendingSmsQueue.add(args)
-                startBackgroundEngine(context)
+            synchronized(lock) {
+                if (isChannelReady && backgroundChannel != null) {
+                    Log.d(TAG, "Channel ready, sending SMS to Dart immediately")
+                    pendingProcessingCount++
+                    backgroundChannel!!.invokeMethod("onSmsReceived", args)
+                } else {
+                    Log.d(TAG, "Channel not ready, queueing SMS and starting engine")
+                    pendingSmsQueue.add(args)
+                    startBackgroundEngine(context)
+                }
             }
         }
     }
 
     private fun startBackgroundEngine(context: Context) {
         if (backgroundEngine != null) {
-            Log.d(TAG, "Background engine already exists, waiting for it to become ready")
+            Log.d(TAG, "Background engine already initializing, SMS queued.")
             return
         }
 
@@ -59,24 +83,27 @@ class SmsReceiver : BroadcastReceiver() {
         val callbackHandle = sharedPrefs.getLong("callbackHandle", -1L)
 
         if (callbackHandle == -1L) {
-            Log.e(TAG, "No callback handle stored. App must be opened at least once first.")
+            Log.e(TAG, "No callback handle stored. Open the app at least once to register.")
+            pendingSmsQueue.clear()
             return
         }
 
         try {
-            Log.d(TAG, "Spinning up background Flutter engine with callback handle: $callbackHandle")
+            Log.d(TAG, "Spinning up background Flutter engine with handle: $callbackHandle")
+
             val loader = FlutterInjector.instance().flutterLoader()
             if (!loader.initialized()) {
-                loader.startInitialization(context)
-                loader.ensureInitializationComplete(context, null)
+                loader.startInitialization(context.applicationContext)
+                loader.ensureInitializationComplete(context.applicationContext, null)
             }
 
-            backgroundEngine = FlutterEngine(context)
+            val engine = FlutterEngine(context.applicationContext)
+            backgroundEngine = engine
 
             val callbackInfo = FlutterCallbackInformation.lookupCallbackInformation(callbackHandle)
             if (callbackInfo == null) {
-                Log.e(TAG, "Could not find Dart callback. Re-open the app to re-register.")
-                backgroundEngine = null
+                Log.e(TAG, "Dart callback not found — reopen the app to re-register.")
+                resetEngine()
                 return
             }
 
@@ -85,32 +112,45 @@ class SmsReceiver : BroadcastReceiver() {
                 loader.findAppBundlePath(),
                 callbackInfo
             )
-            backgroundEngine!!.dartExecutor.executeDartCallback(dartCallback)
+            engine.dartExecutor.executeDartCallback(dartCallback)
 
-            backgroundChannel = MethodChannel(
-                backgroundEngine!!.dartExecutor.binaryMessenger,
+            val channel = MethodChannel(
+                engine.dartExecutor.binaryMessenger,
                 "com.montra.app/sms_background"
             )
+            backgroundChannel = channel
 
-            // Listen for the Dart side to signal it is ready
-            backgroundChannel!!.setMethodCallHandler { call, result ->
-                if (call.method == "backgroundChannelReady") {
-                    Log.d(TAG, "Background channel ready. Flushing ${pendingSmsQueue.size} queued SMS(es).")
-                    isChannelReady = true
-                    for (sms in pendingSmsQueue) {
-                        backgroundChannel!!.invokeMethod("onSmsReceived", sms)
+            channel.setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "backgroundChannelReady" -> {
+                        synchronized(lock) {
+                            Log.d(TAG, "Dart ready. Flushing ${pendingSmsQueue.size} queued SMS(es).")
+                            isChannelReady = true
+                            for (sms in pendingSmsQueue) {
+                                pendingProcessingCount++
+                                channel.invokeMethod("onSmsReceived", sms)
+                            }
+                            pendingSmsQueue.clear()
+                        }
+                        result.success(null)
                     }
-                    pendingSmsQueue.clear()
-                    result.success(null)
-                } else {
-                    result.notImplemented()
+                    "smsProcessingComplete" -> {
+                        result.success(null)
+                        synchronized(lock) {
+                            pendingProcessingCount--
+                            Log.d(TAG, "SMS processed. Remaining: $pendingProcessingCount")
+                            if (pendingProcessingCount <= 0) {
+                                Log.d(TAG, "All SMS processed. Tearing down background engine.")
+                                resetEngine()
+                            }
+                        }
+                    }
+                    else -> result.notImplemented()
                 }
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to start background Flutter engine: ${e.message}", e)
-            backgroundEngine = null
-            backgroundChannel = null
+            resetEngine()
         }
     }
 }
-

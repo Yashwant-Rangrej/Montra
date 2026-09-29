@@ -168,6 +168,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
   void _showProfileModal() {
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -177,10 +178,26 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircleAvatar(
-                radius: 40,
-                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                child: Icon(Icons.person, size: 40, color: Theme.of(context).colorScheme.primary),
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                    width: 3,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                  child: Icon(Icons.person, size: 40, color: Theme.of(context).colorScheme.primary),
+                ),
               ),
               const SizedBox(height: 16),
               Consumer(
@@ -220,9 +237,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
         ),
         GestureDetector(
           onTap: _showProfileModal,
-          child: CircleAvatar(
-            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-            child: Icon(Icons.person, color: Theme.of(context).colorScheme.primary),
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                width: 2,
+              ),
+            ),
+            child: CircleAvatar(
+              radius: 22,
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              child: Icon(Icons.person, color: Theme.of(context).colorScheme.primary),
+            ),
           ),
         )
       ],

@@ -32,21 +32,21 @@ class SettingsScreen extends ConsumerWidget {
               _buildSettingsTile(
                 context,
                 title: 'Categories',
-                icon: Icons.category,
+                icon: Icons.category_outlined,
                 iconColor: Colors.blue,
                 onTap: () => context.push('/categories'),
               ),
               _buildSettingsTile(
                 context,
                 title: 'Budgets',
-                icon: Icons.pie_chart,
+                icon: Icons.pie_chart_outline,
                 iconColor: Colors.purple,
                 onTap: () => context.push('/budgets'),
               ),
               _buildSettingsTile(
                 context,
                 title: 'Check for Updates',
-                icon: Icons.system_update,
+                icon: Icons.system_update_outlined,
                 iconColor: Colors.orange,
                 isLast: true,
                 onTap: () {
@@ -74,7 +74,7 @@ class SettingsScreen extends ConsumerWidget {
                 context,
                 title: 'App Lock (Biometrics/PIN)',
                 subtitle: 'Require authentication to open Montra',
-                icon: Icons.security,
+                icon: Icons.lock_outline,
                 iconColor: Colors.teal,
                 value: isAppLockEnabled,
                 onChanged: (value) async {
@@ -100,7 +100,7 @@ class SettingsScreen extends ConsumerWidget {
               _buildSettingsTile(
                 context,
                 title: 'Clear Database',
-                icon: Icons.delete_forever,
+                icon: Icons.delete_outline,
                 iconColor: Colors.red,
                 textColor: Colors.red,
                 isLast: true,
@@ -298,7 +298,7 @@ class SettingsScreen extends ConsumerWidget {
           color: Colors.amber.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: const Icon(Icons.brightness_6, color: Colors.amber, size: 24),
+        child: const Icon(Icons.brightness_6_outlined, color: Colors.amber, size: 24),
       ),
       title: Text(
         'App Theme',
