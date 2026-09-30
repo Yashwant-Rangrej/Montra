@@ -22,7 +22,7 @@ class MainScaffold extends StatelessWidget {
           NavigationDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: 'Settings'),
         ],
       ),
-      floatingActionButton: _calculateSelectedIndex(context) == 0 
+      floatingActionButton: (_calculateSelectedIndex(context) == 0 || _calculateSelectedIndex(context) == 1)
           ? FloatingActionButton(
               onPressed: () => GoRouter.of(context).push('/add-transaction'),
               backgroundColor: Theme.of(context).colorScheme.primary,
@@ -37,38 +37,20 @@ class MainScaffold extends StatelessWidget {
 
   static int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.path;
-    if (location.startsWith('/transactions')) {
-      return 1;
-    }
-    if (location.startsWith('/budgets')) {
-      return 2;
-    }
-    if (location.startsWith('/analytics')) {
-      return 3;
-    }
-    if (location.startsWith('/settings')) {
-      return 4;
-    }
-    return 0; // dashboard
+    if (location.startsWith('/transactions')) return 1;
+    if (location.startsWith('/budgets')) return 2;
+    if (location.startsWith('/analytics')) return 3;
+    if (location.startsWith('/settings')) return 4;
+    return 0;
   }
 
   void _onItemTapped(int index, BuildContext context) {
     switch (index) {
-      case 0:
-        GoRouter.of(context).go('/');
-        break;
-      case 1:
-        GoRouter.of(context).go('/transactions');
-        break;
-      case 2:
-        GoRouter.of(context).go('/budgets');
-        break;
-      case 3:
-        GoRouter.of(context).go('/analytics');
-        break;
-      case 4:
-        GoRouter.of(context).go('/settings');
-        break;
+      case 0: GoRouter.of(context).go('/'); break;
+      case 1: GoRouter.of(context).go('/transactions'); break;
+      case 2: GoRouter.of(context).go('/budgets'); break;
+      case 3: GoRouter.of(context).go('/analytics'); break;
+      case 4: GoRouter.of(context).go('/settings'); break;
     }
   }
 }

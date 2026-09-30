@@ -124,4 +124,80 @@ class NotificationManager {
       payload: const NotificationPayload(type: 'largeExpense', route: '/transactions'),
     );
   }
+
+  Future<void> showMonthlySummary({
+    required String month,
+    required int year,
+    required double totalExpense,
+    required String topCategory,
+    required double topCategoryAmount,
+    String? topMerchant,
+    required int txCount,
+  }) async {
+    final merchantLine = topMerchant != null ? ' | Top merchant: $topMerchant' : '';
+    await _service.showNotification(
+      id: 9999,
+      title: '📊 $month $year Summary Ready!',
+      body: 'Total spent: ₹${totalExpense.toStringAsFixed(0)} across $txCount transactions. Most in: $topCategory (₹${topCategoryAmount.toStringAsFixed(0)})$merchantLine. Tap to view.',
+      channel: NotificationChannels.insights,
+      payload: const NotificationPayload(type: 'monthlySummary', route: '/'),
+    );
+  }
+
+  // Weekly Summary Notification
+  Future<void> showWeeklySummary({
+    required String weekRange,
+    required double totalSpent,
+    required Map<String, double> categoryBreakdown,
+  }) async {
+    // Build a concise body string
+    final categories = categoryBreakdown.entries.map((e) => '${e.key} ₹${e.value.toStringAsFixed(0)}').join(' • ');
+    await _service.showNotification(
+      id: _generateId(),
+      title: '📅 Weekly Summary ($weekRange)',
+      body: 'Spent ₹${totalSpent.toStringAsFixed(0)} • $categories',
+      channel: NotificationChannels.insights,
+      payload: const NotificationPayload(type: 'weeklySummary', route: '/'),
+    );
+  }
+
+  // Goal Reminder Notification
+  Future<void> showGoalReminder({
+    required String goalName,
+    required double saved,
+    required double target,
+  }) async {
+    final percent = ((saved / target) * 100).clamp(0, 100).toStringAsFixed(0);
+    await _service.showNotification(
+      id: _generateId(),
+      title: '🎯 Goal Reminder: $goalName',
+      body: 'Saved ₹${saved.toStringAsFixed(0)} / ₹${target.toStringAsFixed(0)} ($percent%). Keep going!',
+      channel: NotificationChannels.insights,
+      payload: const NotificationPayload(type: 'goalReminder', route: '/'),
+    );
+  }
+
+  // Backup Reminder Notification
+  Future<void> showBackupReminder({
+    required int daysSinceLastBackup,
+  }) async {
+    await _service.showNotification(
+      id: _generateId(),
+      title: '💾 Backup Reminder',
+      body: 'Your last backup was $daysSinceLastBackup days ago. Keep your data safe!',
+      channel: NotificationChannels.system,
+      payload: const NotificationPayload(type: 'backupReminder', route: '/settings'),
+    );
+  }
+
+  // Data Cleared Notification
+  Future<void> showDataCleared() async {
+    await _service.showNotification(
+      id: _generateId(),
+      title: '✅ All Data Cleared',
+      body: 'Your database has been fully reset.',
+      channel: NotificationChannels.system,
+      payload: const NotificationPayload(type: 'dataCleared', route: '/'),
+    );
+  }
 }

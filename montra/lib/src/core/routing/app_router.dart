@@ -21,6 +21,7 @@ import '../../presentation/categories/categories_screen.dart';
 import '../../presentation/categories/add_category_screen.dart';
 import '../../presentation/budgets/add_budget_screen.dart';
 import '../../domain/entities/category_entity.dart';
+import '../../presentation/analytics/monthly_summary_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
@@ -32,23 +33,32 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: '/splash',
+    // On cold launch, if lock is enabled and not yet unlocked → start at /auth.
+    // Otherwise start at /splash as normal.
+    initialLocation: isAppLockEnabled && !isUnlocked ? '/auth' : '/splash',
     redirect: (context, state) {
-      if (state.matchedLocation == '/splash') {
+      final loc = state.matchedLocation;
+
+      // Lock: if enabled and not unlocked, only /auth is allowed.
+      if (isAppLockEnabled && !isUnlocked) {
+        if (loc != '/auth') return '/auth';
         return null;
       }
-      if (!isOnboardingCompleted && state.matchedLocation != '/onboarding') {
+
+      // After unlock, redirect away from /auth → splash.
+      if (loc == '/auth') return '/splash';
+
+      // Splash plays without interruption.
+      if (loc == '/splash') return null;
+
+      // Onboarding check.
+      if (!isOnboardingCompleted && loc != '/onboarding') {
         return '/onboarding';
       }
-      if (isOnboardingCompleted && state.matchedLocation == '/onboarding') {
+      if (isOnboardingCompleted && loc == '/onboarding') {
         return '/';
       }
-      if (isAppLockEnabled && !isUnlocked && state.matchedLocation != '/auth' && state.matchedLocation != '/onboarding') {
-        return '/auth';
-      }
-      if (isUnlocked && state.matchedLocation == '/auth') {
-        return '/';
-      }
+
       return null;
     },
     routes: [
@@ -134,6 +144,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       builder: (context, state) {
         final category = state.extra as CategoryEntity?;
         return AddCategoryScreen(categoryToEdit: category);
+      },
+    ),
+    GoRoute(
+      path: '/monthly-summary-report',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final stats = state.extra as Map<String, dynamic>;
+        return MonthlySummaryScreen(stats: stats);
       },
     ),
   ],

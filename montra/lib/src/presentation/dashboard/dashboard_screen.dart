@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../providers/transactions_provider.dart';
+import '../../providers/categories_provider.dart';
 import '../../providers/sms_providers.dart';
 import '../../core/theme/app_theme.dart';
 import '../widgets/empty_state_widget.dart';
@@ -25,14 +26,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _checkAndRequestSmsPermission();
       // Refresh transactions when screen first loads
-      final _1 = ref.refresh(transactionsProvider);
+      ref.invalidate(transactionsProvider);
 
       // Listen for background SMS processing notifications
       const MethodChannel bgChannel = MethodChannel('com.montra.app/sms_background');
       bgChannel.setMethodCallHandler((call) async {
         if (call.method == 'smsProcessed') {
           // Refresh transactions when a new SMS is processed
-          final _2 = ref.refresh(transactionsProvider);
+          ref.invalidate(transactionsProvider);
         }
         return null;
       });
@@ -49,7 +50,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       // Refresh transactions when returning to the app
-      final _3 = ref.refresh(transactionsProvider);
+      ref.invalidate(transactionsProvider);
     }
   }
 
@@ -98,6 +99,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
   Widget build(BuildContext context) {
     final statsAsync = ref.watch(dashboardStatsProvider);
     final transactionsAsync = ref.watch(transactionsProvider);
+    final categoriesAsync = ref.watch(categoriesProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -112,7 +114,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
               const SizedBox(height: 32),
               _buildBalanceCard(statsAsync),
               const SizedBox(height: 32),
-              _buildRecentTransactions(transactionsAsync),
+              _buildRecentTransactions(transactionsAsync, categoriesAsync),
             ],
           ),
         ),
@@ -317,17 +319,29 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
     );
   }
 
-  Widget _buildRecentTransactions(AsyncValue<List<dynamic>> transactionsAsync) {
+  IconData _getIconForCategory(String? categoryName) {
+    if (categoryName == null) return Icons.shopping_bag;
+    final name = categoryName.toLowerCase();
+    if (name.contains('food') || name.contains('dining') || name.contains('restaurant')) return Icons.restaurant;
+    if (name.contains('transport') || name.contains('travel') || name.contains('auto') || name.contains('gas') || name.contains('fuel')) return Icons.directions_car;
+    if (name.contains('shop') || name.contains('grocery') || name.contains('market') || name.contains('store')) return Icons.shopping_cart;
+    if (name.contains('health') || name.contains('medical') || name.contains('pharmacy') || name.contains('doctor')) return Icons.local_hospital;
+    if (name.contains('bill') || name.contains('utility') || name.contains('water') || name.contains('electric') || name.contains('internet')) return Icons.receipt_long;
+    if (name.contains('enter') || name.contains('movie') || name.contains('game')) return Icons.movie;
+    if (name.contains('educat') || name.contains('school') || name.contains('book')) return Icons.school;
+    if (name.contains('home') || name.contains('rent')) return Icons.home;
+    if (name.contains('salary') || name.contains('income') || name.contains('wage')) return Icons.attach_money;
+    if (name.contains('gift') || name.contains('donate')) return Icons.card_giftcard;
+    if (name.contains('sport') || name.contains('gym')) return Icons.fitness_center;
+    if (name.contains('subscrip')) return Icons.subscriptions;
+    return Icons.category;
+  }
+
+  Widget _buildRecentTransactions(AsyncValue<List<dynamic>> transactionsAsync, AsyncValue<List<dynamic>> categoriesAsync) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Recent Transactions', style: Theme.of(context).textTheme.titleLarge),
-            Text('See All', style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Theme.of(context).colorScheme.primary)),
-          ],
-        ),
+        Text('Recent Transactions', style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 16),
         transactionsAsync.when(
           data: (transactions) {
@@ -344,21 +358,34 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
               itemCount: transactions.length > 5 ? 5 : transactions.length,
               itemBuilder: (context, index) {
                 final tx = transactions[index];
+                String? catName;
+                categoriesAsync.whenData((categories) {
+                  catName = categories.where((c) => c.id == tx.categoryId).firstOrNull?.name;
+                });
+                final iconData = _getIconForCategory(catName);
+
                 return ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: CircleAvatar(
-                    backgroundColor: AppTheme.expense.withValues(alpha: 0.1),
+                    backgroundColor: tx.type == 'Ignored' ? Theme.of(context).colorScheme.surfaceContainerHighest : AppTheme.expense.withValues(alpha: 0.1),
                     child: Icon(
-                      Icons.shopping_bag,
-                      color: AppTheme.expense,
+                      iconData,
+                      color: tx.type == 'Ignored' ? Theme.of(context).colorScheme.outline : AppTheme.expense,
                     ),
                   ),
-                  title: Text(tx.merchant ?? tx.notes ?? 'Transaction', style: Theme.of(context).textTheme.titleMedium),
+                  title: Text(
+                    tx.merchant ?? tx.notes ?? 'Transaction',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      decoration: tx.type == 'Ignored' ? TextDecoration.lineThrough : null,
+                      color: tx.type == 'Ignored' ? Theme.of(context).colorScheme.outline : null,
+                    ),
+                  ),
                   subtitle: Text(tx.type, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                   trailing: Text(
                     '-₹${tx.amount.toStringAsFixed(2)}',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppTheme.expense,
+                      color: tx.type == 'Ignored' ? Theme.of(context).colorScheme.outline : AppTheme.expense,
+                      decoration: tx.type == 'Ignored' ? TextDecoration.lineThrough : null,
                     ),
                   ),
                 );

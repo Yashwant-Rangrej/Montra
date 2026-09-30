@@ -88,3 +88,15 @@ class TransactionTags extends Table {
   @override
   Set<Column> get primaryKey => {transactionId, tagId};
 }
+
+class SavedSummaries extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get month => integer()();
+  IntColumn get year => integer()();
+  RealColumn get totalExpense => real()();
+  TextColumn get topCategory => text()();
+  RealColumn get topCategoryAmount => real()();
+  TextColumn get topMerchant => text().nullable()();
+  IntColumn get transactionCount => integer()();
+  DateTimeColumn get generatedAt => dateTime().withDefault(currentDateAndTime)();
+}

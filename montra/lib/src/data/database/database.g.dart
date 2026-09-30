@@ -3727,6 +3727,582 @@ class UnrecognizedSmsCompanion extends UpdateCompanion<UnrecognizedSm> {
   }
 }
 
+class $SavedSummariesTable extends SavedSummaries
+    with TableInfo<$SavedSummariesTable, SavedSummary> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SavedSummariesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _monthMeta = const VerificationMeta('month');
+  @override
+  late final GeneratedColumn<int> month = GeneratedColumn<int>(
+    'month',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _yearMeta = const VerificationMeta('year');
+  @override
+  late final GeneratedColumn<int> year = GeneratedColumn<int>(
+    'year',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _totalExpenseMeta = const VerificationMeta(
+    'totalExpense',
+  );
+  @override
+  late final GeneratedColumn<double> totalExpense = GeneratedColumn<double>(
+    'total_expense',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _topCategoryMeta = const VerificationMeta(
+    'topCategory',
+  );
+  @override
+  late final GeneratedColumn<String> topCategory = GeneratedColumn<String>(
+    'top_category',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _topCategoryAmountMeta = const VerificationMeta(
+    'topCategoryAmount',
+  );
+  @override
+  late final GeneratedColumn<double> topCategoryAmount =
+      GeneratedColumn<double>(
+        'top_category_amount',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _topMerchantMeta = const VerificationMeta(
+    'topMerchant',
+  );
+  @override
+  late final GeneratedColumn<String> topMerchant = GeneratedColumn<String>(
+    'top_merchant',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _transactionCountMeta = const VerificationMeta(
+    'transactionCount',
+  );
+  @override
+  late final GeneratedColumn<int> transactionCount = GeneratedColumn<int>(
+    'transaction_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _generatedAtMeta = const VerificationMeta(
+    'generatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> generatedAt = GeneratedColumn<DateTime>(
+    'generated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    month,
+    year,
+    totalExpense,
+    topCategory,
+    topCategoryAmount,
+    topMerchant,
+    transactionCount,
+    generatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'saved_summaries';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SavedSummary> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('month')) {
+      context.handle(
+        _monthMeta,
+        month.isAcceptableOrUnknown(data['month']!, _monthMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_monthMeta);
+    }
+    if (data.containsKey('year')) {
+      context.handle(
+        _yearMeta,
+        year.isAcceptableOrUnknown(data['year']!, _yearMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_yearMeta);
+    }
+    if (data.containsKey('total_expense')) {
+      context.handle(
+        _totalExpenseMeta,
+        totalExpense.isAcceptableOrUnknown(
+          data['total_expense']!,
+          _totalExpenseMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_totalExpenseMeta);
+    }
+    if (data.containsKey('top_category')) {
+      context.handle(
+        _topCategoryMeta,
+        topCategory.isAcceptableOrUnknown(
+          data['top_category']!,
+          _topCategoryMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_topCategoryMeta);
+    }
+    if (data.containsKey('top_category_amount')) {
+      context.handle(
+        _topCategoryAmountMeta,
+        topCategoryAmount.isAcceptableOrUnknown(
+          data['top_category_amount']!,
+          _topCategoryAmountMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_topCategoryAmountMeta);
+    }
+    if (data.containsKey('top_merchant')) {
+      context.handle(
+        _topMerchantMeta,
+        topMerchant.isAcceptableOrUnknown(
+          data['top_merchant']!,
+          _topMerchantMeta,
+        ),
+      );
+    }
+    if (data.containsKey('transaction_count')) {
+      context.handle(
+        _transactionCountMeta,
+        transactionCount.isAcceptableOrUnknown(
+          data['transaction_count']!,
+          _transactionCountMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_transactionCountMeta);
+    }
+    if (data.containsKey('generated_at')) {
+      context.handle(
+        _generatedAtMeta,
+        generatedAt.isAcceptableOrUnknown(
+          data['generated_at']!,
+          _generatedAtMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SavedSummary map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SavedSummary(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      month: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}month'],
+      )!,
+      year: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}year'],
+      )!,
+      totalExpense: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}total_expense'],
+      )!,
+      topCategory: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}top_category'],
+      )!,
+      topCategoryAmount: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}top_category_amount'],
+      )!,
+      topMerchant: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}top_merchant'],
+      ),
+      transactionCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}transaction_count'],
+      )!,
+      generatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}generated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SavedSummariesTable createAlias(String alias) {
+    return $SavedSummariesTable(attachedDatabase, alias);
+  }
+}
+
+class SavedSummary extends DataClass implements Insertable<SavedSummary> {
+  final int id;
+  final int month;
+  final int year;
+  final double totalExpense;
+  final String topCategory;
+  final double topCategoryAmount;
+  final String? topMerchant;
+  final int transactionCount;
+  final DateTime generatedAt;
+  const SavedSummary({
+    required this.id,
+    required this.month,
+    required this.year,
+    required this.totalExpense,
+    required this.topCategory,
+    required this.topCategoryAmount,
+    this.topMerchant,
+    required this.transactionCount,
+    required this.generatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['month'] = Variable<int>(month);
+    map['year'] = Variable<int>(year);
+    map['total_expense'] = Variable<double>(totalExpense);
+    map['top_category'] = Variable<String>(topCategory);
+    map['top_category_amount'] = Variable<double>(topCategoryAmount);
+    if (!nullToAbsent || topMerchant != null) {
+      map['top_merchant'] = Variable<String>(topMerchant);
+    }
+    map['transaction_count'] = Variable<int>(transactionCount);
+    map['generated_at'] = Variable<DateTime>(generatedAt);
+    return map;
+  }
+
+  SavedSummariesCompanion toCompanion(bool nullToAbsent) {
+    return SavedSummariesCompanion(
+      id: Value(id),
+      month: Value(month),
+      year: Value(year),
+      totalExpense: Value(totalExpense),
+      topCategory: Value(topCategory),
+      topCategoryAmount: Value(topCategoryAmount),
+      topMerchant: topMerchant == null && nullToAbsent
+          ? const Value.absent()
+          : Value(topMerchant),
+      transactionCount: Value(transactionCount),
+      generatedAt: Value(generatedAt),
+    );
+  }
+
+  factory SavedSummary.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SavedSummary(
+      id: serializer.fromJson<int>(json['id']),
+      month: serializer.fromJson<int>(json['month']),
+      year: serializer.fromJson<int>(json['year']),
+      totalExpense: serializer.fromJson<double>(json['totalExpense']),
+      topCategory: serializer.fromJson<String>(json['topCategory']),
+      topCategoryAmount: serializer.fromJson<double>(json['topCategoryAmount']),
+      topMerchant: serializer.fromJson<String?>(json['topMerchant']),
+      transactionCount: serializer.fromJson<int>(json['transactionCount']),
+      generatedAt: serializer.fromJson<DateTime>(json['generatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'month': serializer.toJson<int>(month),
+      'year': serializer.toJson<int>(year),
+      'totalExpense': serializer.toJson<double>(totalExpense),
+      'topCategory': serializer.toJson<String>(topCategory),
+      'topCategoryAmount': serializer.toJson<double>(topCategoryAmount),
+      'topMerchant': serializer.toJson<String?>(topMerchant),
+      'transactionCount': serializer.toJson<int>(transactionCount),
+      'generatedAt': serializer.toJson<DateTime>(generatedAt),
+    };
+  }
+
+  SavedSummary copyWith({
+    int? id,
+    int? month,
+    int? year,
+    double? totalExpense,
+    String? topCategory,
+    double? topCategoryAmount,
+    Value<String?> topMerchant = const Value.absent(),
+    int? transactionCount,
+    DateTime? generatedAt,
+  }) => SavedSummary(
+    id: id ?? this.id,
+    month: month ?? this.month,
+    year: year ?? this.year,
+    totalExpense: totalExpense ?? this.totalExpense,
+    topCategory: topCategory ?? this.topCategory,
+    topCategoryAmount: topCategoryAmount ?? this.topCategoryAmount,
+    topMerchant: topMerchant.present ? topMerchant.value : this.topMerchant,
+    transactionCount: transactionCount ?? this.transactionCount,
+    generatedAt: generatedAt ?? this.generatedAt,
+  );
+  SavedSummary copyWithCompanion(SavedSummariesCompanion data) {
+    return SavedSummary(
+      id: data.id.present ? data.id.value : this.id,
+      month: data.month.present ? data.month.value : this.month,
+      year: data.year.present ? data.year.value : this.year,
+      totalExpense: data.totalExpense.present
+          ? data.totalExpense.value
+          : this.totalExpense,
+      topCategory: data.topCategory.present
+          ? data.topCategory.value
+          : this.topCategory,
+      topCategoryAmount: data.topCategoryAmount.present
+          ? data.topCategoryAmount.value
+          : this.topCategoryAmount,
+      topMerchant: data.topMerchant.present
+          ? data.topMerchant.value
+          : this.topMerchant,
+      transactionCount: data.transactionCount.present
+          ? data.transactionCount.value
+          : this.transactionCount,
+      generatedAt: data.generatedAt.present
+          ? data.generatedAt.value
+          : this.generatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavedSummary(')
+          ..write('id: $id, ')
+          ..write('month: $month, ')
+          ..write('year: $year, ')
+          ..write('totalExpense: $totalExpense, ')
+          ..write('topCategory: $topCategory, ')
+          ..write('topCategoryAmount: $topCategoryAmount, ')
+          ..write('topMerchant: $topMerchant, ')
+          ..write('transactionCount: $transactionCount, ')
+          ..write('generatedAt: $generatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    month,
+    year,
+    totalExpense,
+    topCategory,
+    topCategoryAmount,
+    topMerchant,
+    transactionCount,
+    generatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SavedSummary &&
+          other.id == this.id &&
+          other.month == this.month &&
+          other.year == this.year &&
+          other.totalExpense == this.totalExpense &&
+          other.topCategory == this.topCategory &&
+          other.topCategoryAmount == this.topCategoryAmount &&
+          other.topMerchant == this.topMerchant &&
+          other.transactionCount == this.transactionCount &&
+          other.generatedAt == this.generatedAt);
+}
+
+class SavedSummariesCompanion extends UpdateCompanion<SavedSummary> {
+  final Value<int> id;
+  final Value<int> month;
+  final Value<int> year;
+  final Value<double> totalExpense;
+  final Value<String> topCategory;
+  final Value<double> topCategoryAmount;
+  final Value<String?> topMerchant;
+  final Value<int> transactionCount;
+  final Value<DateTime> generatedAt;
+  const SavedSummariesCompanion({
+    this.id = const Value.absent(),
+    this.month = const Value.absent(),
+    this.year = const Value.absent(),
+    this.totalExpense = const Value.absent(),
+    this.topCategory = const Value.absent(),
+    this.topCategoryAmount = const Value.absent(),
+    this.topMerchant = const Value.absent(),
+    this.transactionCount = const Value.absent(),
+    this.generatedAt = const Value.absent(),
+  });
+  SavedSummariesCompanion.insert({
+    this.id = const Value.absent(),
+    required int month,
+    required int year,
+    required double totalExpense,
+    required String topCategory,
+    required double topCategoryAmount,
+    this.topMerchant = const Value.absent(),
+    required int transactionCount,
+    this.generatedAt = const Value.absent(),
+  }) : month = Value(month),
+       year = Value(year),
+       totalExpense = Value(totalExpense),
+       topCategory = Value(topCategory),
+       topCategoryAmount = Value(topCategoryAmount),
+       transactionCount = Value(transactionCount);
+  static Insertable<SavedSummary> custom({
+    Expression<int>? id,
+    Expression<int>? month,
+    Expression<int>? year,
+    Expression<double>? totalExpense,
+    Expression<String>? topCategory,
+    Expression<double>? topCategoryAmount,
+    Expression<String>? topMerchant,
+    Expression<int>? transactionCount,
+    Expression<DateTime>? generatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (month != null) 'month': month,
+      if (year != null) 'year': year,
+      if (totalExpense != null) 'total_expense': totalExpense,
+      if (topCategory != null) 'top_category': topCategory,
+      if (topCategoryAmount != null) 'top_category_amount': topCategoryAmount,
+      if (topMerchant != null) 'top_merchant': topMerchant,
+      if (transactionCount != null) 'transaction_count': transactionCount,
+      if (generatedAt != null) 'generated_at': generatedAt,
+    });
+  }
+
+  SavedSummariesCompanion copyWith({
+    Value<int>? id,
+    Value<int>? month,
+    Value<int>? year,
+    Value<double>? totalExpense,
+    Value<String>? topCategory,
+    Value<double>? topCategoryAmount,
+    Value<String?>? topMerchant,
+    Value<int>? transactionCount,
+    Value<DateTime>? generatedAt,
+  }) {
+    return SavedSummariesCompanion(
+      id: id ?? this.id,
+      month: month ?? this.month,
+      year: year ?? this.year,
+      totalExpense: totalExpense ?? this.totalExpense,
+      topCategory: topCategory ?? this.topCategory,
+      topCategoryAmount: topCategoryAmount ?? this.topCategoryAmount,
+      topMerchant: topMerchant ?? this.topMerchant,
+      transactionCount: transactionCount ?? this.transactionCount,
+      generatedAt: generatedAt ?? this.generatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (month.present) {
+      map['month'] = Variable<int>(month.value);
+    }
+    if (year.present) {
+      map['year'] = Variable<int>(year.value);
+    }
+    if (totalExpense.present) {
+      map['total_expense'] = Variable<double>(totalExpense.value);
+    }
+    if (topCategory.present) {
+      map['top_category'] = Variable<String>(topCategory.value);
+    }
+    if (topCategoryAmount.present) {
+      map['top_category_amount'] = Variable<double>(topCategoryAmount.value);
+    }
+    if (topMerchant.present) {
+      map['top_merchant'] = Variable<String>(topMerchant.value);
+    }
+    if (transactionCount.present) {
+      map['transaction_count'] = Variable<int>(transactionCount.value);
+    }
+    if (generatedAt.present) {
+      map['generated_at'] = Variable<DateTime>(generatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavedSummariesCompanion(')
+          ..write('id: $id, ')
+          ..write('month: $month, ')
+          ..write('year: $year, ')
+          ..write('totalExpense: $totalExpense, ')
+          ..write('topCategory: $topCategory, ')
+          ..write('topCategoryAmount: $topCategoryAmount, ')
+          ..write('topMerchant: $topMerchant, ')
+          ..write('transactionCount: $transactionCount, ')
+          ..write('generatedAt: $generatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -3743,6 +4319,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $UnrecognizedSmsTable unrecognizedSms = $UnrecognizedSmsTable(
     this,
   );
+  late final $SavedSummariesTable savedSummaries = $SavedSummariesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3757,6 +4334,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     tags,
     transactionTags,
     unrecognizedSms,
+    savedSummaries,
   ];
 }
 
@@ -5710,6 +6288,290 @@ typedef $$UnrecognizedSmsTableProcessedTableManager =
       UnrecognizedSm,
       PrefetchHooks Function()
     >;
+typedef $$SavedSummariesTableCreateCompanionBuilder =
+    SavedSummariesCompanion Function({
+      Value<int> id,
+      required int month,
+      required int year,
+      required double totalExpense,
+      required String topCategory,
+      required double topCategoryAmount,
+      Value<String?> topMerchant,
+      required int transactionCount,
+      Value<DateTime> generatedAt,
+    });
+typedef $$SavedSummariesTableUpdateCompanionBuilder =
+    SavedSummariesCompanion Function({
+      Value<int> id,
+      Value<int> month,
+      Value<int> year,
+      Value<double> totalExpense,
+      Value<String> topCategory,
+      Value<double> topCategoryAmount,
+      Value<String?> topMerchant,
+      Value<int> transactionCount,
+      Value<DateTime> generatedAt,
+    });
+
+class $$SavedSummariesTableFilterComposer
+    extends Composer<_$AppDatabase, $SavedSummariesTable> {
+  $$SavedSummariesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get month => $composableBuilder(
+    column: $table.month,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get year => $composableBuilder(
+    column: $table.year,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get totalExpense => $composableBuilder(
+    column: $table.totalExpense,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get topCategory => $composableBuilder(
+    column: $table.topCategory,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get topCategoryAmount => $composableBuilder(
+    column: $table.topCategoryAmount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get topMerchant => $composableBuilder(
+    column: $table.topMerchant,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get transactionCount => $composableBuilder(
+    column: $table.transactionCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get generatedAt => $composableBuilder(
+    column: $table.generatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SavedSummariesTableOrderingComposer
+    extends Composer<_$AppDatabase, $SavedSummariesTable> {
+  $$SavedSummariesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get month => $composableBuilder(
+    column: $table.month,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get year => $composableBuilder(
+    column: $table.year,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get totalExpense => $composableBuilder(
+    column: $table.totalExpense,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get topCategory => $composableBuilder(
+    column: $table.topCategory,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get topCategoryAmount => $composableBuilder(
+    column: $table.topCategoryAmount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get topMerchant => $composableBuilder(
+    column: $table.topMerchant,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get transactionCount => $composableBuilder(
+    column: $table.transactionCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get generatedAt => $composableBuilder(
+    column: $table.generatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SavedSummariesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SavedSummariesTable> {
+  $$SavedSummariesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get month =>
+      $composableBuilder(column: $table.month, builder: (column) => column);
+
+  GeneratedColumn<int> get year =>
+      $composableBuilder(column: $table.year, builder: (column) => column);
+
+  GeneratedColumn<double> get totalExpense => $composableBuilder(
+    column: $table.totalExpense,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get topCategory => $composableBuilder(
+    column: $table.topCategory,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get topCategoryAmount => $composableBuilder(
+    column: $table.topCategoryAmount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get topMerchant => $composableBuilder(
+    column: $table.topMerchant,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get transactionCount => $composableBuilder(
+    column: $table.transactionCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get generatedAt => $composableBuilder(
+    column: $table.generatedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$SavedSummariesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SavedSummariesTable,
+          SavedSummary,
+          $$SavedSummariesTableFilterComposer,
+          $$SavedSummariesTableOrderingComposer,
+          $$SavedSummariesTableAnnotationComposer,
+          $$SavedSummariesTableCreateCompanionBuilder,
+          $$SavedSummariesTableUpdateCompanionBuilder,
+          (
+            SavedSummary,
+            BaseReferences<_$AppDatabase, $SavedSummariesTable, SavedSummary>,
+          ),
+          SavedSummary,
+          PrefetchHooks Function()
+        > {
+  $$SavedSummariesTableTableManager(
+    _$AppDatabase db,
+    $SavedSummariesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SavedSummariesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SavedSummariesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SavedSummariesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> month = const Value.absent(),
+                Value<int> year = const Value.absent(),
+                Value<double> totalExpense = const Value.absent(),
+                Value<String> topCategory = const Value.absent(),
+                Value<double> topCategoryAmount = const Value.absent(),
+                Value<String?> topMerchant = const Value.absent(),
+                Value<int> transactionCount = const Value.absent(),
+                Value<DateTime> generatedAt = const Value.absent(),
+              }) => SavedSummariesCompanion(
+                id: id,
+                month: month,
+                year: year,
+                totalExpense: totalExpense,
+                topCategory: topCategory,
+                topCategoryAmount: topCategoryAmount,
+                topMerchant: topMerchant,
+                transactionCount: transactionCount,
+                generatedAt: generatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int month,
+                required int year,
+                required double totalExpense,
+                required String topCategory,
+                required double topCategoryAmount,
+                Value<String?> topMerchant = const Value.absent(),
+                required int transactionCount,
+                Value<DateTime> generatedAt = const Value.absent(),
+              }) => SavedSummariesCompanion.insert(
+                id: id,
+                month: month,
+                year: year,
+                totalExpense: totalExpense,
+                topCategory: topCategory,
+                topCategoryAmount: topCategoryAmount,
+                topMerchant: topMerchant,
+                transactionCount: transactionCount,
+                generatedAt: generatedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SavedSummariesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SavedSummariesTable,
+      SavedSummary,
+      $$SavedSummariesTableFilterComposer,
+      $$SavedSummariesTableOrderingComposer,
+      $$SavedSummariesTableAnnotationComposer,
+      $$SavedSummariesTableCreateCompanionBuilder,
+      $$SavedSummariesTableUpdateCompanionBuilder,
+      (
+        SavedSummary,
+        BaseReferences<_$AppDatabase, $SavedSummariesTable, SavedSummary>,
+      ),
+      SavedSummary,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -5731,4 +6593,6 @@ class $AppDatabaseManager {
       $$TransactionTagsTableTableManager(_db, _db.transactionTags);
   $$UnrecognizedSmsTableTableManager get unrecognizedSms =>
       $$UnrecognizedSmsTableTableManager(_db, _db.unrecognizedSms);
+  $$SavedSummariesTableTableManager get savedSummaries =>
+      $$SavedSummariesTableTableManager(_db, _db.savedSummaries);
 }

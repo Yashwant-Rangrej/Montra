@@ -5,12 +5,12 @@ import 'tables.dart';
 
 part 'database.g.dart';
 
-@DriftDatabase(tables: [Accounts, Categories, Transactions, Budgets, Notifications, Settings, Tags, TransactionTags, UnrecognizedSms])
+@DriftDatabase(tables: [Accounts, Categories, Transactions, Budgets, Notifications, Settings, Tags, TransactionTags, UnrecognizedSms, SavedSummaries])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(impl.openConnection());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration {
@@ -49,15 +49,55 @@ class AppDatabase extends _$AppDatabase {
             await customStatement('ALTER TABLE "budgets" ADD COLUMN "end_date" INTEGER NULL;');
           } catch (_) {}
         }
+        if (from < 7) {
+          try {
+            await m.createTable(savedSummaries);
+          } catch (_) {}
+        }
+      },
+      beforeOpen: (details) async {
+        // WAL mode: better crash-safety and concurrent read performance
+        await customStatement('PRAGMA journal_mode=WAL;');
+        // Enforce foreign key constraints
+        await customStatement('PRAGMA foreign_keys=ON;');
       },
     );
   }
 
+  /// Clear every table — full app reset.
   Future<void> clearAllData() async {
     await transaction(() async {
       for (final table in allTables) {
         await delete(table).go();
       }
     });
+    await runMaintenance();
+  }
+
+  /// Delete all transactions (keeps budgets, categories, settings).
+  Future<void> clearTransactions() async {
+    await transaction(() async {
+      await delete(transactions).go();
+    });
+    await runMaintenance();
+  }
+
+  /// Delete transactions older than the current month.
+  Future<void> clearMonthlyHistory() async {
+    final now = DateTime.now();
+    final startOfMonth = DateTime(now.year, now.month, 1);
+    await transaction(() async {
+      await (delete(transactions)
+        ..where((t) => t.transactionDate.isSmallerThanValue(startOfMonth))
+      ).go();
+    });
+    await runMaintenance();
+  }
+
+  /// VACUUM reclaims freed pages; ANALYZE updates query-planner statistics.
+  Future<void> runMaintenance() async {
+    await customStatement('PRAGMA optimize;');
+    await customStatement('VACUUM;');
+    await customStatement('ANALYZE;');
   }
 }

@@ -61,7 +61,7 @@ class _SplashScreenState extends State<SplashScreen>
           if (_progress >= 1.0) {
             _progress = 1.0;
             timer.cancel();
-            // Go to home. The router redirect logic will redirect to onboarding/auth if needed
+            // Go to home — lock overlay on the home screen handles auth if enabled
             context.go('/');
           }
         });
@@ -94,28 +94,7 @@ class _SplashScreenState extends State<SplashScreen>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Top Header Info
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'MONTRA OS',
-                      style: TextStyle(
-                        color: AppTheme.primary,
-                        fontSize: 12,
-                        letterSpacing: 1.5,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      'v1.0.0',
-                      style: TextStyle(
-                        color: AppTheme.primary,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
+                const SizedBox(height: 12), // Placeholder to keep center logo balanced
 
                 // Center Logo & Title
                 FadeTransition(

@@ -5,6 +5,8 @@ import '../../providers/auth_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../providers/repository_providers.dart';
 import '../../services/update/update_service.dart';
+import '../../services/monthly_summary_service.dart';
+import '../../services/notifications/notification_manager.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -91,6 +93,33 @@ class SettingsScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 32),
+          _buildSectionHeader(context, 'Reports'),
+          _buildSettingsGroup(
+            context,
+            children: [
+              _buildSettingsTile(
+                context,
+                title: 'Generate Monthly Summary',
+                icon: Icons.bar_chart_outlined,
+                iconColor: Colors.indigo,
+                isLast: true,
+                onTap: () async {
+                  final db = ref.read(databaseProvider);
+                  final notifManager = ref.read(notificationManagerProvider);
+                  final service = MonthlySummaryService(db, notifManager);
+                  final stats = await service.computeLastMonthStats(DateTime.now());
+                  if (stats != null && context.mounted) {
+                    context.push('/monthly-summary-report', extra: stats);
+                  } else if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('No expenses found for last month.')),
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
           _buildSectionHeader(context, 'Data Management'),
           _buildSettingsGroup(
             context,
@@ -103,29 +132,52 @@ class SettingsScreen extends ConsumerWidget {
                 textColor: Colors.red,
                 isLast: true,
                 onTap: () async {
-                  final confirm = await showDialog<bool>(
+                  final result = await showDialog<String>(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: const Text('Clear All Data?'),
-                      content: const Text('This will permanently delete all transactions, budgets, categories, and settings. This cannot be undone.'),
+                      title: const Text('Clear Database'),
+                      content: const Text('Which data would you like to clear?'),
                       actions: [
                         TextButton(
-                          onPressed: () => Navigator.pop(context, false),
+                          onPressed: () => Navigator.pop(context, 'cancel'),
                           child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'history'),
+                          child: const Text('Past History Only', style: TextStyle(color: Colors.blue)),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'transactions'),
+                          child: const Text('All Transactions', style: TextStyle(color: Colors.orange)),
                         ),
                         FilledButton(
                           style: FilledButton.styleFrom(backgroundColor: Colors.red),
-                          onPressed: () => Navigator.pop(context, true),
-                          child: const Text('Clear Data'),
+                          onPressed: () => Navigator.pop(context, 'all'),
+                          child: const Text('Clear Everything'),
                         ),
                       ],
                     ),
                   );
-                  if (confirm == true) {
+                  if (result == 'all' || result == 'transactions' || result == 'history') {
                     final db = ref.read(databaseProvider);
-                    await db.clearAllData();
+                    if (result == 'all') {
+                      await db.clearAllData();
+          // Notify user that all data has been cleared
+          final notifMgr = ref.read(notificationManagerProvider);
+          await notifMgr.showDataCleared();
+                    } else if (result == 'transactions') {
+                      await db.clearTransactions();
+                    } else if (result == 'history') {
+                      await db.clearMonthlyHistory();
+                    }
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Database cleared successfully.')));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(
+                          result == 'all' ? 'All data cleared successfully.' 
+                          : result == 'history' ? 'Past monthly history cleared successfully.' 
+                          : 'Transactions cleared successfully.'
+                        ),
+                      ));
                     }
                   }
                 },

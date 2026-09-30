@@ -93,8 +93,9 @@ class TransactionRepositoryImpl implements TransactionRepository {
 
   @override
   Stream<List<TransactionEntity>> watchTransactions() {
-    return db.select(db.transactions).watch().map((transactions) {
-      return transactions.map(_mapToEntity).toList();
-    });
+    return (db.select(db.transactions)
+        ..orderBy([(t) => OrderingTerm(expression: t.transactionDate, mode: OrderingMode.desc)]))
+        .watch()
+        .map((txList) => txList.map(_mapToEntity).toList());
   }
 }

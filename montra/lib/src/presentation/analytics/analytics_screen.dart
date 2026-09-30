@@ -89,8 +89,13 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                           color: color,
                           value: sum,
                           title: '${percentage.toStringAsFixed(1)}%',
+                          showTitle: true,
+                          titlePositionPercentageOffset: percentage < 5 ? 1.4 : 0.5,
                           radius: 50,
-                          titleStyle: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.onPrimary),
+                          titleStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            color: percentage < 5 ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onPrimary,
+                            fontWeight: FontWeight.bold,
+                          ),
                         )
                       );
 

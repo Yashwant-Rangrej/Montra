@@ -34,9 +34,16 @@ final dashboardStatsProvider = Provider<AsyncValue<Map<String, double>>>((ref) {
   return transactionsAsync.whenData((transactions) {
     double todayExpense = 0;
     double monthlyExpense = 0;
+    double lastMonthExpense = 0;
     double totalExpense = 0;
 
     final now = DateTime.now();
+    int lastMonth = now.month - 1;
+    int lastMonthYear = now.year;
+    if (lastMonth == 0) {
+      lastMonth = 12;
+      lastMonthYear -= 1;
+    }
 
     for (var tx in transactions) {
       if (tx.type.toLowerCase() == 'expense') {
@@ -46,6 +53,9 @@ final dashboardStatsProvider = Provider<AsyncValue<Map<String, double>>>((ref) {
             todayExpense += tx.amount;
           }
         }
+        if (tx.transactionDate.year == lastMonthYear && tx.transactionDate.month == lastMonth) {
+          lastMonthExpense += tx.amount;
+        }
         totalExpense += tx.amount;
       }
     }
@@ -54,6 +64,7 @@ final dashboardStatsProvider = Provider<AsyncValue<Map<String, double>>>((ref) {
       'balance': totalExpense, // Total spend
       'todayExpense': todayExpense,
       'monthlyExpense': monthlyExpense,
+      'lastMonthExpense': lastMonthExpense,
     };
   });
 });
@@ -97,5 +108,27 @@ final merchantIntelligenceProvider = Provider<AsyncValue<Map<String, dynamic>>>(
       'topSpendingMerchant': topSpendingMerchant,
       'maxSpent': maxSpent,
     };
+  });
+});
+
+final monthlyExpensesProvider = Provider<AsyncValue<Map<String, double>>>((ref) {
+  final transactionsAsync = ref.watch(transactionsProvider);
+  
+  return transactionsAsync.whenData((transactions) {
+    final Map<String, double> expensesByMonth = {};
+
+    for (var tx in transactions) {
+      if (tx.type.toLowerCase() == 'expense') {
+        final monthKey = '${tx.transactionDate.year}-${tx.transactionDate.month.toString().padLeft(2, '0')}';
+        expensesByMonth[monthKey] = (expensesByMonth[monthKey] ?? 0) + tx.amount;
+      }
+    }
+    
+    final sortedKeys = expensesByMonth.keys.toList()..sort((a, b) => b.compareTo(a));
+    final Map<String, double> sortedMap = {};
+    for (var key in sortedKeys) {
+      sortedMap[key] = expensesByMonth[key]!;
+    }
+    return sortedMap;
   });
 });
