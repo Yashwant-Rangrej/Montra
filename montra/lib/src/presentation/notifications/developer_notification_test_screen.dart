@@ -130,7 +130,7 @@ class _DeveloperNotificationTestScreenState
                               ? 'Notifications Allowed'
                               : 'Notification Permission Disabled',
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w600,
                             color: _hasPermission
                                 ? Colors.green.shade900
                                 : Colors.red.shade900,
@@ -164,7 +164,7 @@ class _DeveloperNotificationTestScreenState
             'These buttons trigger native notifications for testing purposes only.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.error,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                 ),
           ),
           const SizedBox(height: 16),

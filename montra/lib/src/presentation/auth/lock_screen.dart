@@ -78,7 +78,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                   Text(
                     'Welcome Back',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
@@ -102,9 +102,9 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                           ),
                           onPressed: _authenticate,
                           icon: const Icon(Icons.fingerprint),
-                          label: const Text(
+                          label: Text(
                             'Unlock',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
                           ),
                         ),
                 ],

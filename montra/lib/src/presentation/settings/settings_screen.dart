@@ -199,7 +199,7 @@ class SettingsScreen extends ConsumerWidget {
         style: Theme.of(context).textTheme.labelLarge?.copyWith(
               color: Theme.of(context).colorScheme.primary,
               letterSpacing: 1.2,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
             ),
       ),
     );

@@ -264,7 +264,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                                               child: Icon(Icons.calendar_month, color: Theme.of(context).colorScheme.primary),
                                             ),
                                             title: Text('$monthName $year', style: Theme.of(context).textTheme.titleMedium),
-                                            trailing: Text('₹${amount.toStringAsFixed(2)}', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppTheme.expense, fontWeight: FontWeight.bold)),
+                                            trailing: Text('₹${amount.toStringAsFixed(2)}', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppTheme.expense, fontWeight: FontWeight.w600)),
                                           );
                                         },
                                       ),

@@ -94,7 +94,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                           radius: 50,
                           titleStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
                             color: percentage < 5 ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onPrimary,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w600,
                           ),
                         )
                       );

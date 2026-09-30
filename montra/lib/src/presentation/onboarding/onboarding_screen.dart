@@ -88,7 +88,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    child: const Text('Skip', style: TextStyle(fontWeight: FontWeight.w600)),
+                    child: Text('Skip', style: Theme.of(context).textTheme.labelLarge?.copyWith(color: AppTheme.primary, fontWeight: FontWeight.w500)),
                   ),
                 ],
               ),
@@ -129,7 +129,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               curve: Curves.easeInOut,
                             );
                           },
-                          child: const Text('Back', style: TextStyle(color: AppTheme.onSurfaceVariant)),
+                          child: Text('Back', style: Theme.of(context).textTheme.labelLarge?.copyWith(color: AppTheme.onSurfaceVariant)),
                         )
                       : const SizedBox(width: 60),
 
@@ -223,9 +223,8 @@ class OnboardingStepView extends StatelessWidget {
           Text(
             data.title,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
+            style: Theme.of(context).textTheme.displayMedium?.copyWith(
+              fontWeight: FontWeight.w500,
               color: AppTheme.onSurface,
               height: 1.25,
             ),
@@ -234,8 +233,7 @@ class OnboardingStepView extends StatelessWidget {
           Text(
             data.subtitle,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 15,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: AppTheme.onSurfaceVariant,
               height: 1.4,
             ),
@@ -255,8 +253,7 @@ class OnboardingStepView extends StatelessWidget {
                   const SizedBox(width: 6),
                   Text(
                     data.privacyPill!,
-                    style: const TextStyle(
-                      fontSize: 12,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.w500,
                       color: AppTheme.onSurfaceVariant,
                     ),

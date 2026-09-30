@@ -30,19 +30,17 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              const Text(
+              Text(
                 'One Last Step',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
+                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                  fontWeight: FontWeight.w500,
                   color: AppTheme.primary,
                 ),
               ),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'To automatically detect your transactions, Montra needs permission to read financial SMS messages. Your messages never leave your device and are processed completely offline.',
-                style: TextStyle(
-                  fontSize: 15,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppTheme.onSurfaceVariant,
                   height: 1.4,
                 ),
@@ -136,7 +134,7 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
                     children: [
                       Text(
                         'Continue',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500, color: Colors.white),
                       ),
                       SizedBox(width: 8),
                       Icon(Icons.arrow_forward, size: 20),
@@ -205,9 +203,8 @@ class _PermissionCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w500,
                         color: AppTheme.onSurface,
                       ),
                     ),
@@ -230,8 +227,7 @@ class _PermissionCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: const TextStyle(
-                    fontSize: 13,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppTheme.onSurfaceVariant,
                   ),
                 ),

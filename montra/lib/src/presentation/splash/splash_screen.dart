@@ -128,21 +128,18 @@ class _SplashScreenState extends State<SplashScreen>
                           ),
                         ),
                         const SizedBox(height: 20),
-                        const Text(
+                        Text(
                           'Montra',
-                          style: TextStyle(
+                          style: Theme.of(context).textTheme.displayLarge?.copyWith(
                             color: AppTheme.onSurface,
-                            fontSize: 42,
-                            fontWeight: FontWeight.w800,
                             letterSpacing: -1.0,
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           'Expense Tracking & Financial Insights',
-                          style: TextStyle(
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: AppTheme.onSurfaceVariant,
-                            fontSize: 14,
                             fontWeight: FontWeight.w500,
                           ),
                           textAlign: TextAlign.center,
@@ -172,20 +169,19 @@ class _SplashScreenState extends State<SplashScreen>
                       children: [
                         Text(
                           _progress >= 1.0 ? 'Ready!' : 'Initializing App...',
-                          style: const TextStyle(color: AppTheme.onSurfaceVariant, fontSize: 12),
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppTheme.onSurfaceVariant),
                         ),
                         Text(
                           '${(_progress * 100).toInt()}%',
-                          style: const TextStyle(color: AppTheme.onSurface, fontSize: 12, fontWeight: FontWeight.bold),
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppTheme.onSurface, fontWeight: FontWeight.w500),
                         ),
                       ],
                     ),
                     const SizedBox(height: 24),
-                    const Text(
+                    Text(
                       'SECURED WITH 256-BIT ENCRYPTION',
-                      style: TextStyle(
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: AppTheme.outline,
-                        fontSize: 10,
                         letterSpacing: 1.5,
                       ),
                     ),

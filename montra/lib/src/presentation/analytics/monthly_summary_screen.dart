@@ -191,10 +191,9 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
           value: entry.value,
           title: '${((entry.value / totalExpense) * 100).toStringAsFixed(0)}%',
           radius: 60,
-          titleStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
+          titleStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
             color: Colors.white,
+            fontWeight: FontWeight.w500,
           ),
         ),
       );
@@ -220,16 +219,15 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
                   children: [
-                    const Text(
+                    Text(
                       'Total Spent',
-                      style: TextStyle(fontSize: 16, color: Colors.indigo),
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.indigo),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       '₹${totalExpense.toStringAsFixed(0)}',
-                      style: const TextStyle(
-                        fontSize: 36,
-                        fontWeight: FontWeight.w700,
+                      style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                        fontWeight: FontWeight.w500,
                         color: Colors.indigo,
                       ),
                     ),
@@ -246,9 +244,9 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
             
             // Pie Chart
             if (pieSections.isNotEmpty) ...[
-              const Text(
+              Text(
                 'Expense Breakdown',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w500),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
@@ -289,9 +287,8 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
                           ),
                           Text(
                             topCategory,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
@@ -299,9 +296,8 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
                     ),
                     Text(
                       '₹${topCategoryAmount.toStringAsFixed(0)}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],

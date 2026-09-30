@@ -39,13 +39,13 @@ class AutoSmsGraphic extends StatelessWidget {
                   children: [
                     Icon(Icons.sms, size: 16, color: AppTheme.primary),
                     SizedBox(width: 6),
-                    Text('Bank XYZ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                    Text('Bank XYZ', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
                   ],
                 ),
                 SizedBox(height: 6),
                 Text(
                   'Payment of ₹450.00 to Starbucks was successful.',
-                  style: TextStyle(fontSize: 13, color: AppTheme.onSurface),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppTheme.onSurface),
                 ),
               ],
             ),
@@ -77,14 +77,14 @@ class AutoSmsGraphic extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Starbucks', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                      Text('Coffee & Snacks', style: TextStyle(fontSize: 12, color: AppTheme.onSurfaceVariant)),
+                      Text('Starbucks', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500)),
+                      Text('Coffee & Snacks', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppTheme.onSurfaceVariant)),
                     ],
                   ),
                 ),
                 Text(
                   '-₹450.00',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppTheme.onSurface),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500, color: AppTheme.onSurface),
                 ),
               ],
             ),
@@ -121,7 +121,7 @@ class FinancialHabitsBento extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Monthly Trend', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                  Text('Monthly Trend', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
                   const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -162,8 +162,8 @@ class FinancialHabitsBento extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Total Savings', style: TextStyle(fontSize: 12, color: AppTheme.onSurfaceVariant)),
-                          Text('₹1,24,500', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                          Text('Total Savings', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppTheme.onSurfaceVariant)),
+                          Text('₹1,24,500', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w500)),
                         ],
                       ),
                     ],
@@ -172,8 +172,8 @@ class FinancialHabitsBento extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Target: ₹1.5L', style: TextStyle(fontSize: 12)),
-                      Text('83%', style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primary)),
+                      Text('Target: ₹1.5L', style: Theme.of(context).textTheme.labelMedium),
+                      Text('83%', style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w500, color: AppTheme.primary)),
                     ],
                   ),
                   SizedBox(height: 6),
