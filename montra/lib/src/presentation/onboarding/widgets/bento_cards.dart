@@ -32,17 +32,17 @@ class AutoSmsGraphic extends StatelessWidget {
                 BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4)),
               ],
             ),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(Icons.sms, size: 16, color: AppTheme.primary),
-                    SizedBox(width: 6),
+                    const Icon(Icons.sms, size: 16, color: AppTheme.primary),
+                    const SizedBox(width: 6),
                     Text('Bank XYZ', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
                   ],
                 ),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
                 Text(
                   'Payment of ₹450.00 to Starbucks was successful.',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppTheme.onSurface),
@@ -66,13 +66,13 @@ class AutoSmsGraphic extends StatelessWidget {
                 BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4)),
               ],
             ),
-            child: const Row(
+            child: Row(
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   backgroundColor: AppTheme.secondaryContainer,
                   child: Icon(Icons.local_cafe, color: AppTheme.secondary),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,16 +149,16 @@ class FinancialHabitsBento extends StatelessWidget {
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 12)],
               ),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      CircleAvatar(
+                      const CircleAvatar(
                         backgroundColor: AppTheme.secondaryContainer,
                         child: Icon(Icons.savings, color: AppTheme.secondary),
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -168,7 +168,7 @@ class FinancialHabitsBento extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -176,8 +176,8 @@ class FinancialHabitsBento extends StatelessWidget {
                       Text('83%', style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w500, color: AppTheme.primary)),
                     ],
                   ),
-                  SizedBox(height: 6),
-                  LinearProgressIndicator(
+                  const SizedBox(height: 6),
+                  const LinearProgressIndicator(
                     value: 0.83,
                     backgroundColor: AppTheme.surfaceVariant,
                     valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primary),
