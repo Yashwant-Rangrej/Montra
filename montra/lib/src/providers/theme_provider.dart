@@ -18,8 +18,9 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   Future<void> _init() async {
     final value = await _storage.read(key: _key);
     if (value != null) {
-      if (value == 'light') state = ThemeMode.light;
-      else if (value == 'dark') state = ThemeMode.dark;
+      if (value == 'light') {
+        state = ThemeMode.light;
+      } else if (value == 'dark') state = ThemeMode.dark;
       else state = ThemeMode.system;
     }
   }
@@ -27,8 +28,9 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   Future<void> updateThemeMode(ThemeMode newMode) async {
     state = newMode;
     String modeString = 'system';
-    if (newMode == ThemeMode.light) modeString = 'light';
-    else if (newMode == ThemeMode.dark) modeString = 'dark';
+    if (newMode == ThemeMode.light) {
+      modeString = 'light';
+    } else if (newMode == ThemeMode.dark) modeString = 'dark';
     
     try {
       await _storage.write(key: _key, value: modeString);

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
@@ -13,7 +12,6 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isAppLockEnabled = ref.watch(appLockEnabledProvider);
-    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -268,7 +266,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           value: value,
           onChanged: onChanged,
-          activeColor: Theme.of(context).colorScheme.primary,
+          activeThumbColor: Theme.of(context).colorScheme.primary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(
               top: Radius.circular(isLast && childrenCount(context) == 1 ? 24 : 0),

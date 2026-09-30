@@ -79,7 +79,7 @@ class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
               const SizedBox(height: 16),
               DropdownButtonFormField<bool>(
                 decoration: const InputDecoration(labelText: 'Calculation Period'),
-                value: _isCustomRange,
+                initialValue: _isCustomRange,
                 items: const [
                   DropdownMenuItem(value: false, child: Text('This Month')),
                   DropdownMenuItem(value: true, child: Text('Custom Date Range')),

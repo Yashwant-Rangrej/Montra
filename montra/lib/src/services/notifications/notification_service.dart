@@ -17,8 +17,9 @@ void notificationTapBackground(NotificationResponse response) async {
         final action = response.actionId;
         
         String? categoryName;
-        if (action == 'ACTION_FOOD') categoryName = 'Food';
-        else if (action == 'ACTION_TRANSPORT') categoryName = 'Transportation';
+        if (action == 'ACTION_FOOD') {
+          categoryName = 'Food';
+        } else if (action == 'ACTION_TRANSPORT') categoryName = 'Transportation';
 
         if (categoryName != null) {
           final db = AppDatabase();

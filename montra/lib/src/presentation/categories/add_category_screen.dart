@@ -48,7 +48,7 @@ class _AddCategoryScreenState extends ConsumerState<AddCategoryScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _type,
+                initialValue: _type,
                 decoration: const InputDecoration(labelText: 'Type'),
                 items: const [
                   DropdownMenuItem(value: 'Expense', child: Text('Expense')),

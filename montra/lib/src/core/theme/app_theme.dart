@@ -97,8 +97,6 @@ class AppTheme {
         onError: onError,
         errorContainer: errorContainer,
         onErrorContainer: onErrorContainer,
-        background: background,
-        onBackground: onBackground,
       ),
       scaffoldBackgroundColor: background,
       dividerColor: divider,
@@ -110,8 +108,8 @@ class AppTheme {
         scrolledUnderElevation: 0,
       ),
       navigationBarTheme: NavigationBarThemeData(
-        labelTextStyle: MaterialStateProperty.resolveWith((states) {
-          final isSelected = states.contains(MaterialState.selected);
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          final isSelected = states.contains(WidgetState.selected);
           return GoogleFonts.inter(
             fontSize: 11,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
@@ -224,8 +222,6 @@ class AppTheme {
         outline: Color(0xFF8F909A),
         error: Color(0xFFFFB4AB),
         onError: Color(0xFF690005),
-        background: Color(0xFF131313),
-        onBackground: Color(0xFFE6E3D0),
       ),
       scaffoldBackgroundColor: const Color(0xFF131313),
       dividerColor: const Color(0xFF454652),

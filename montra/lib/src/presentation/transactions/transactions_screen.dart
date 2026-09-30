@@ -94,7 +94,6 @@ class TransactionsScreen extends ConsumerWidget {
                     itemCount: transactions.length,
                     itemBuilder: (context, index) {
                       final tx = transactions[index];
-                      final isIncome = false; // Forced expense
                       return Card(
                         margin: const EdgeInsets.only(bottom: 12),
                         child: ListTile(

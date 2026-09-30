@@ -127,9 +127,9 @@ class FinancialHabitsBento extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      _Bar(height: 30, color: AppTheme.primary.withOpacity(0.3)),
-                      _Bar(height: 50, color: AppTheme.primary.withOpacity(0.3)),
-                      _Bar(height: 25, color: AppTheme.primary.withOpacity(0.3)),
+                      _Bar(height: 30, color: AppTheme.primary.withValues(alpha: 0.3)),
+                      _Bar(height: 50, color: AppTheme.primary.withValues(alpha: 0.3)),
+                      _Bar(height: 25, color: AppTheme.primary.withValues(alpha: 0.3)),
                       const _Bar(height: 70, color: AppTheme.primary),
                     ],
                   )
@@ -145,7 +145,7 @@ class FinancialHabitsBento extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 12)],
               ),

@@ -21,8 +21,6 @@ import '../../presentation/categories/categories_screen.dart';
 import '../../presentation/categories/add_category_screen.dart';
 import '../../presentation/budgets/add_budget_screen.dart';
 import '../../domain/entities/category_entity.dart';
-import '../../domain/entities/budget_entity.dart';
-import '../../domain/entities/transaction_entity.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');

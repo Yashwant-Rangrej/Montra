@@ -1,13 +1,11 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart';
 import 'package:drift/drift.dart' as drift;
 import '../../data/database/database.dart';
 import '../../domain/entities/sms_message.dart';
 import '../notifications/notification_service.dart';
 import '../notifications/notification_models.dart';
 import '../notifications/notification_channels.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'sms_parser.dart';
 
 @pragma('vm:entry-point')
@@ -86,12 +84,6 @@ Future<void> _processSms(
           route: '/transactions',
           data: {'transactionId': insertedId},
         ),
-        actions: [
-          const AndroidNotificationAction('ACTION_FOOD', '🍔 Food',
-              showsUserInterface: false),
-          const AndroidNotificationAction('ACTION_TRANSPORT', '🚗 Transport',
-              showsUserInterface: false),
-        ],
       );
       await db.close();
     } else {

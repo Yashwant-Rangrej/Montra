@@ -5,7 +5,6 @@ import '../../providers/transactions_provider.dart';
 import '../../providers/sms_providers.dart';
 import '../../core/theme/app_theme.dart';
 import '../widgets/empty_state_widget.dart';
-import '../notifications/notifications_screen.dart';
 import '../../providers/auth_provider.dart';
 import 'package:flutter/services.dart';
 
@@ -18,8 +17,6 @@ class DashboardScreen extends ConsumerStatefulWidget {
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsBindingObserver {
   bool _isBalanceVisible = false;
-  int _tapCount = 0;
-  DateTime? _lastTapTime;
 
   @override
   void initState() {
@@ -28,14 +25,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _checkAndRequestSmsPermission();
       // Refresh transactions when screen first loads
-      ref.refresh(transactionsProvider);
+      final _1 = ref.refresh(transactionsProvider);
 
       // Listen for background SMS processing notifications
-      const MethodChannel _bgChannel = MethodChannel('com.montra.app/sms_background');
-      _bgChannel.setMethodCallHandler((call) async {
+      const MethodChannel bgChannel = MethodChannel('com.montra.app/sms_background');
+      bgChannel.setMethodCallHandler((call) async {
         if (call.method == 'smsProcessed') {
           // Refresh transactions when a new SMS is processed
-          ref.refresh(transactionsProvider);
+          final _2 = ref.refresh(transactionsProvider);
         }
         return null;
       });
@@ -52,7 +49,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       // Refresh transactions when returning to the app
-      ref.refresh(transactionsProvider);
+      final _3 = ref.refresh(transactionsProvider);
     }
   }
 
@@ -182,12 +179,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
                     width: 3,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
                       blurRadius: 10,
                       spreadRadius: 2,
                     ),
@@ -241,7 +238,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
                 width: 2,
               ),
             ),

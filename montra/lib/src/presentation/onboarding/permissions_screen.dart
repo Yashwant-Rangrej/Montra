@@ -176,7 +176,7 @@ class _PermissionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppTheme.surfaceVariant.withOpacity(0.5)),
+        border: Border.all(color: AppTheme.surfaceVariant.withValues(alpha: 0.5)),
         boxShadow: const [
           BoxShadow(
             color: Colors.black12,
@@ -191,7 +191,7 @@ class _PermissionCard extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: AppTheme.primaryContainer.withOpacity(0.15),
+              color: AppTheme.primaryContainer.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: AppTheme.primary),
@@ -240,7 +240,7 @@ class _PermissionCard extends StatelessWidget {
           ),
           Switch(
             value: value,
-            activeColor: AppTheme.primary,
+            activeThumbColor: AppTheme.primary,
             onChanged: onChanged,
           ),
         ],
