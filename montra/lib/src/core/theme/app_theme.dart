@@ -182,20 +182,24 @@ class AppTheme {
       listTileTheme: const ListTileThemeData(
         contentPadding: EdgeInsets.symmetric(horizontal: spacingMd),
       ),
-      textTheme: TextTheme(
-        displayLarge: GoogleFonts.inter(fontSize: 32, fontWeight: FontWeight.w600, height: 40/32, letterSpacing: -0.64, color: textPrimary),
-        displayMedium: GoogleFonts.inter(fontSize: 28, fontWeight: FontWeight.w600, height: 36/28, letterSpacing: -0.56, color: textPrimary),
-        displaySmall: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.w500, height: 32/24, color: textPrimary),
-        headlineLarge: GoogleFonts.inter(fontSize: 32, fontWeight: FontWeight.w600, height: 40/32, letterSpacing: -0.64, color: textPrimary),
-        headlineMedium: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.w500, height: 32/24, color: textPrimary),
-        headlineSmall: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w500, height: 28/20, color: textPrimary),
-        titleLarge: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w500, height: 24/18, color: textPrimary),
-        titleMedium: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w500, height: 24/16, color: textPrimary),
-        bodyLarge: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w400, height: 24/16, color: textPrimary),
-        bodyMedium: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w400, height: 20/14, color: textPrimary),
-        labelLarge: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, height: 20/14, letterSpacing: 0.1, color: textSecondary),
-        labelMedium: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, height: 16/12, letterSpacing: 0.5, color: textSecondary),
-      ),
+      textTheme: _buildTextTheme(textPrimary, textSecondary),
+    );
+  }
+
+  static TextTheme _buildTextTheme(Color primaryColor, Color secondaryColor) {
+    return TextTheme(
+      displayLarge: GoogleFonts.inter(fontSize: 32, fontWeight: FontWeight.w500, height: 40/32, letterSpacing: -0.64, color: primaryColor),
+      displayMedium: GoogleFonts.inter(fontSize: 28, fontWeight: FontWeight.w500, height: 36/28, letterSpacing: -0.56, color: primaryColor),
+      displaySmall: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.w400, height: 32/24, color: primaryColor),
+      headlineLarge: GoogleFonts.inter(fontSize: 32, fontWeight: FontWeight.w500, height: 40/32, letterSpacing: -0.64, color: primaryColor),
+      headlineMedium: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.w500, height: 32/24, color: primaryColor),
+      headlineSmall: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w500, height: 28/20, color: primaryColor),
+      titleLarge: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w500, height: 24/18, color: primaryColor),
+      titleMedium: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w500, height: 24/16, color: primaryColor),
+      bodyLarge: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w400, height: 24/16, color: primaryColor),
+      bodyMedium: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w400, height: 20/14, color: primaryColor),
+      labelLarge: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, height: 20/14, letterSpacing: 0.1, color: secondaryColor),
+      labelMedium: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w400, height: 16/12, letterSpacing: 0.5, color: secondaryColor),
     );
   }
 
@@ -260,6 +264,7 @@ class AppTheme {
           borderSide: BorderSide.none,
         ),
       ),
+      textTheme: _buildTextTheme(const Color(0xFFE6E3D0), const Color(0xFFC5C5D4)),
     );
   }
 }
