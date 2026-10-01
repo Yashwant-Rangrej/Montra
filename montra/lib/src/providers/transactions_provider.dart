@@ -4,7 +4,12 @@ import 'repository_providers.dart';
 
 final transactionsProvider = StreamProvider<List<TransactionEntity>>((ref) {
   final repository = ref.watch(transactionRepositoryProvider);
-  return repository.watchTransactions();
+  return repository.watchTransactions().map((transactions) {
+    final now = DateTime.now();
+    return transactions.where((tx) => 
+      tx.transactionDate.year == now.year && tx.transactionDate.month == now.month
+    ).toList();
+  });
 });
 
 final searchQueryProvider = StateProvider<String>((ref) => '');

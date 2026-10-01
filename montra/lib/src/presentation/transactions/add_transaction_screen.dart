@@ -30,7 +30,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   int? _categoryId;
   bool _isCustomCategory = false;
   String _customCategoryName = '';
-  String? _paymentMethod;
+  String? _paymentMethod = 'Cash';
   File? _receiptAttachment;
   DateTime _date = DateTime.now();
 
@@ -47,7 +47,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       _notes = t.notes ?? '';
       _accountId = t.accountId;
       _categoryId = t.categoryId;
-      _paymentMethod = t.paymentMethod;
+      _paymentMethod = t.paymentMethod ?? 'Cash';
       _date = t.transactionDate;
       if (t.receiptAttachment != null) {
         _receiptAttachment = File(t.receiptAttachment!);
@@ -185,7 +185,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                       DropdownButtonFormField<String>(
                         initialValue: _paymentMethod,
                         decoration: const InputDecoration(labelText: 'Payment Method'),
-                        items: ['Cash', 'Credit Card', 'Debit Card', 'UPI', 'Bank Transfer']
+                        items: {'Cash', if (_paymentMethod != null) _paymentMethod!}
                             .map((t) => DropdownMenuItem(value: t, child: Text(t)))
                             .toList(),
                         onChanged: (val) => setState(() => _paymentMethod = val),
