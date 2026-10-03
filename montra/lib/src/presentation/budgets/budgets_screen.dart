@@ -98,8 +98,20 @@ class BudgetsScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 16),
-          Text('₹${spent.toStringAsFixed(0)} spent of ₹${total.toStringAsFixed(0)}',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('₹${spent.toStringAsFixed(0)} spent of ₹${total.toStringAsFixed(0)}',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              ),
+              Text(
+                '${(percentage * 100).toStringAsFixed(1)}%',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: isOverBudget ? Theme.of(context).colorScheme.error : color,
+                    ),
+              ),
+            ],
           ),
           const SizedBox(height: 8),
           ClipRRect(

@@ -151,13 +151,34 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
             isBottom: false,
           ),
           _buildDivider(),
-          _buildSwitchTile(
-            title: 'Large Expense Alerts',
-            subtitle: 'Transactions over ₹500',
-            value: settings.largeExpenseAlertsEnabled,
-            onChanged: (val) => notifier.updateSettings(settings.copyWith(largeExpenseAlertsEnabled: val)),
-            isTop: false,
-            isBottom: true,
+          Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
+            ),
+            child: ListTile(
+              title: Text(
+                'Large Expense Alerts',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              subtitle: Text(
+                'Transactions over ₹${settings.largeExpenseThreshold.toStringAsFixed(0)}',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit, size: 20),
+                    onPressed: () => _editThreshold(context, settings, notifier),
+                  ),
+                  Switch(
+                    value: settings.largeExpenseAlertsEnabled,
+                    onChanged: (val) => notifier.updateSettings(settings.copyWith(largeExpenseAlertsEnabled: val)),
+                  ),
+                ],
+              ),
+            ),
           ),
 
           const SizedBox(height: 24),
@@ -194,26 +215,7 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
             isBottom: true,
           ),
 
-          const SizedBox(height: 24),
-          _buildSectionHeader('Diagnostics'),
-          Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: ListTile(
-              title: const Text('Test Notification Alerts'),
-              subtitle: Text(
-                'Simulate alerts and test background triggers',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-              ),
-              trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: () => context.push('/developer-notification-test'),
-            ),
-          ),
-          
+
           const SizedBox(height: 40),
         ],
       ),
@@ -275,4 +277,39 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
       ),
     );
   }
+
+  void _editThreshold(BuildContext context, NotificationSettings settings, NotificationSettingsNotifier notifier) {
+    final controller = TextEditingController(text: settings.largeExpenseThreshold.toStringAsFixed(0));
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Set Large Expense Threshold'),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(
+            labelText: 'Threshold Amount (₹)',
+            prefixText: '₹ ',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final newThreshold = double.tryParse(controller.text);
+              if (newThreshold != null && newThreshold > 0) {
+                notifier.updateSettings(settings.copyWith(largeExpenseThreshold: newThreshold));
+              }
+              Navigator.pop(ctx);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
 }
+

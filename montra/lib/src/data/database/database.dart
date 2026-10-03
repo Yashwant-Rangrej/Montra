@@ -5,12 +5,12 @@ import 'tables.dart';
 
 part 'database.g.dart';
 
-@DriftDatabase(tables: [Accounts, Categories, Transactions, Budgets, Notifications, Settings, Tags, TransactionTags, UnrecognizedSms, SavedSummaries])
+@DriftDatabase(tables: [Accounts, Categories, Transactions, Budgets, Notifications, Settings, Tags, TransactionTags, UnrecognizedSms, SavedSummaries, NotificationSettingsDb])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(impl.openConnection());
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration {
@@ -52,6 +52,14 @@ class AppDatabase extends _$AppDatabase {
         if (from < 7) {
           try {
             await m.createTable(savedSummaries);
+          } catch (_) {}
+        }
+        if (from < 8) {
+          try {
+            await m.createTable(notificationSettingsDb);
+            await into(notificationSettingsDb).insert(
+              NotificationSettingsDbCompanion.insert(),
+            );
           } catch (_) {}
         }
       },

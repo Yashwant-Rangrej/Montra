@@ -36,13 +36,7 @@ class SettingsScreen extends ConsumerWidget {
                 iconColor: Colors.blue,
                 onTap: () => context.push('/categories'),
               ),
-              _buildSettingsTile(
-                context,
-                title: 'Budgets',
-                icon: Icons.pie_chart_outline,
-                iconColor: Colors.purple,
-                onTap: () => context.push('/budgets'),
-              ),
+
               _buildSettingsTile(
                 context,
                 title: 'Notifications',
@@ -52,9 +46,16 @@ class SettingsScreen extends ConsumerWidget {
               ),
               _buildSettingsTile(
                 context,
+                title: 'Ignored SMS',
+                icon: Icons.sms_failed_outlined,
+                iconColor: Colors.orange,
+                onTap: () => context.push('/ignored-sms'),
+              ),
+              _buildSettingsTile(
+                context,
                 title: 'Check for Updates',
                 icon: Icons.system_update_outlined,
-                iconColor: Colors.orange,
+                iconColor: Colors.teal,
                 isLast: true,
                 onTap: () {
                   // This checks github pages for the version.json

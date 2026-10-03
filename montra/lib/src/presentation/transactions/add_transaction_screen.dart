@@ -8,6 +8,8 @@ import '../../domain/entities/category_entity.dart';
 import '../../providers/repository_providers.dart';
 import '../../providers/categories_provider.dart';
 import '../../providers/transactions_provider.dart';
+import '../../providers/unrecognized_sms_provider.dart';
+import '../../data/repositories/notification_repository.dart';
 import '../../services/notifications/notification_manager.dart';
 
 class AddTransactionScreen extends ConsumerStatefulWidget {
@@ -278,8 +280,9 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
         // --- Notification Triggers for Real Testing ---
         final manager = ref.read(notificationManagerProvider);
         
-        // 1. Large Expense Alert (Trigger if amount >= 10,000)
-        if (_type == 'expense' && _amount >= 10000) {
+        // 1. Large Expense Alert (Trigger based on custom threshold)
+        final threshold = ref.read(notificationRepositoryProvider).getSettings().largeExpenseThreshold;
+        if (_type == 'Expense' && _amount >= threshold) {
           manager.showLargeExpenseAlert(
             merchant: _merchant.isEmpty ? 'Unknown Merchant' : _merchant,
             amount: _amount,
@@ -287,17 +290,68 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
           );
         }
 
-        // 2. Budget Alert (Basic Check)
-        if (_type == 'expense' && finalCategoryId != null) {
+        // 2. Budget Alert (Trigger based on spending milestones)
+        if (_type == 'Expense' && finalCategoryId != null) {
           final budgetRepo = ref.read(budgetRepositoryProvider);
-          final budgets = await budgetRepo.getAllBudgets();
+          final transactionRepo = ref.read(transactionRepositoryProvider);
+          final now = DateTime.now();
+          // Only check budgets for the CURRENT month
+          final budgets = await budgetRepo.getBudgetsByMonthAndYear(now.month, now.year);
+          final allTransactions = await transactionRepo.getAllTransactions();
+          // Only count expenses from the CURRENT month
+          final currentMonthTransactions = allTransactions.where((t) =>
+              t.type == 'Expense' &&
+              t.transactionDate.year == now.year &&
+              t.transactionDate.month == now.month).toList();
+
           for (var budget in budgets) {
-            if (budget.categoryId == finalCategoryId) {
-              manager.showBudgetAlert(
-                budgetName: 'Category Budget',
-                used: _amount, // In a real app, this would sum up all category expenses
-                remaining: budget.amount - _amount,
-              );
+            if (budget.categoryId == finalCategoryId || budget.categoryId == null) {
+              // Sum expenses for this category (or overall if budget.categoryId is null)
+              final spent = currentMonthTransactions
+                  .where((t) => budget.categoryId == null || t.categoryId == finalCategoryId)
+                  .fold(0.0, (sum, t) => sum + t.amount);
+
+              final percent = spent / budget.amount;
+              final prevPercent = (spent - _amount) / budget.amount;
+
+              if (percent > 1.0 && prevPercent <= 1.0) {
+                manager.showBudgetAlert(
+                  budgetName: 'Budget Limit Crossed!',
+                  used: spent,
+                  remaining: 0,
+                );
+              } else if (percent >= 1.0 && prevPercent < 1.0) {
+                manager.showBudgetAlert(
+                  budgetName: 'Budget Reached (100%)',
+                  used: spent,
+                  remaining: 0,
+                );
+              } else if (percent >= 0.95 && prevPercent < 0.95) {
+                manager.showBudgetAlert(
+                  budgetName: 'Budget Critical (95%)',
+                  used: spent,
+                  remaining: budget.amount - spent,
+                );
+              } else if (percent >= 0.80 && prevPercent < 0.80) {
+                manager.showBudgetAlert(
+                  budgetName: 'Budget Warning (80%)',
+                  used: spent,
+                  remaining: budget.amount - spent,
+                );
+              } else if (percent >= 0.50 && prevPercent < 0.50) {
+                manager.showBudgetAlert(
+                  budgetName: 'Half Budget Reached (50%)',
+                  used: spent,
+                  remaining: budget.amount - spent,
+                );
+              } else if (percent > 1.0) {
+                // Remind them if they keep adding expenses while already over limit
+                manager.showBudgetAlert(
+                  budgetName: 'Still Over Budget!',
+                  used: spent,
+                  remaining: 0,
+                );
+              }
             }
           }
         }
@@ -305,8 +359,17 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
         await repo.updateTransaction(transaction);
       }
       
+      // If this transaction was restored from an ignored SMS, remove it from the ignored list.
+      final originalSms = widget.transactionToEdit?.originalSms;
+      if (originalSms != null && widget.transactionToEdit?.id == 0) {
+        try {
+          await ref
+              .read(unrecognizedSmsNotifierProvider.notifier)
+              .deleteByOriginalBody(originalSms);
+        } catch (_) {}
+      }
+      
       // Invalidate to refresh all relevant lists and stats immediately
-      ref.invalidate(transactionsProvider);
       ref.invalidate(transactionsProvider);
       ref.invalidate(dashboardStatsProvider);
       

@@ -4303,6 +4303,758 @@ class SavedSummariesCompanion extends UpdateCompanion<SavedSummary> {
   }
 }
 
+class $NotificationSettingsDbTable extends NotificationSettingsDb
+    with TableInfo<$NotificationSettingsDbTable, NotificationSettingsDbData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $NotificationSettingsDbTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _dailySummaryEnabledMeta =
+      const VerificationMeta('dailySummaryEnabled');
+  @override
+  late final GeneratedColumn<bool> dailySummaryEnabled = GeneratedColumn<bool>(
+    'daily_summary_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("daily_summary_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _weeklySummaryEnabledMeta =
+      const VerificationMeta('weeklySummaryEnabled');
+  @override
+  late final GeneratedColumn<bool> weeklySummaryEnabled = GeneratedColumn<bool>(
+    'weekly_summary_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("weekly_summary_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _monthlySummaryEnabledMeta =
+      const VerificationMeta('monthlySummaryEnabled');
+  @override
+  late final GeneratedColumn<bool> monthlySummaryEnabled =
+      GeneratedColumn<bool>(
+        'monthly_summary_enabled',
+        aliasedName,
+        false,
+        type: DriftSqlType.bool,
+        requiredDuringInsert: false,
+        defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("monthly_summary_enabled" IN (0, 1))',
+        ),
+        defaultValue: const Constant(false),
+      );
+  static const VerificationMeta _budgetAlertsEnabledMeta =
+      const VerificationMeta('budgetAlertsEnabled');
+  @override
+  late final GeneratedColumn<bool> budgetAlertsEnabled = GeneratedColumn<bool>(
+    'budget_alerts_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("budget_alerts_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _goalRemindersEnabledMeta =
+      const VerificationMeta('goalRemindersEnabled');
+  @override
+  late final GeneratedColumn<bool> goalRemindersEnabled = GeneratedColumn<bool>(
+    'goal_reminders_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("goal_reminders_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _smsDetectionEnabledMeta =
+      const VerificationMeta('smsDetectionEnabled');
+  @override
+  late final GeneratedColumn<bool> smsDetectionEnabled = GeneratedColumn<bool>(
+    'sms_detection_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("sms_detection_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _largeExpenseAlertsEnabledMeta =
+      const VerificationMeta('largeExpenseAlertsEnabled');
+  @override
+  late final GeneratedColumn<bool> largeExpenseAlertsEnabled =
+      GeneratedColumn<bool>(
+        'large_expense_alerts_enabled',
+        aliasedName,
+        false,
+        type: DriftSqlType.bool,
+        requiredDuringInsert: false,
+        defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("large_expense_alerts_enabled" IN (0, 1))',
+        ),
+        defaultValue: const Constant(true),
+      );
+  static const VerificationMeta _smartInsightsEnabledMeta =
+      const VerificationMeta('smartInsightsEnabled');
+  @override
+  late final GeneratedColumn<bool> smartInsightsEnabled = GeneratedColumn<bool>(
+    'smart_insights_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("smart_insights_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _quietHoursEnabledMeta = const VerificationMeta(
+    'quietHoursEnabled',
+  );
+  @override
+  late final GeneratedColumn<bool> quietHoursEnabled = GeneratedColumn<bool>(
+    'quiet_hours_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("quiet_hours_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _largeExpenseThresholdMeta =
+      const VerificationMeta('largeExpenseThreshold');
+  @override
+  late final GeneratedColumn<double> largeExpenseThreshold =
+      GeneratedColumn<double>(
+        'large_expense_threshold',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(10000.0),
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    dailySummaryEnabled,
+    weeklySummaryEnabled,
+    monthlySummaryEnabled,
+    budgetAlertsEnabled,
+    goalRemindersEnabled,
+    smsDetectionEnabled,
+    largeExpenseAlertsEnabled,
+    smartInsightsEnabled,
+    quietHoursEnabled,
+    largeExpenseThreshold,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'notification_settings_db';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<NotificationSettingsDbData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('daily_summary_enabled')) {
+      context.handle(
+        _dailySummaryEnabledMeta,
+        dailySummaryEnabled.isAcceptableOrUnknown(
+          data['daily_summary_enabled']!,
+          _dailySummaryEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('weekly_summary_enabled')) {
+      context.handle(
+        _weeklySummaryEnabledMeta,
+        weeklySummaryEnabled.isAcceptableOrUnknown(
+          data['weekly_summary_enabled']!,
+          _weeklySummaryEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('monthly_summary_enabled')) {
+      context.handle(
+        _monthlySummaryEnabledMeta,
+        monthlySummaryEnabled.isAcceptableOrUnknown(
+          data['monthly_summary_enabled']!,
+          _monthlySummaryEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('budget_alerts_enabled')) {
+      context.handle(
+        _budgetAlertsEnabledMeta,
+        budgetAlertsEnabled.isAcceptableOrUnknown(
+          data['budget_alerts_enabled']!,
+          _budgetAlertsEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('goal_reminders_enabled')) {
+      context.handle(
+        _goalRemindersEnabledMeta,
+        goalRemindersEnabled.isAcceptableOrUnknown(
+          data['goal_reminders_enabled']!,
+          _goalRemindersEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('sms_detection_enabled')) {
+      context.handle(
+        _smsDetectionEnabledMeta,
+        smsDetectionEnabled.isAcceptableOrUnknown(
+          data['sms_detection_enabled']!,
+          _smsDetectionEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('large_expense_alerts_enabled')) {
+      context.handle(
+        _largeExpenseAlertsEnabledMeta,
+        largeExpenseAlertsEnabled.isAcceptableOrUnknown(
+          data['large_expense_alerts_enabled']!,
+          _largeExpenseAlertsEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('smart_insights_enabled')) {
+      context.handle(
+        _smartInsightsEnabledMeta,
+        smartInsightsEnabled.isAcceptableOrUnknown(
+          data['smart_insights_enabled']!,
+          _smartInsightsEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('quiet_hours_enabled')) {
+      context.handle(
+        _quietHoursEnabledMeta,
+        quietHoursEnabled.isAcceptableOrUnknown(
+          data['quiet_hours_enabled']!,
+          _quietHoursEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('large_expense_threshold')) {
+      context.handle(
+        _largeExpenseThresholdMeta,
+        largeExpenseThreshold.isAcceptableOrUnknown(
+          data['large_expense_threshold']!,
+          _largeExpenseThresholdMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  NotificationSettingsDbData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return NotificationSettingsDbData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      dailySummaryEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}daily_summary_enabled'],
+      )!,
+      weeklySummaryEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}weekly_summary_enabled'],
+      )!,
+      monthlySummaryEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}monthly_summary_enabled'],
+      )!,
+      budgetAlertsEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}budget_alerts_enabled'],
+      )!,
+      goalRemindersEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}goal_reminders_enabled'],
+      )!,
+      smsDetectionEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}sms_detection_enabled'],
+      )!,
+      largeExpenseAlertsEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}large_expense_alerts_enabled'],
+      )!,
+      smartInsightsEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}smart_insights_enabled'],
+      )!,
+      quietHoursEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}quiet_hours_enabled'],
+      )!,
+      largeExpenseThreshold: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}large_expense_threshold'],
+      )!,
+    );
+  }
+
+  @override
+  $NotificationSettingsDbTable createAlias(String alias) {
+    return $NotificationSettingsDbTable(attachedDatabase, alias);
+  }
+}
+
+class NotificationSettingsDbData extends DataClass
+    implements Insertable<NotificationSettingsDbData> {
+  final int id;
+  final bool dailySummaryEnabled;
+  final bool weeklySummaryEnabled;
+  final bool monthlySummaryEnabled;
+  final bool budgetAlertsEnabled;
+  final bool goalRemindersEnabled;
+  final bool smsDetectionEnabled;
+  final bool largeExpenseAlertsEnabled;
+  final bool smartInsightsEnabled;
+  final bool quietHoursEnabled;
+  final double largeExpenseThreshold;
+  const NotificationSettingsDbData({
+    required this.id,
+    required this.dailySummaryEnabled,
+    required this.weeklySummaryEnabled,
+    required this.monthlySummaryEnabled,
+    required this.budgetAlertsEnabled,
+    required this.goalRemindersEnabled,
+    required this.smsDetectionEnabled,
+    required this.largeExpenseAlertsEnabled,
+    required this.smartInsightsEnabled,
+    required this.quietHoursEnabled,
+    required this.largeExpenseThreshold,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['daily_summary_enabled'] = Variable<bool>(dailySummaryEnabled);
+    map['weekly_summary_enabled'] = Variable<bool>(weeklySummaryEnabled);
+    map['monthly_summary_enabled'] = Variable<bool>(monthlySummaryEnabled);
+    map['budget_alerts_enabled'] = Variable<bool>(budgetAlertsEnabled);
+    map['goal_reminders_enabled'] = Variable<bool>(goalRemindersEnabled);
+    map['sms_detection_enabled'] = Variable<bool>(smsDetectionEnabled);
+    map['large_expense_alerts_enabled'] = Variable<bool>(
+      largeExpenseAlertsEnabled,
+    );
+    map['smart_insights_enabled'] = Variable<bool>(smartInsightsEnabled);
+    map['quiet_hours_enabled'] = Variable<bool>(quietHoursEnabled);
+    map['large_expense_threshold'] = Variable<double>(largeExpenseThreshold);
+    return map;
+  }
+
+  NotificationSettingsDbCompanion toCompanion(bool nullToAbsent) {
+    return NotificationSettingsDbCompanion(
+      id: Value(id),
+      dailySummaryEnabled: Value(dailySummaryEnabled),
+      weeklySummaryEnabled: Value(weeklySummaryEnabled),
+      monthlySummaryEnabled: Value(monthlySummaryEnabled),
+      budgetAlertsEnabled: Value(budgetAlertsEnabled),
+      goalRemindersEnabled: Value(goalRemindersEnabled),
+      smsDetectionEnabled: Value(smsDetectionEnabled),
+      largeExpenseAlertsEnabled: Value(largeExpenseAlertsEnabled),
+      smartInsightsEnabled: Value(smartInsightsEnabled),
+      quietHoursEnabled: Value(quietHoursEnabled),
+      largeExpenseThreshold: Value(largeExpenseThreshold),
+    );
+  }
+
+  factory NotificationSettingsDbData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return NotificationSettingsDbData(
+      id: serializer.fromJson<int>(json['id']),
+      dailySummaryEnabled: serializer.fromJson<bool>(
+        json['dailySummaryEnabled'],
+      ),
+      weeklySummaryEnabled: serializer.fromJson<bool>(
+        json['weeklySummaryEnabled'],
+      ),
+      monthlySummaryEnabled: serializer.fromJson<bool>(
+        json['monthlySummaryEnabled'],
+      ),
+      budgetAlertsEnabled: serializer.fromJson<bool>(
+        json['budgetAlertsEnabled'],
+      ),
+      goalRemindersEnabled: serializer.fromJson<bool>(
+        json['goalRemindersEnabled'],
+      ),
+      smsDetectionEnabled: serializer.fromJson<bool>(
+        json['smsDetectionEnabled'],
+      ),
+      largeExpenseAlertsEnabled: serializer.fromJson<bool>(
+        json['largeExpenseAlertsEnabled'],
+      ),
+      smartInsightsEnabled: serializer.fromJson<bool>(
+        json['smartInsightsEnabled'],
+      ),
+      quietHoursEnabled: serializer.fromJson<bool>(json['quietHoursEnabled']),
+      largeExpenseThreshold: serializer.fromJson<double>(
+        json['largeExpenseThreshold'],
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'dailySummaryEnabled': serializer.toJson<bool>(dailySummaryEnabled),
+      'weeklySummaryEnabled': serializer.toJson<bool>(weeklySummaryEnabled),
+      'monthlySummaryEnabled': serializer.toJson<bool>(monthlySummaryEnabled),
+      'budgetAlertsEnabled': serializer.toJson<bool>(budgetAlertsEnabled),
+      'goalRemindersEnabled': serializer.toJson<bool>(goalRemindersEnabled),
+      'smsDetectionEnabled': serializer.toJson<bool>(smsDetectionEnabled),
+      'largeExpenseAlertsEnabled': serializer.toJson<bool>(
+        largeExpenseAlertsEnabled,
+      ),
+      'smartInsightsEnabled': serializer.toJson<bool>(smartInsightsEnabled),
+      'quietHoursEnabled': serializer.toJson<bool>(quietHoursEnabled),
+      'largeExpenseThreshold': serializer.toJson<double>(largeExpenseThreshold),
+    };
+  }
+
+  NotificationSettingsDbData copyWith({
+    int? id,
+    bool? dailySummaryEnabled,
+    bool? weeklySummaryEnabled,
+    bool? monthlySummaryEnabled,
+    bool? budgetAlertsEnabled,
+    bool? goalRemindersEnabled,
+    bool? smsDetectionEnabled,
+    bool? largeExpenseAlertsEnabled,
+    bool? smartInsightsEnabled,
+    bool? quietHoursEnabled,
+    double? largeExpenseThreshold,
+  }) => NotificationSettingsDbData(
+    id: id ?? this.id,
+    dailySummaryEnabled: dailySummaryEnabled ?? this.dailySummaryEnabled,
+    weeklySummaryEnabled: weeklySummaryEnabled ?? this.weeklySummaryEnabled,
+    monthlySummaryEnabled: monthlySummaryEnabled ?? this.monthlySummaryEnabled,
+    budgetAlertsEnabled: budgetAlertsEnabled ?? this.budgetAlertsEnabled,
+    goalRemindersEnabled: goalRemindersEnabled ?? this.goalRemindersEnabled,
+    smsDetectionEnabled: smsDetectionEnabled ?? this.smsDetectionEnabled,
+    largeExpenseAlertsEnabled:
+        largeExpenseAlertsEnabled ?? this.largeExpenseAlertsEnabled,
+    smartInsightsEnabled: smartInsightsEnabled ?? this.smartInsightsEnabled,
+    quietHoursEnabled: quietHoursEnabled ?? this.quietHoursEnabled,
+    largeExpenseThreshold: largeExpenseThreshold ?? this.largeExpenseThreshold,
+  );
+  NotificationSettingsDbData copyWithCompanion(
+    NotificationSettingsDbCompanion data,
+  ) {
+    return NotificationSettingsDbData(
+      id: data.id.present ? data.id.value : this.id,
+      dailySummaryEnabled: data.dailySummaryEnabled.present
+          ? data.dailySummaryEnabled.value
+          : this.dailySummaryEnabled,
+      weeklySummaryEnabled: data.weeklySummaryEnabled.present
+          ? data.weeklySummaryEnabled.value
+          : this.weeklySummaryEnabled,
+      monthlySummaryEnabled: data.monthlySummaryEnabled.present
+          ? data.monthlySummaryEnabled.value
+          : this.monthlySummaryEnabled,
+      budgetAlertsEnabled: data.budgetAlertsEnabled.present
+          ? data.budgetAlertsEnabled.value
+          : this.budgetAlertsEnabled,
+      goalRemindersEnabled: data.goalRemindersEnabled.present
+          ? data.goalRemindersEnabled.value
+          : this.goalRemindersEnabled,
+      smsDetectionEnabled: data.smsDetectionEnabled.present
+          ? data.smsDetectionEnabled.value
+          : this.smsDetectionEnabled,
+      largeExpenseAlertsEnabled: data.largeExpenseAlertsEnabled.present
+          ? data.largeExpenseAlertsEnabled.value
+          : this.largeExpenseAlertsEnabled,
+      smartInsightsEnabled: data.smartInsightsEnabled.present
+          ? data.smartInsightsEnabled.value
+          : this.smartInsightsEnabled,
+      quietHoursEnabled: data.quietHoursEnabled.present
+          ? data.quietHoursEnabled.value
+          : this.quietHoursEnabled,
+      largeExpenseThreshold: data.largeExpenseThreshold.present
+          ? data.largeExpenseThreshold.value
+          : this.largeExpenseThreshold,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NotificationSettingsDbData(')
+          ..write('id: $id, ')
+          ..write('dailySummaryEnabled: $dailySummaryEnabled, ')
+          ..write('weeklySummaryEnabled: $weeklySummaryEnabled, ')
+          ..write('monthlySummaryEnabled: $monthlySummaryEnabled, ')
+          ..write('budgetAlertsEnabled: $budgetAlertsEnabled, ')
+          ..write('goalRemindersEnabled: $goalRemindersEnabled, ')
+          ..write('smsDetectionEnabled: $smsDetectionEnabled, ')
+          ..write('largeExpenseAlertsEnabled: $largeExpenseAlertsEnabled, ')
+          ..write('smartInsightsEnabled: $smartInsightsEnabled, ')
+          ..write('quietHoursEnabled: $quietHoursEnabled, ')
+          ..write('largeExpenseThreshold: $largeExpenseThreshold')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    dailySummaryEnabled,
+    weeklySummaryEnabled,
+    monthlySummaryEnabled,
+    budgetAlertsEnabled,
+    goalRemindersEnabled,
+    smsDetectionEnabled,
+    largeExpenseAlertsEnabled,
+    smartInsightsEnabled,
+    quietHoursEnabled,
+    largeExpenseThreshold,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is NotificationSettingsDbData &&
+          other.id == this.id &&
+          other.dailySummaryEnabled == this.dailySummaryEnabled &&
+          other.weeklySummaryEnabled == this.weeklySummaryEnabled &&
+          other.monthlySummaryEnabled == this.monthlySummaryEnabled &&
+          other.budgetAlertsEnabled == this.budgetAlertsEnabled &&
+          other.goalRemindersEnabled == this.goalRemindersEnabled &&
+          other.smsDetectionEnabled == this.smsDetectionEnabled &&
+          other.largeExpenseAlertsEnabled == this.largeExpenseAlertsEnabled &&
+          other.smartInsightsEnabled == this.smartInsightsEnabled &&
+          other.quietHoursEnabled == this.quietHoursEnabled &&
+          other.largeExpenseThreshold == this.largeExpenseThreshold);
+}
+
+class NotificationSettingsDbCompanion
+    extends UpdateCompanion<NotificationSettingsDbData> {
+  final Value<int> id;
+  final Value<bool> dailySummaryEnabled;
+  final Value<bool> weeklySummaryEnabled;
+  final Value<bool> monthlySummaryEnabled;
+  final Value<bool> budgetAlertsEnabled;
+  final Value<bool> goalRemindersEnabled;
+  final Value<bool> smsDetectionEnabled;
+  final Value<bool> largeExpenseAlertsEnabled;
+  final Value<bool> smartInsightsEnabled;
+  final Value<bool> quietHoursEnabled;
+  final Value<double> largeExpenseThreshold;
+  const NotificationSettingsDbCompanion({
+    this.id = const Value.absent(),
+    this.dailySummaryEnabled = const Value.absent(),
+    this.weeklySummaryEnabled = const Value.absent(),
+    this.monthlySummaryEnabled = const Value.absent(),
+    this.budgetAlertsEnabled = const Value.absent(),
+    this.goalRemindersEnabled = const Value.absent(),
+    this.smsDetectionEnabled = const Value.absent(),
+    this.largeExpenseAlertsEnabled = const Value.absent(),
+    this.smartInsightsEnabled = const Value.absent(),
+    this.quietHoursEnabled = const Value.absent(),
+    this.largeExpenseThreshold = const Value.absent(),
+  });
+  NotificationSettingsDbCompanion.insert({
+    this.id = const Value.absent(),
+    this.dailySummaryEnabled = const Value.absent(),
+    this.weeklySummaryEnabled = const Value.absent(),
+    this.monthlySummaryEnabled = const Value.absent(),
+    this.budgetAlertsEnabled = const Value.absent(),
+    this.goalRemindersEnabled = const Value.absent(),
+    this.smsDetectionEnabled = const Value.absent(),
+    this.largeExpenseAlertsEnabled = const Value.absent(),
+    this.smartInsightsEnabled = const Value.absent(),
+    this.quietHoursEnabled = const Value.absent(),
+    this.largeExpenseThreshold = const Value.absent(),
+  });
+  static Insertable<NotificationSettingsDbData> custom({
+    Expression<int>? id,
+    Expression<bool>? dailySummaryEnabled,
+    Expression<bool>? weeklySummaryEnabled,
+    Expression<bool>? monthlySummaryEnabled,
+    Expression<bool>? budgetAlertsEnabled,
+    Expression<bool>? goalRemindersEnabled,
+    Expression<bool>? smsDetectionEnabled,
+    Expression<bool>? largeExpenseAlertsEnabled,
+    Expression<bool>? smartInsightsEnabled,
+    Expression<bool>? quietHoursEnabled,
+    Expression<double>? largeExpenseThreshold,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (dailySummaryEnabled != null)
+        'daily_summary_enabled': dailySummaryEnabled,
+      if (weeklySummaryEnabled != null)
+        'weekly_summary_enabled': weeklySummaryEnabled,
+      if (monthlySummaryEnabled != null)
+        'monthly_summary_enabled': monthlySummaryEnabled,
+      if (budgetAlertsEnabled != null)
+        'budget_alerts_enabled': budgetAlertsEnabled,
+      if (goalRemindersEnabled != null)
+        'goal_reminders_enabled': goalRemindersEnabled,
+      if (smsDetectionEnabled != null)
+        'sms_detection_enabled': smsDetectionEnabled,
+      if (largeExpenseAlertsEnabled != null)
+        'large_expense_alerts_enabled': largeExpenseAlertsEnabled,
+      if (smartInsightsEnabled != null)
+        'smart_insights_enabled': smartInsightsEnabled,
+      if (quietHoursEnabled != null) 'quiet_hours_enabled': quietHoursEnabled,
+      if (largeExpenseThreshold != null)
+        'large_expense_threshold': largeExpenseThreshold,
+    });
+  }
+
+  NotificationSettingsDbCompanion copyWith({
+    Value<int>? id,
+    Value<bool>? dailySummaryEnabled,
+    Value<bool>? weeklySummaryEnabled,
+    Value<bool>? monthlySummaryEnabled,
+    Value<bool>? budgetAlertsEnabled,
+    Value<bool>? goalRemindersEnabled,
+    Value<bool>? smsDetectionEnabled,
+    Value<bool>? largeExpenseAlertsEnabled,
+    Value<bool>? smartInsightsEnabled,
+    Value<bool>? quietHoursEnabled,
+    Value<double>? largeExpenseThreshold,
+  }) {
+    return NotificationSettingsDbCompanion(
+      id: id ?? this.id,
+      dailySummaryEnabled: dailySummaryEnabled ?? this.dailySummaryEnabled,
+      weeklySummaryEnabled: weeklySummaryEnabled ?? this.weeklySummaryEnabled,
+      monthlySummaryEnabled:
+          monthlySummaryEnabled ?? this.monthlySummaryEnabled,
+      budgetAlertsEnabled: budgetAlertsEnabled ?? this.budgetAlertsEnabled,
+      goalRemindersEnabled: goalRemindersEnabled ?? this.goalRemindersEnabled,
+      smsDetectionEnabled: smsDetectionEnabled ?? this.smsDetectionEnabled,
+      largeExpenseAlertsEnabled:
+          largeExpenseAlertsEnabled ?? this.largeExpenseAlertsEnabled,
+      smartInsightsEnabled: smartInsightsEnabled ?? this.smartInsightsEnabled,
+      quietHoursEnabled: quietHoursEnabled ?? this.quietHoursEnabled,
+      largeExpenseThreshold:
+          largeExpenseThreshold ?? this.largeExpenseThreshold,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (dailySummaryEnabled.present) {
+      map['daily_summary_enabled'] = Variable<bool>(dailySummaryEnabled.value);
+    }
+    if (weeklySummaryEnabled.present) {
+      map['weekly_summary_enabled'] = Variable<bool>(
+        weeklySummaryEnabled.value,
+      );
+    }
+    if (monthlySummaryEnabled.present) {
+      map['monthly_summary_enabled'] = Variable<bool>(
+        monthlySummaryEnabled.value,
+      );
+    }
+    if (budgetAlertsEnabled.present) {
+      map['budget_alerts_enabled'] = Variable<bool>(budgetAlertsEnabled.value);
+    }
+    if (goalRemindersEnabled.present) {
+      map['goal_reminders_enabled'] = Variable<bool>(
+        goalRemindersEnabled.value,
+      );
+    }
+    if (smsDetectionEnabled.present) {
+      map['sms_detection_enabled'] = Variable<bool>(smsDetectionEnabled.value);
+    }
+    if (largeExpenseAlertsEnabled.present) {
+      map['large_expense_alerts_enabled'] = Variable<bool>(
+        largeExpenseAlertsEnabled.value,
+      );
+    }
+    if (smartInsightsEnabled.present) {
+      map['smart_insights_enabled'] = Variable<bool>(
+        smartInsightsEnabled.value,
+      );
+    }
+    if (quietHoursEnabled.present) {
+      map['quiet_hours_enabled'] = Variable<bool>(quietHoursEnabled.value);
+    }
+    if (largeExpenseThreshold.present) {
+      map['large_expense_threshold'] = Variable<double>(
+        largeExpenseThreshold.value,
+      );
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NotificationSettingsDbCompanion(')
+          ..write('id: $id, ')
+          ..write('dailySummaryEnabled: $dailySummaryEnabled, ')
+          ..write('weeklySummaryEnabled: $weeklySummaryEnabled, ')
+          ..write('monthlySummaryEnabled: $monthlySummaryEnabled, ')
+          ..write('budgetAlertsEnabled: $budgetAlertsEnabled, ')
+          ..write('goalRemindersEnabled: $goalRemindersEnabled, ')
+          ..write('smsDetectionEnabled: $smsDetectionEnabled, ')
+          ..write('largeExpenseAlertsEnabled: $largeExpenseAlertsEnabled, ')
+          ..write('smartInsightsEnabled: $smartInsightsEnabled, ')
+          ..write('quietHoursEnabled: $quietHoursEnabled, ')
+          ..write('largeExpenseThreshold: $largeExpenseThreshold')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4320,6 +5072,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this,
   );
   late final $SavedSummariesTable savedSummaries = $SavedSummariesTable(this);
+  late final $NotificationSettingsDbTable notificationSettingsDb =
+      $NotificationSettingsDbTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4335,6 +5089,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     transactionTags,
     unrecognizedSms,
     savedSummaries,
+    notificationSettingsDb,
   ];
 }
 
@@ -6572,6 +7327,353 @@ typedef $$SavedSummariesTableProcessedTableManager =
       SavedSummary,
       PrefetchHooks Function()
     >;
+typedef $$NotificationSettingsDbTableCreateCompanionBuilder =
+    NotificationSettingsDbCompanion Function({
+      Value<int> id,
+      Value<bool> dailySummaryEnabled,
+      Value<bool> weeklySummaryEnabled,
+      Value<bool> monthlySummaryEnabled,
+      Value<bool> budgetAlertsEnabled,
+      Value<bool> goalRemindersEnabled,
+      Value<bool> smsDetectionEnabled,
+      Value<bool> largeExpenseAlertsEnabled,
+      Value<bool> smartInsightsEnabled,
+      Value<bool> quietHoursEnabled,
+      Value<double> largeExpenseThreshold,
+    });
+typedef $$NotificationSettingsDbTableUpdateCompanionBuilder =
+    NotificationSettingsDbCompanion Function({
+      Value<int> id,
+      Value<bool> dailySummaryEnabled,
+      Value<bool> weeklySummaryEnabled,
+      Value<bool> monthlySummaryEnabled,
+      Value<bool> budgetAlertsEnabled,
+      Value<bool> goalRemindersEnabled,
+      Value<bool> smsDetectionEnabled,
+      Value<bool> largeExpenseAlertsEnabled,
+      Value<bool> smartInsightsEnabled,
+      Value<bool> quietHoursEnabled,
+      Value<double> largeExpenseThreshold,
+    });
+
+class $$NotificationSettingsDbTableFilterComposer
+    extends Composer<_$AppDatabase, $NotificationSettingsDbTable> {
+  $$NotificationSettingsDbTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get dailySummaryEnabled => $composableBuilder(
+    column: $table.dailySummaryEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get weeklySummaryEnabled => $composableBuilder(
+    column: $table.weeklySummaryEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get monthlySummaryEnabled => $composableBuilder(
+    column: $table.monthlySummaryEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get budgetAlertsEnabled => $composableBuilder(
+    column: $table.budgetAlertsEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get goalRemindersEnabled => $composableBuilder(
+    column: $table.goalRemindersEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get smsDetectionEnabled => $composableBuilder(
+    column: $table.smsDetectionEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get largeExpenseAlertsEnabled => $composableBuilder(
+    column: $table.largeExpenseAlertsEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get smartInsightsEnabled => $composableBuilder(
+    column: $table.smartInsightsEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get quietHoursEnabled => $composableBuilder(
+    column: $table.quietHoursEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get largeExpenseThreshold => $composableBuilder(
+    column: $table.largeExpenseThreshold,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$NotificationSettingsDbTableOrderingComposer
+    extends Composer<_$AppDatabase, $NotificationSettingsDbTable> {
+  $$NotificationSettingsDbTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get dailySummaryEnabled => $composableBuilder(
+    column: $table.dailySummaryEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get weeklySummaryEnabled => $composableBuilder(
+    column: $table.weeklySummaryEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get monthlySummaryEnabled => $composableBuilder(
+    column: $table.monthlySummaryEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get budgetAlertsEnabled => $composableBuilder(
+    column: $table.budgetAlertsEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get goalRemindersEnabled => $composableBuilder(
+    column: $table.goalRemindersEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get smsDetectionEnabled => $composableBuilder(
+    column: $table.smsDetectionEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get largeExpenseAlertsEnabled => $composableBuilder(
+    column: $table.largeExpenseAlertsEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get smartInsightsEnabled => $composableBuilder(
+    column: $table.smartInsightsEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get quietHoursEnabled => $composableBuilder(
+    column: $table.quietHoursEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get largeExpenseThreshold => $composableBuilder(
+    column: $table.largeExpenseThreshold,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$NotificationSettingsDbTableAnnotationComposer
+    extends Composer<_$AppDatabase, $NotificationSettingsDbTable> {
+  $$NotificationSettingsDbTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<bool> get dailySummaryEnabled => $composableBuilder(
+    column: $table.dailySummaryEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get weeklySummaryEnabled => $composableBuilder(
+    column: $table.weeklySummaryEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get monthlySummaryEnabled => $composableBuilder(
+    column: $table.monthlySummaryEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get budgetAlertsEnabled => $composableBuilder(
+    column: $table.budgetAlertsEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get goalRemindersEnabled => $composableBuilder(
+    column: $table.goalRemindersEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get smsDetectionEnabled => $composableBuilder(
+    column: $table.smsDetectionEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get largeExpenseAlertsEnabled => $composableBuilder(
+    column: $table.largeExpenseAlertsEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get smartInsightsEnabled => $composableBuilder(
+    column: $table.smartInsightsEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get quietHoursEnabled => $composableBuilder(
+    column: $table.quietHoursEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get largeExpenseThreshold => $composableBuilder(
+    column: $table.largeExpenseThreshold,
+    builder: (column) => column,
+  );
+}
+
+class $$NotificationSettingsDbTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $NotificationSettingsDbTable,
+          NotificationSettingsDbData,
+          $$NotificationSettingsDbTableFilterComposer,
+          $$NotificationSettingsDbTableOrderingComposer,
+          $$NotificationSettingsDbTableAnnotationComposer,
+          $$NotificationSettingsDbTableCreateCompanionBuilder,
+          $$NotificationSettingsDbTableUpdateCompanionBuilder,
+          (
+            NotificationSettingsDbData,
+            BaseReferences<
+              _$AppDatabase,
+              $NotificationSettingsDbTable,
+              NotificationSettingsDbData
+            >,
+          ),
+          NotificationSettingsDbData,
+          PrefetchHooks Function()
+        > {
+  $$NotificationSettingsDbTableTableManager(
+    _$AppDatabase db,
+    $NotificationSettingsDbTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$NotificationSettingsDbTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$NotificationSettingsDbTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$NotificationSettingsDbTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<bool> dailySummaryEnabled = const Value.absent(),
+                Value<bool> weeklySummaryEnabled = const Value.absent(),
+                Value<bool> monthlySummaryEnabled = const Value.absent(),
+                Value<bool> budgetAlertsEnabled = const Value.absent(),
+                Value<bool> goalRemindersEnabled = const Value.absent(),
+                Value<bool> smsDetectionEnabled = const Value.absent(),
+                Value<bool> largeExpenseAlertsEnabled = const Value.absent(),
+                Value<bool> smartInsightsEnabled = const Value.absent(),
+                Value<bool> quietHoursEnabled = const Value.absent(),
+                Value<double> largeExpenseThreshold = const Value.absent(),
+              }) => NotificationSettingsDbCompanion(
+                id: id,
+                dailySummaryEnabled: dailySummaryEnabled,
+                weeklySummaryEnabled: weeklySummaryEnabled,
+                monthlySummaryEnabled: monthlySummaryEnabled,
+                budgetAlertsEnabled: budgetAlertsEnabled,
+                goalRemindersEnabled: goalRemindersEnabled,
+                smsDetectionEnabled: smsDetectionEnabled,
+                largeExpenseAlertsEnabled: largeExpenseAlertsEnabled,
+                smartInsightsEnabled: smartInsightsEnabled,
+                quietHoursEnabled: quietHoursEnabled,
+                largeExpenseThreshold: largeExpenseThreshold,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<bool> dailySummaryEnabled = const Value.absent(),
+                Value<bool> weeklySummaryEnabled = const Value.absent(),
+                Value<bool> monthlySummaryEnabled = const Value.absent(),
+                Value<bool> budgetAlertsEnabled = const Value.absent(),
+                Value<bool> goalRemindersEnabled = const Value.absent(),
+                Value<bool> smsDetectionEnabled = const Value.absent(),
+                Value<bool> largeExpenseAlertsEnabled = const Value.absent(),
+                Value<bool> smartInsightsEnabled = const Value.absent(),
+                Value<bool> quietHoursEnabled = const Value.absent(),
+                Value<double> largeExpenseThreshold = const Value.absent(),
+              }) => NotificationSettingsDbCompanion.insert(
+                id: id,
+                dailySummaryEnabled: dailySummaryEnabled,
+                weeklySummaryEnabled: weeklySummaryEnabled,
+                monthlySummaryEnabled: monthlySummaryEnabled,
+                budgetAlertsEnabled: budgetAlertsEnabled,
+                goalRemindersEnabled: goalRemindersEnabled,
+                smsDetectionEnabled: smsDetectionEnabled,
+                largeExpenseAlertsEnabled: largeExpenseAlertsEnabled,
+                smartInsightsEnabled: smartInsightsEnabled,
+                quietHoursEnabled: quietHoursEnabled,
+                largeExpenseThreshold: largeExpenseThreshold,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$NotificationSettingsDbTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $NotificationSettingsDbTable,
+      NotificationSettingsDbData,
+      $$NotificationSettingsDbTableFilterComposer,
+      $$NotificationSettingsDbTableOrderingComposer,
+      $$NotificationSettingsDbTableAnnotationComposer,
+      $$NotificationSettingsDbTableCreateCompanionBuilder,
+      $$NotificationSettingsDbTableUpdateCompanionBuilder,
+      (
+        NotificationSettingsDbData,
+        BaseReferences<
+          _$AppDatabase,
+          $NotificationSettingsDbTable,
+          NotificationSettingsDbData
+        >,
+      ),
+      NotificationSettingsDbData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -6595,4 +7697,9 @@ class $AppDatabaseManager {
       $$UnrecognizedSmsTableTableManager(_db, _db.unrecognizedSms);
   $$SavedSummariesTableTableManager get savedSummaries =>
       $$SavedSummariesTableTableManager(_db, _db.savedSummaries);
+  $$NotificationSettingsDbTableTableManager get notificationSettingsDb =>
+      $$NotificationSettingsDbTableTableManager(
+        _db,
+        _db.notificationSettingsDb,
+      );
 }

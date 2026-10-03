@@ -14,9 +14,9 @@ import '../../presentation/budgets/budgets_screen.dart';
 import '../../presentation/analytics/analytics_screen.dart';
 import '../../presentation/settings/settings_screen.dart';
 import '../../presentation/notifications/notification_settings_screen.dart';
-import '../../presentation/notifications/developer_notification_test_screen.dart';
 import '../../presentation/main_scaffold.dart';
 import '../../presentation/transactions/add_transaction_screen.dart';
+import '../../presentation/transactions/ignored_sms_screen.dart';
 import '../../presentation/categories/categories_screen.dart';
 import '../../presentation/categories/add_category_screen.dart';
 import '../../presentation/budgets/add_budget_screen.dart';
@@ -111,17 +111,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       builder: (context, state) => const NotificationSettingsScreen(),
     ),
     GoRoute(
-      path: '/developer-notification-test',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (context, state) => const DeveloperNotificationTestScreen(),
-    ),
-    GoRoute(
       path: '/add-transaction',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
         final tx = state.extra as TransactionEntity?;
         return AddTransactionScreen(transactionToEdit: tx);
       },
+    ),
+    GoRoute(
+      path: '/ignored-sms',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const IgnoredSmsScreen(),
     ),
 
 

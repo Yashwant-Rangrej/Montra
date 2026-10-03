@@ -18,7 +18,6 @@ class DashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsBindingObserver {
-  bool _isBalanceVisible = false;
 
   @override
   void initState() {
@@ -53,12 +52,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
       // Refresh transactions when returning to the app
       ref.invalidate(transactionsProvider);
     }
-  }
-
-  void _handleBalanceTap() {
-    setState(() {
-      _isBalanceVisible = !_isBalanceVisible;
-    });
   }
 
   Future<void> _checkAndRequestSmsPermission() async {
@@ -260,9 +253,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
   Widget _buildBalanceCard(AsyncValue<Map<String, double>> statsAsync) {
     return statsAsync.when(
       data: (stats) {
-        return GestureDetector(
-          onTap: _handleBalanceTap,
-          child: Container(
+        return Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.secondary,
@@ -271,13 +262,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                if (_isBalanceVisible) ...[
-                  Text('Total Spend', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7))),
-                  const SizedBox(height: 8),
-                  Text('₹${stats['balance']?.toStringAsFixed(2)}', style: Theme.of(context).textTheme.displayMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary)),
-                  const SizedBox(height: 32),
-                ],
-              
               Text('Today', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7))),
               const SizedBox(height: 8),
               _buildIncomeExpenseStat('Total Expenses', stats['todayExpense'] ?? 0.0, false),
@@ -289,7 +273,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
               _buildIncomeExpenseStat('Total Expenses', stats['monthlyExpense'] ?? 0.0, false),
             ],
           ),
-        ));
+        );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, stack) => Text('Error: $err'),

@@ -100,3 +100,17 @@ class SavedSummaries extends Table {
   IntColumn get transactionCount => integer()();
   DateTimeColumn get generatedAt => dateTime().withDefault(currentDateAndTime)();
 }
+
+class NotificationSettingsDb extends Table {
+  IntColumn get id => integer().autoIncrement()(); // Will just use ID 1 for a single row
+  BoolColumn get dailySummaryEnabled => boolean().withDefault(const Constant(true))();
+  BoolColumn get weeklySummaryEnabled => boolean().withDefault(const Constant(true))();
+  BoolColumn get monthlySummaryEnabled => boolean().withDefault(const Constant(false))();
+  BoolColumn get budgetAlertsEnabled => boolean().withDefault(const Constant(true))();
+  BoolColumn get goalRemindersEnabled => boolean().withDefault(const Constant(false))();
+  BoolColumn get smsDetectionEnabled => boolean().withDefault(const Constant(true))();
+  BoolColumn get largeExpenseAlertsEnabled => boolean().withDefault(const Constant(true))();
+  BoolColumn get smartInsightsEnabled => boolean().withDefault(const Constant(true))();
+  BoolColumn get quietHoursEnabled => boolean().withDefault(const Constant(true))();
+  RealColumn get largeExpenseThreshold => real().withDefault(const Constant(10000.0))();
+}
