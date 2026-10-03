@@ -3,12 +3,14 @@ class SmsParsedResult {
   final String type;
   final String merchant;
   final String category;
+  final String paymentMethod;
 
   SmsParsedResult({
     required this.amount,
     required this.type,
     required this.merchant,
     required this.category,
+    required this.paymentMethod,
   });
 }
 
@@ -58,11 +60,20 @@ class SmsParser {
     // Categorize
     String category = categorizeMerchant(merchant);
     
+    // Payment Method
+    String paymentMethod = 'Bank Transfer';
+    if (lowerBody.contains('upi')) {
+      paymentMethod = 'UPI';
+    } else if (lowerBody.contains('card')) {
+      paymentMethod = 'Card';
+    }
+    
     return SmsParsedResult(
       amount: amount,
       type: transactionType,
       merchant: merchant,
       category: category,
+      paymentMethod: paymentMethod,
     );
   }
   

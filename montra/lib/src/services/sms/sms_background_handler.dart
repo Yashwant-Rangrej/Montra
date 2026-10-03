@@ -19,6 +19,7 @@ void smsBackgroundHandler() async {
 
   final notificationService = NotificationService();
   await notificationService.init((NotificationPayload payload) {});
+  debugPrint('Notification service initialized');
 
   channel.setMethodCallHandler((call) async {
     if (call.method == 'onSmsReceived') {
@@ -66,6 +67,7 @@ Future<void> _processSms(
               merchant: drift.Value(parsed.merchant),
               categoryId: drift.Value(categoryId),
               accountId: accountId,
+              paymentMethod: drift.Value(parsed.paymentMethod),
               transactionDate: message.receivedAt,
               originalSms: drift.Value(message.body),
             ),
@@ -73,6 +75,7 @@ Future<void> _processSms(
 
       debugPrint('Transaction inserted with id: $insertedId');
 
+      debugPrint('Attempting to show SMS detection notification');
       await notificationService.showNotification(
         id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
         title: '💳 Expense Detected',

@@ -113,32 +113,59 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ListTile(
-              leading: const Icon(Icons.visibility_off),
-              title: const Text('Ignore this transaction'),
-              subtitle: const Text('It will not be counted in your stats'),
-              onTap: () async {
-                final updatedTx = TransactionEntity(
-                  id: tx.id,
-                  amount: tx.amount,
-                  type: 'Ignored', // Setting type to Ignored will remove it from expense calculations
-                  merchant: tx.merchant,
-                  categoryId: tx.categoryId,
-                  paymentMethod: tx.paymentMethod,
-                  accountId: tx.accountId,
-                  targetAccountId: tx.targetAccountId,
-                  availableBalance: tx.availableBalance,
-                  transactionDate: tx.transactionDate,
-                  notes: tx.notes,
-                  originalSms: tx.originalSms,
-                  bankTransactionId: tx.bankTransactionId,
-                  receiptAttachment: tx.receiptAttachment,
-                );
-                await ref.read(transactionRepositoryProvider).updateTransaction(updatedTx);
-                ref.invalidate(transactionsProvider);
-                if (context.mounted) Navigator.pop(context);
-              },
-            ),
+            tx.type == 'Ignored'
+                ? ListTile(
+                    leading: const Icon(Icons.restore),
+                    title: const Text('Restore this transaction'),
+                    subtitle: const Text('It will be counted in your stats again'),
+                    onTap: () async {
+                      final updatedTx = TransactionEntity(
+                        id: tx.id,
+                        amount: tx.amount,
+                        type: 'Expense', // Restore as Expense
+                        merchant: tx.merchant,
+                        categoryId: tx.categoryId,
+                        paymentMethod: tx.paymentMethod,
+                        accountId: tx.accountId,
+                        targetAccountId: tx.targetAccountId,
+                        availableBalance: tx.availableBalance,
+                        transactionDate: tx.transactionDate,
+                        notes: tx.notes,
+                        originalSms: tx.originalSms,
+                        bankTransactionId: tx.bankTransactionId,
+                        receiptAttachment: tx.receiptAttachment,
+                      );
+                      await ref.read(transactionRepositoryProvider).updateTransaction(updatedTx);
+                      ref.invalidate(transactionsProvider);
+                      if (context.mounted) Navigator.pop(context);
+                    },
+                  )
+                : ListTile(
+                    leading: const Icon(Icons.visibility_off),
+                    title: const Text('Ignore this transaction'),
+                    subtitle: const Text('It will not be counted in your stats'),
+                    onTap: () async {
+                      final updatedTx = TransactionEntity(
+                        id: tx.id,
+                        amount: tx.amount,
+                        type: 'Ignored', // Setting type to Ignored will remove it from expense calculations
+                        merchant: tx.merchant,
+                        categoryId: tx.categoryId,
+                        paymentMethod: tx.paymentMethod,
+                        accountId: tx.accountId,
+                        targetAccountId: tx.targetAccountId,
+                        availableBalance: tx.availableBalance,
+                        transactionDate: tx.transactionDate,
+                        notes: tx.notes,
+                        originalSms: tx.originalSms,
+                        bankTransactionId: tx.bankTransactionId,
+                        receiptAttachment: tx.receiptAttachment,
+                      );
+                      await ref.read(transactionRepositoryProvider).updateTransaction(updatedTx);
+                      ref.invalidate(transactionsProvider);
+                      if (context.mounted) Navigator.pop(context);
+                    },
+                  ),
             ListTile(
               leading: const Icon(Icons.delete),
               title: const Text('Delete transaction(s)'),
@@ -364,7 +391,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                                 color: tx.type == 'Ignored' ? Theme.of(context).colorScheme.outline : null,
                               )
                             ),
-                            subtitle: Text('${tx.type} • ${tx.transactionDate.day}/${tx.transactionDate.month}/${tx.transactionDate.year}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                            subtitle: Text('${tx.type} • ${tx.paymentMethod ?? "Cash"} • ${tx.transactionDate.day}/${tx.transactionDate.month}/${tx.transactionDate.year}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                             trailing: _isSelectionMode
                               ? Checkbox(
                                   value: _selectedIds.contains(tx.id),

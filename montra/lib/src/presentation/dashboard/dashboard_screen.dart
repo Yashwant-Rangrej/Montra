@@ -380,7 +380,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
                       color: tx.type == 'Ignored' ? Theme.of(context).colorScheme.outline : null,
                     ),
                   ),
-                  subtitle: Text(tx.type, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                  subtitle: Text('${tx.type} • ${tx.paymentMethod ?? "Cash"}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                   trailing: Text(
                     '-₹${tx.amount.toStringAsFixed(2)}',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
