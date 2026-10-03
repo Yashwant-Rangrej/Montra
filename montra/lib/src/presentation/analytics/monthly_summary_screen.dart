@@ -213,7 +213,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
             // Total Card
             Card(
               elevation: 0,
-              color: Colors.indigo.withOpacity(0.1),
+              color: Colors.indigo.withValues(alpha: 0.1),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
@@ -266,7 +266,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
             // Top Category Card
             Card(
               elevation: 0,
-              color: Colors.orange.withOpacity(0.1),
+              color: Colors.orange.withValues(alpha: 0.1),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               child: Padding(
                 padding: const EdgeInsets.all(20.0),

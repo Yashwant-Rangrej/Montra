@@ -6,10 +6,7 @@ import '../../core/theme/app_theme.dart';
 class SplashScreen extends StatefulWidget {
   final Duration duration;
 
-  const SplashScreen({
-    super.key,
-    this.duration = const Duration(seconds: 3),
-  });
+  const SplashScreen({super.key, this.duration = const Duration(seconds: 3)});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -33,17 +30,11 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOutBack,
-      ),
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutBack),
     );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeIn,
-      ),
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
     );
 
     _animationController.forward();
@@ -53,7 +44,7 @@ class _SplashScreenState extends State<SplashScreen>
   void _startLoadingProgress() {
     const interval = Duration(milliseconds: 30);
     final totalSteps = widget.duration.inMilliseconds / interval.inMilliseconds;
-    
+
     _timer = Timer.periodic(interval, (timer) {
       if (mounted) {
         setState(() {
@@ -85,17 +76,16 @@ class _SplashScreenState extends State<SplashScreen>
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
-          color: AppTheme.background,
-        ),
+        decoration: const BoxDecoration(color: AppTheme.background),
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const SizedBox(height: 12), // Placeholder to keep center logo balanced
-
+                const SizedBox(
+                  height: 12,
+                ), // Placeholder to keep center logo balanced
                 // Center Logo & Title
                 FadeTransition(
                   opacity: _fadeAnimation,
@@ -116,7 +106,7 @@ class _SplashScreenState extends State<SplashScreen>
                                 color: AppTheme.primary.withValues(alpha: 0.2),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
-                              )
+                              ),
                             ],
                           ),
                           child: ClipRRect(
@@ -130,18 +120,20 @@ class _SplashScreenState extends State<SplashScreen>
                         const SizedBox(height: 20),
                         Text(
                           'Montra',
-                          style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                            color: AppTheme.onSurface,
-                            letterSpacing: -1.0,
-                          ),
+                          style: Theme.of(context).textTheme.displayLarge
+                              ?.copyWith(
+                                color: AppTheme.onSurface,
+                                letterSpacing: -1.0,
+                              ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           'Expense Tracking & Financial Insights',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppTheme.onSurfaceVariant,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: AppTheme.onSurfaceVariant,
+                                fontWeight: FontWeight.w500,
+                              ),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -169,17 +161,22 @@ class _SplashScreenState extends State<SplashScreen>
                       children: [
                         Text(
                           _progress >= 1.0 ? 'Ready!' : 'Initializing App...',
-                          style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppTheme.onSurfaceVariant),
+                          style: Theme.of(context).textTheme.labelMedium
+                              ?.copyWith(color: AppTheme.onSurfaceVariant),
                         ),
                         Text(
                           '${(_progress * 100).toInt()}%',
-                          style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppTheme.onSurface, fontWeight: FontWeight.w500),
+                          style: Theme.of(context).textTheme.labelMedium
+                              ?.copyWith(
+                                color: AppTheme.onSurface,
+                                fontWeight: FontWeight.w500,
+                              ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'SECURED WITH 256-BIT ENCRYPTION',
+                      'Developed by Yashwant Rangrej',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: AppTheme.outline,
                         letterSpacing: 1.5,

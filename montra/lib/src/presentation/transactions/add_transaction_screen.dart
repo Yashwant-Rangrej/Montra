@@ -185,7 +185,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                       DropdownButtonFormField<String>(
                         initialValue: _paymentMethod,
                         decoration: const InputDecoration(labelText: 'Payment Method'),
-                        items: {'Cash', if (_paymentMethod != null) _paymentMethod!}
+                        items: {'Cash', 'UPI', 'Card', 'Bank Transfer', ?_paymentMethod}
                             .map((t) => DropdownMenuItem(value: t, child: Text(t)))
                             .toList(),
                         onChanged: (val) => setState(() => _paymentMethod = val),

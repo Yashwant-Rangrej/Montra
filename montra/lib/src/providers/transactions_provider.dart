@@ -2,6 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/entities/transaction_entity.dart';
 import 'repository_providers.dart';
 
+final allTransactionsProvider = StreamProvider<List<TransactionEntity>>((ref) {
+  final repository = ref.watch(transactionRepositoryProvider);
+  return repository.watchTransactions();
+});
+
 final transactionsProvider = StreamProvider<List<TransactionEntity>>((ref) {
   final repository = ref.watch(transactionRepositoryProvider);
   return repository.watchTransactions().map((transactions) {
@@ -34,7 +39,7 @@ final filteredTransactionsProvider = Provider<AsyncValue<List<TransactionEntity>
 });
 
 final dashboardStatsProvider = Provider<AsyncValue<Map<String, double>>>((ref) {
-  final transactionsAsync = ref.watch(transactionsProvider);
+  final transactionsAsync = ref.watch(allTransactionsProvider);
   
   return transactionsAsync.whenData((transactions) {
     double todayExpense = 0;
@@ -117,7 +122,7 @@ final merchantIntelligenceProvider = Provider<AsyncValue<Map<String, dynamic>>>(
 });
 
 final monthlyExpensesProvider = Provider<AsyncValue<Map<String, double>>>((ref) {
-  final transactionsAsync = ref.watch(transactionsProvider);
+  final transactionsAsync = ref.watch(allTransactionsProvider);
   
   return transactionsAsync.whenData((transactions) {
     final Map<String, double> expensesByMonth = {};

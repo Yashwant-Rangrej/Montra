@@ -48,7 +48,10 @@ class SmsParser {
     
     // Extract merchant
     String merchant = sender; // Default to sender
-    RegExp merchantRegex = RegExp(r'(?:at|to|info[\*:-])\s+([A-Za-z0-9\s]+?)(?:on|ref|avl|val|balance|$)', caseSensitive: false);
+    RegExp merchantRegex = RegExp(
+      r'(?:at|to|info[\*:-])\s+([A-Za-z0-9\s]+?)(?:\bon\b|\bvia\b|\busing\b|\bref\b|\bavl\b|\bval\b|\bbalance\b|$)',
+      caseSensitive: false,
+    );
     Match? merchantMatch = merchantRegex.firstMatch(body);
     if (merchantMatch != null && merchantMatch.group(1) != null) {
       merchant = merchantMatch.group(1)!.trim();

@@ -30,4 +30,38 @@ class TransactionEntity {
     this.bankTransactionId,
     this.receiptAttachment,
   });
+
+  TransactionEntity copyWith({
+    int? id,
+    double? amount,
+    String? type,
+    String? merchant,
+    int? categoryId,
+    String? paymentMethod,
+    int? accountId,
+    int? targetAccountId,
+    double? availableBalance,
+    DateTime? transactionDate,
+    String? notes,
+    String? originalSms,
+    String? bankTransactionId,
+    String? receiptAttachment,
+  }) {
+    return TransactionEntity(
+      id: id ?? this.id,
+      amount: amount ?? this.amount,
+      type: type ?? this.type,
+      merchant: merchant ?? this.merchant,
+      categoryId: categoryId ?? this.categoryId,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      accountId: accountId ?? this.accountId,
+      targetAccountId: targetAccountId ?? this.targetAccountId,
+      availableBalance: availableBalance ?? this.availableBalance,
+      transactionDate: transactionDate ?? this.transactionDate,
+      notes: notes ?? this.notes,
+      originalSms: originalSms ?? this.originalSms,
+      bankTransactionId: bankTransactionId ?? this.bankTransactionId,
+      receiptAttachment: receiptAttachment ?? this.receiptAttachment,
+    );
+  }
 }

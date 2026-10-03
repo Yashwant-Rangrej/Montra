@@ -45,6 +45,13 @@ class SettingsScreen extends ConsumerWidget {
               ),
               _buildSettingsTile(
                 context,
+                title: 'Notifications',
+                icon: Icons.notifications_outlined,
+                iconColor: Colors.deepPurple,
+                onTap: () => context.push('/notification-settings'),
+              ),
+              _buildSettingsTile(
+                context,
                 title: 'Check for Updates',
                 icon: Icons.system_update_outlined,
                 iconColor: Colors.orange,

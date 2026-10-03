@@ -30,6 +30,7 @@ class UpdateService {
             final packageInfo = await PackageInfo.fromPlatform();
             final currentVersion = packageInfo.version;
             
+            if (!context.mounted) return;
             if (_isNewerVersion(latestVersion, currentVersion)) {
               _showUpdateDialog(context, latestVersion, releaseNotes, downloadUrl);
             } else if (showNoUpdateMessage) {
@@ -41,7 +42,7 @@ class UpdateService {
         }
       }
     } catch (e) {
-      if (showNoUpdateMessage) {
+      if (showNoUpdateMessage && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to check for updates. Check your connection.')),
         );

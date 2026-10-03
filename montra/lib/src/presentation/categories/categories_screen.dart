@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/categories_provider.dart';
 import '../../providers/repository_providers.dart';
+import '../../core/utils/category_icon_helper.dart';
 import '../widgets/empty_state_widget.dart';
 
 class CategoriesScreen extends ConsumerWidget {
@@ -39,7 +40,7 @@ class CategoriesScreen extends ConsumerWidget {
                   leading: CircleAvatar(
                     backgroundColor: color.withValues(alpha: 0.2),
                     child: Icon(
-                      Icons.category, // You can use dynamic icons if implemented
+                      CategoryIconHelper.getIcon(category.name),
                       color: color,
                     ),
                   ),

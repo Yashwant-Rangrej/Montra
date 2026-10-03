@@ -129,6 +129,9 @@ String _monthNameStr(int month) {
 /// Schedules the periodic WorkManager task.
 /// Call once on app init — WorkManager persists it across reboots.
 Future<void> registerMonthlySummaryWorker() async {
+  if (kIsWeb || (defaultTargetPlatform != TargetPlatform.android && defaultTargetPlatform != TargetPlatform.iOS)) {
+    return;
+  }
   await Workmanager().initialize(callbackDispatcher);
   await Workmanager().registerPeriodicTask(
     _uniqueTaskName,

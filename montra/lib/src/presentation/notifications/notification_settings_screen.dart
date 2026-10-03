@@ -193,6 +193,26 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
             isTop: true,
             isBottom: true,
           ),
+
+          const SizedBox(height: 24),
+          _buildSectionHeader('Diagnostics'),
+          Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: ListTile(
+              title: const Text('Test Notification Alerts'),
+              subtitle: Text(
+                'Simulate alerts and test background triggers',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+              ),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => context.push('/developer-notification-test'),
+            ),
+          ),
           
           const SizedBox(height: 40),
         ],
