@@ -84,12 +84,21 @@ class SmsParser {
   // FIX #2: At least one debit keyword must be present → stops credit-only
   // SMS being logged as expenses AND stops valid debit SMS being dropped
   // when they happen to also contain words like "credited".
+  //
+  // ⚠ PRECISION RULES (to avoid false positives):
+  //   • "debited" not "debit" → avoids "debit card PIN" info SMS
+  //   • "paid to/at/for" not bare "paid" → avoids generic "paid attention" matches
+  //   • "payment of/for" not bare "payment" → avoids "payment due reminder" info SMS
   // ─────────────────────────────────────────────────────────────────────────
   static const _debitKeywords = [
     'debited',
-    'debit',
     'spent',
-    'paid',
+    'paid to',
+    'paid at',
+    'paid for',
+    'paid rs',
+    'paid inr',
+    'paid ₹',
     'payment of',
     'payment for',
     'withdrawn',
@@ -101,7 +110,11 @@ class SmsParser {
     'used for',
   ];
 
-  // Credit-only signals (skip when NO debit keyword found alongside them)
+  // ─────────────────────────────────────────────────────────────────────────
+  // Credit-only signals: if ONLY these are present (no debit keyword) skip.
+  // Also: if a credit keyword appears WITHOUT any debit keyword, it's an
+  // incoming credit SMS — we don't log those as expenses.
+  // ─────────────────────────────────────────────────────────────────────────
   static const _creditOnlyKeywords = [
     'credited',
     'received',
@@ -171,13 +184,29 @@ class SmsParser {
     final String category = categorizeMerchant(merchant);
 
     // ── Step 6: Payment method ─────────────────────────────────────────────
-    String paymentMethod = 'Bank Transfer';
-    if (lowerBody.contains('upi')) {
-      paymentMethod = 'UPI';
-    } else if (lowerBody.contains('credit card') ||
+    // Detect UPI by multiple signals: explicit keyword, VPA address (@),
+    // app names (PhonePe / GPay / Paytm / BHIM), or UPI ref patterns.
+    final bool isUpi = lowerBody.contains('upi') ||
+        RegExp(r'\b\w+@\w+\b').hasMatch(lowerBody) || // VPA e.g. name@oksbi
+        lowerBody.contains('phonepe') ||
+        lowerBody.contains('gpay') ||
+        lowerBody.contains('google pay') ||
+        lowerBody.contains('paytm') ||
+        lowerBody.contains('bhim') ||
+        lowerBody.contains('vpa') ||
+        RegExp(r'upi\s*ref', caseSensitive: false).hasMatch(body);
+
+    final bool isCard = lowerBody.contains('credit card') ||
         lowerBody.contains('debit card') ||
-        lowerBody.contains(' card ')) {
+        lowerBody.contains(' card ');
+
+    String paymentMethod;
+    if (isUpi) {
+      paymentMethod = 'UPI';
+    } else if (isCard) {
       paymentMethod = 'Card';
+    } else {
+      paymentMethod = 'Bank Transfer';
     }
 
     return SmsParsedResult(

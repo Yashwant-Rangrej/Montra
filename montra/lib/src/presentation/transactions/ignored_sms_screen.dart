@@ -97,7 +97,7 @@ class IgnoredSmsScreen extends ConsumerWidget {
       amount: parsed?.amount ?? 0.0,
       type: parsed?.type ?? 'Expense',
       merchant: parsed?.merchant ?? sms.sender,
-      paymentMethod: parsed?.paymentMethod ?? 'Cash',
+      paymentMethod: parsed?.paymentMethod ?? 'Bank Transfer',
       accountId: 1,
       transactionDate: sms.receivedAt,
       originalSms: sms.body,

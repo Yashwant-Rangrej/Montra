@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 
 class AppTheme {
   // Brand Colors
@@ -110,9 +110,9 @@ class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           final isSelected = states.contains(WidgetState.selected);
-          return GoogleFonts.inter(
+          return TextStyle(
             fontSize: 11,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
             color: isSelected ? textPrimary : textSecondary,
           );
         }),
@@ -188,18 +188,21 @@ class AppTheme {
 
   static TextTheme _buildTextTheme(Color primaryColor, Color secondaryColor) {
     return TextTheme(
-      displayLarge: GoogleFonts.inter(fontSize: 32, fontWeight: FontWeight.w500, height: 40/32, letterSpacing: -0.64, color: primaryColor),
-      displayMedium: GoogleFonts.inter(fontSize: 28, fontWeight: FontWeight.w500, height: 36/28, letterSpacing: -0.56, color: primaryColor),
-      displaySmall: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.w400, height: 32/24, color: primaryColor),
-      headlineLarge: GoogleFonts.inter(fontSize: 32, fontWeight: FontWeight.w500, height: 40/32, letterSpacing: -0.64, color: primaryColor),
-      headlineMedium: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.w500, height: 32/24, color: primaryColor),
-      headlineSmall: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w500, height: 28/20, color: primaryColor),
-      titleLarge: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w500, height: 24/18, color: primaryColor),
-      titleMedium: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w500, height: 24/16, color: primaryColor),
-      bodyLarge: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w400, height: 24/16, color: primaryColor),
-      bodyMedium: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w400, height: 20/14, color: primaryColor),
-      labelLarge: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, height: 20/14, letterSpacing: 0.1, color: secondaryColor),
-      labelMedium: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w400, height: 16/12, letterSpacing: 0.5, color: secondaryColor),
+      displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.w500, height: 40 / 32, letterSpacing: -0.64, color: primaryColor),
+      displayMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.w500, height: 36 / 28, letterSpacing: -0.56, color: primaryColor),
+      displaySmall: TextStyle(fontSize: 24, fontWeight: FontWeight.w400, height: 32 / 24, color: primaryColor),
+      headlineLarge: TextStyle(fontSize: 30, fontWeight: FontWeight.w500, height: 38 / 30, letterSpacing: -0.5, color: primaryColor),
+      headlineMedium: TextStyle(fontSize: 22, fontWeight: FontWeight.w500, height: 28 / 22, color: primaryColor),
+      headlineSmall: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, height: 24 / 18, color: primaryColor),
+      titleLarge: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, height: 22 / 17, color: primaryColor),
+      titleMedium: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, height: 20 / 15, color: primaryColor),
+      titleSmall: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, height: 18 / 13, color: primaryColor),
+      bodyLarge: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, height: 22 / 15, color: primaryColor),
+      bodyMedium: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, height: 18 / 13, color: primaryColor),
+      bodySmall: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, height: 16 / 12, color: secondaryColor),
+      labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, height: 20 / 14, letterSpacing: 0.1, color: secondaryColor),
+      labelMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, height: 16 / 12, letterSpacing: 0.5, color: secondaryColor),
+      labelSmall: TextStyle(fontSize: 11, fontWeight: FontWeight.w400, height: 16 / 11, letterSpacing: 0.5, color: secondaryColor),
     );
   }
 
