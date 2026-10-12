@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_theme.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/sms_providers.dart';
 import '../../data/repositories/notification_repository.dart';
 
 class PermissionsScreen extends ConsumerStatefulWidget {
@@ -53,9 +54,26 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
                 title: 'SMS',
                 subtitle: 'Detect bank messages',
                 value: notificationSettings.smsDetectionEnabled,
-                onChanged: (val) {
-                  ref.read(notificationSettingsProvider.notifier)
-                     .updateSettings(notificationSettings.copyWith(smsDetectionEnabled: val));
+                onChanged: (val) async {
+                  // FIX: Actually request the OS-level SMS permission and
+                  // register the Dart callback handle so the background
+                  // SmsReceiver can spin up a Flutter engine.
+                  if (val) {
+                    final interceptor = ref.read(smsInterceptorProvider);
+                    final granted = await interceptor.requestPermissions();
+                    if (granted) {
+                      await interceptor.initialize();
+                    }
+                    ref.read(notificationSettingsProvider.notifier)
+                       .updateSettings(notificationSettings.copyWith(
+                         smsDetectionEnabled: granted,
+                       ));
+                  } else {
+                    ref.read(notificationSettingsProvider.notifier)
+                       .updateSettings(notificationSettings.copyWith(
+                         smsDetectionEnabled: false,
+                       ));
+                  }
                 },
               ),
               const SizedBox(height: 16),

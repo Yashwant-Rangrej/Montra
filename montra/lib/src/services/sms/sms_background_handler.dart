@@ -75,6 +75,10 @@ Future<void> _processSms(
 
       debugPrint('Transaction inserted with id: $insertedId');
 
+      // FIX: Close DB before the async notification call so a notification
+      // failure never leaks the database handle.
+      await db.close();
+
       debugPrint('Attempting to show SMS detection notification');
       await notificationService.showNotification(
         id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
@@ -88,19 +92,38 @@ Future<void> _processSms(
           data: {'transactionId': insertedId},
         ),
       );
-      await db.close();
     } else {
-      debugPrint(
-          'SMS could not be parsed, saving as unrecognized: ${message.body}');
-      await db.into(db.unrecognizedSms).insert(
-            UnrecognizedSmsCompanion.insert(
-              sender: message.sender,
-              body: message.body,
-              receivedAt: message.receivedAt,
-              reason: const drift.Value(
-                  'Could not extract transaction details from SMS.'),
-            ),
-          );
+      // FIX: Only save as unrecognized if the sender IS a known financial
+      // sender but the body could not be parsed (e.g. bank balance enquiry).
+      // Non-financial senders (OTPs, promo SMS) are silently dropped — the
+      // parser already rejects them; no need to pollute unrecognizedSms.
+      final lowerSender = message.sender.toLowerCase();
+      const financialKeywords = [
+        'sbi', 'hdfc', 'icici', 'axis', 'kotak', 'yesbnk', 'yesbank',
+        'pnb', 'bob', 'canara', 'idbi', 'indus', 'federal', 'uco',
+        'union', 'rbl', 'hsbc', 'citibank', 'idfc', 'bajaj',
+        'paytm', 'phonepe', 'gpay', 'amazon', 'bank', 'wallet', 'upi', 'nbfc',
+      ];
+      final bool isFinancial = financialKeywords.any(
+        (k) => lowerSender.contains(k),
+      );
+
+      if (isFinancial) {
+        debugPrint(
+            'Financial SMS could not be parsed, saving as unrecognized: ${message.body}');
+        await db.into(db.unrecognizedSms).insert(
+              UnrecognizedSmsCompanion.insert(
+                sender: message.sender,
+                body: message.body,
+                receivedAt: message.receivedAt,
+                reason: const drift.Value(
+                    'Could not extract transaction details from SMS.'),
+              ),
+            );
+      } else {
+        debugPrint(
+            'Non-financial SMS from ${message.sender} — silently dropped.');
+      }
       await db.close();
     }
 
