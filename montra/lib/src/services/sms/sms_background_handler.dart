@@ -81,7 +81,9 @@ Future<void> _processSms(
 
       debugPrint('Attempting to show SMS detection notification');
       await notificationService.showNotification(
-        id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
+        // Use a wide remainder to avoid notification ID collisions when
+        // multiple SMS arrive within milliseconds of each other.
+        id: (DateTime.now().millisecondsSinceEpoch ~/ 100).remainder(2147483647),
         title: '💳 Expense Detected',
         body:
             'Spent ₹${parsed.amount.toStringAsFixed(0)} at ${parsed.merchant} (${parsed.category})',
@@ -93,6 +95,19 @@ Future<void> _processSms(
         ),
       );
     } else {
+      // If it's a financial sender but parsing failed, still notify the user
+      final bool isFinancial = _bankSenderPatterns.any((p) => message.sender.toLowerCase().contains(p));
+      if (isFinancial) {
+        await notificationService.showNotification(
+          id: (DateTime.now().millisecondsSinceEpoch ~/ 100).remainder(2147483647),
+          title: '💬 SMS Received',
+          body: 'Message from ${message.sender}: ${message.body.substring(0, 30)}...',
+          channel: NotificationChannels.transactions,
+          payload: NotificationPayload(type: 'smsReceived', route: '/sms', data: {}),
+        );
+      }
+      // Existing unrecognized handling follows
+
       // FIX: Only save as unrecognized if the sender IS a known financial
       // sender but the body could not be parsed (e.g. bank balance enquiry).
       // Non-financial senders (OTPs, promo SMS) are silently dropped — the
@@ -102,7 +117,8 @@ Future<void> _processSms(
         'sbi', 'hdfc', 'icici', 'axis', 'kotak', 'yesbnk', 'yesbank',
         'pnb', 'bob', 'canara', 'idbi', 'indus', 'federal', 'uco',
         'union', 'rbl', 'hsbc', 'citibank', 'idfc', 'bajaj',
-        'paytm', 'phonepe', 'gpay', 'amazon', 'bank', 'wallet', 'upi', 'nbfc',
+        // 'bnk' catches abbreviated sender IDs; avoids generic spam senders.
+        'paytm', 'phonepe', 'gpay', 'amazon', 'bnk', 'wallet', 'upi', 'nbfc',
       ];
       final bool isFinancial = financialKeywords.any(
         (k) => lowerSender.contains(k),
