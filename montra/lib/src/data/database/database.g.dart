@@ -1039,6 +1039,7 @@ class $TransactionsTable extends Transactions
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    defaultValue: const Constant('UPI'),
   );
   static const VerificationMeta _accountIdMeta = const VerificationMeta(
     'accountId',

@@ -54,13 +54,15 @@ Future<void> _processSms(
       const accountId = 1;
 
       // Find category ID based on parsed category name
-      final categoryRow = await (db.select(db.categories)
-            ..where((c) => c.name.equals(parsed.category)))
-          .getSingleOrNull();
+      final categoryRow = await (db.select(
+        db.categories,
+      )..where((c) => c.name.equals(parsed.category))).getSingleOrNull();
       final int? categoryId = categoryRow?.id;
 
       // Insert parsed transaction into local Drift database
-      final insertedId = await db.into(db.transactions).insert(
+      final insertedId = await db
+          .into(db.transactions)
+          .insert(
             TransactionsCompanion.insert(
               amount: parsed.amount,
               type: parsed.type,
@@ -83,10 +85,12 @@ Future<void> _processSms(
       await notificationService.showNotification(
         // Use a wide remainder to avoid notification ID collisions when
         // multiple SMS arrive within milliseconds of each other.
-        id: (DateTime.now().millisecondsSinceEpoch ~/ 100).remainder(2147483647),
+        id: (DateTime.now().millisecondsSinceEpoch ~/ 100).remainder(
+          2147483647,
+        ),
         title: '💳 Expense Detected',
         body:
-            'Spent ₹${parsed.amount.toStringAsFixed(0)} at ${parsed.merchant} (${parsed.category})',
+            'Spent ₹${parsed.amount.toStringAsFixed(0)} at ${parsed.merchant} via ${parsed.paymentMethod} (${parsed.category})',
         channel: NotificationChannels.transactions,
         payload: NotificationPayload(
           type: 'transactionDetected',
@@ -95,19 +99,6 @@ Future<void> _processSms(
         ),
       );
     } else {
-      // If it's a financial sender but parsing failed, still notify the user
-      final bool isFinancial = _bankSenderPatterns.any((p) => message.sender.toLowerCase().contains(p));
-      if (isFinancial) {
-        await notificationService.showNotification(
-          id: (DateTime.now().millisecondsSinceEpoch ~/ 100).remainder(2147483647),
-          title: '💬 SMS Received',
-          body: 'Message from ${message.sender}: ${message.body.substring(0, 30)}...',
-          channel: NotificationChannels.transactions,
-          payload: NotificationPayload(type: 'smsReceived', route: '/sms', data: {}),
-        );
-      }
-      // Existing unrecognized handling follows
-
       // FIX: Only save as unrecognized if the sender IS a known financial
       // sender but the body could not be parsed (e.g. bank balance enquiry).
       // Non-financial senders (OTPs, promo SMS) are silently dropped — the
@@ -126,19 +117,24 @@ Future<void> _processSms(
 
       if (isFinancial) {
         debugPrint(
-            'Financial SMS could not be parsed, saving as unrecognized: ${message.body}');
-        await db.into(db.unrecognizedSms).insert(
+          'Financial SMS could not be parsed, saving as unrecognized: ${message.body}',
+        );
+        await db
+            .into(db.unrecognizedSms)
+            .insert(
               UnrecognizedSmsCompanion.insert(
                 sender: message.sender,
                 body: message.body,
                 receivedAt: message.receivedAt,
                 reason: const drift.Value(
-                    'Could not extract transaction details from SMS.'),
+                  'Could not extract transaction details from SMS.',
+                ),
               ),
             );
       } else {
         debugPrint(
-            'Non-financial SMS from ${message.sender} — silently dropped.');
+          'Non-financial SMS from ${message.sender} — silently dropped.',
+        );
       }
       await db.close();
     }

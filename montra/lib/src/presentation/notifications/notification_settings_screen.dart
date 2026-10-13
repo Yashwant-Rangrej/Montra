@@ -6,6 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../data/repositories/notification_repository.dart';
 import '../../providers/notification_providers.dart';
 import '../../providers/sms_providers.dart';
+import '../../services/notifications/notification_manager.dart';
 
 class NotificationSettingsScreen extends ConsumerStatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -215,6 +216,103 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
             isBottom: true,
           ),
 
+
+          const SizedBox(height: 24),
+          _buildSectionHeader('Test Notification Channels'),
+          Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.sms_outlined, color: Colors.blue),
+                  title: const Text('Test Expense Detection Alert'),
+                  subtitle: const Text('Test the SMS transaction notification'),
+                  trailing: const Icon(Icons.send_outlined, size: 20),
+                  onTap: () async {
+                    final manager = ref.read(notificationManagerProvider);
+                    await manager.showTransactionDetected(
+                      merchant: 'HDFC UPI Test',
+                      amount: 150.0,
+                      category: 'Food',
+                      force: true,
+                    );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Test Expense alert sent!')),
+                      );
+                    }
+                  },
+                ),
+                _buildDivider(),
+                ListTile(
+                  leading: const Icon(Icons.warning_amber_rounded, color: Colors.orange),
+                  title: const Text('Test Large Expense Alert'),
+                  subtitle: const Text('Test high-value transaction alert'),
+                  trailing: const Icon(Icons.send_outlined, size: 20),
+                  onTap: () async {
+                    final manager = ref.read(notificationManagerProvider);
+                    await manager.showLargeExpenseAlert(
+                      merchant: 'Amazon India',
+                      amount: 7500.0,
+                      method: 'UPI',
+                      force: true,
+                    );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Test Large Expense alert sent!')),
+                      );
+                    }
+                  },
+                ),
+                _buildDivider(),
+                ListTile(
+                  leading: const Icon(Icons.pie_chart_outline, color: Colors.deepPurple),
+                  title: const Text('Test Budget Alert'),
+                  subtitle: const Text('Test budget threshold warning'),
+                  trailing: const Icon(Icons.send_outlined, size: 20),
+                  onTap: () async {
+                    final manager = ref.read(notificationManagerProvider);
+                    await manager.showBudgetAlert(
+                      budgetName: 'Monthly Groceries',
+                      used: 4200.0,
+                      remaining: 800.0,
+                      force: true,
+                    );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Test Budget alert sent!')),
+                      );
+                    }
+                  },
+                ),
+                _buildDivider(),
+                ListTile(
+                  leading: const Icon(Icons.calendar_today_outlined, color: Colors.green),
+                  title: const Text('Test Daily Summary'),
+                  subtitle: const Text('Test end-of-day financial summary'),
+                  trailing: const Icon(Icons.send_outlined, size: 20),
+                  onTap: () async {
+                    final manager = ref.read(notificationManagerProvider);
+                    await manager.showDailySummary(
+                      spentToday: 650.0,
+                      txCount: 3,
+                      biggestExpense: 'Dinner (₹400)',
+                      remainingBudget: 1350.0,
+                      force: true,
+                    );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Test Daily Summary sent!')),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
 
           const SizedBox(height: 40),
         ],

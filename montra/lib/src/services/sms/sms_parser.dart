@@ -168,11 +168,11 @@ class SmsParser {
   // Tried in order — first match wins.
   // ─────────────────────────────────────────────────────────────────────────
 
-  // 1. VPA address: "to name@handle" or "at name@handle"
-  //    e.g. "To rajeshrajeshk120@yes" → "rajeshrajeshk120"
-  //         "to zomato@upi" → "zomato"
+  // 1. VPA address: capture the full VPA address as mentioned in SMS
+  //    e.g. "To rajeshrajeshk120@yes" → "rajeshrajeshk120@yes"
+  //         "to zomato@upi" → "zomato@upi"
   static final RegExp _vpaMerchantRegex = RegExp(
-    r'(?:to|at)\s+([A-Za-z0-9][A-Za-z0-9.\-_]{1,40})@[A-Za-z]{2,}',
+    r'(?:to|at)\s+([A-Za-z0-9][A-Za-z0-9.\-_]{1,40}@[A-Za-z0-9.\-_]{2,})',
     caseSensitive: false,
   );
 
@@ -183,10 +183,10 @@ class SmsParser {
     caseSensitive: false,
   );
 
-  // 3. Standard "at MERCHANT" or "to MERCHANT" — stops at common delimiters
-  //    e.g. "at ZOMATO on" / "to SomeName via" / "at Amazon.in Ref"
+  // 3. Standard "at MERCHANT" or "to MERCHANT" — captures full merchant/person name
+  //    e.g. "at ZOMATO on" / "to Ramesh Kumar via" / "at Amazon.in Ref"
   static final RegExp _standardMerchantRegex = RegExp(
-    r'(?:at|to)\s+([A-Za-z0-9][A-Za-z0-9\s\-&.]{1,40}?)(?:\s+on\b|\s+via\b|\s+using\b|\s+ref\b|\s+avl\b|\s+bal\b|\s+a\/c\b|@|\.|\,|\n|$)',
+    r'(?:at|to)\s+([A-Za-z0-9][A-Za-z0-9\s\-&.]{1,40}?)(?:\s+on\b|\s+via\b|\s+using\b|\s+ref\b|\s+avl\b|\s+bal\b|\s+a\/c\b|\.|\,|\n|$)',
     caseSensitive: false,
   );
 
@@ -236,8 +236,27 @@ class SmsParser {
     final String category = categorizeMerchant(merchant);
 
     // ── Step 6: Payment method ─────────────────────────────────────────────
-    // Detect UPI: explicit keyword, VPA (@), app names, or UPI ref pattern
-    final bool isUpi = lowerBody.contains('upi') ||
+    final bool isCard =
+        lowerBody.contains('credit card') ||
+        lowerBody.contains('debit card') ||
+        RegExp(
+          r'\bcard\s+(?:xx|ending|no\.?)\s*\d',
+          caseSensitive: false,
+        ).hasMatch(lowerBody);
+
+    final bool isAtm =
+        lowerBody.contains('atm') ||
+        lowerBody.contains('cash withdrawal') ||
+        lowerBody.contains('withdrawn cash');
+
+    final bool isBankTransfer =
+        lowerBody.contains('neft') ||
+        lowerBody.contains('rtgs') ||
+        lowerBody.contains('imps');
+
+    // Detect UPI: explicit keyword, VPA (@), app names, UPI ref, or "Sent/Paid Rs... to..." templates
+    final bool isUpi =
+        lowerBody.contains('upi') ||
         lowerBody.contains('@') || // VPA address present
         lowerBody.contains('phonepe') ||
         lowerBody.contains('gpay') ||
@@ -245,20 +264,24 @@ class SmsParser {
         lowerBody.contains('paytm') ||
         lowerBody.contains('bhim') ||
         lowerBody.contains('vpa') ||
+        lowerBody.contains('cred') ||
+        lowerBody.contains('amazon pay') ||
+        RegExp(r'\bsent\s+(?:rs\.?|inr|₹)', caseSensitive: false).hasMatch(body) ||
+        RegExp(r'\bpaid\s+(?:rs\.?|inr|₹)', caseSensitive: false).hasMatch(body) ||
         RegExp(r'upi\s*ref', caseSensitive: false).hasMatch(body);
 
-    final bool isCard = lowerBody.contains('credit card') ||
-        lowerBody.contains('debit card') ||
-        RegExp(r'\bcard\s+(xx|ending|no\.?)\s*\d', caseSensitive: false)
-            .hasMatch(lowerBody);
-
     String paymentMethod;
-    if (isUpi) {
-      paymentMethod = 'UPI';
+    if (isAtm) {
+      paymentMethod = 'Cash';
     } else if (isCard) {
       paymentMethod = 'Card';
-    } else {
+    } else if (isUpi) {
+      paymentMethod = 'UPI';
+    } else if (isBankTransfer) {
       paymentMethod = 'Bank Transfer';
+    } else {
+      // Default for bank debit notifications from SMS is UPI
+      paymentMethod = 'UPI';
     }
 
     return SmsParsedResult(
@@ -328,10 +351,9 @@ class SmsParser {
   static String _cleanMerchantName(String raw) {
     // Remove trailing punctuation and whitespace
     String cleaned = raw.trim().replaceAll(RegExp(r'[.,\-\s]+$'), '').trim();
-    // Title-case if it's all uppercase and long enough
-    if (cleaned.length > 2 && cleaned == cleaned.toUpperCase()) {
-      cleaned = cleaned[0].toUpperCase() +
-          cleaned.substring(1).toLowerCase();
+    // Only title-case if it's all uppercase and NOT a VPA/email (contains '@')
+    if (!cleaned.contains('@') && cleaned.length > 2 && cleaned == cleaned.toUpperCase()) {
+      cleaned = cleaned[0].toUpperCase() + cleaned.substring(1).toLowerCase();
     }
     return cleaned.isEmpty ? raw.trim() : cleaned;
   }
@@ -350,39 +372,125 @@ class SmsParser {
     final String ml = merchant.toLowerCase();
 
     const foodKeywords = [
-      'starbucks', 'zomato', 'swiggy', 'mcdonalds', 'kfc',
-      'restaurant', 'cafe', 'food', 'blinkit', 'bigbasket',
-      'grofers', 'dunzo', 'dominos', 'pizza', 'burger', 'dineout',
-      'eatsure', 'zepto', 'instamart',
+      'starbucks',
+      'zomato',
+      'swiggy',
+      'mcdonalds',
+      'kfc',
+      'restaurant',
+      'cafe',
+      'food',
+      'blinkit',
+      'bigbasket',
+      'grofers',
+      'dunzo',
+      'dominos',
+      'pizza',
+      'burger',
+      'dineout',
+      'eatsure',
+      'zepto',
+      'instamart',
     ];
     const transportKeywords = [
-      'uber', 'ola', 'irctc', 'petrol', 'fuel', 'hpcl', 'ioc',
-      'bpcl', 'metro', 'rapido', 'bus', 'train', 'flight', 'airport',
-      'indigo', 'spicejet', 'airindia', 'makemytrip', 'redbus',
+      'uber',
+      'ola',
+      'irctc',
+      'petrol',
+      'fuel',
+      'hpcl',
+      'ioc',
+      'bpcl',
+      'metro',
+      'rapido',
+      'bus',
+      'train',
+      'flight',
+      'airport',
+      'indigo',
+      'spicejet',
+      'airindia',
+      'makemytrip',
+      'redbus',
     ];
     const shoppingKeywords = [
-      'amazon', 'flipkart', 'myntra', 'nykaa', 'supermarket',
-      'dmart', 'reliance', 'meesho', 'ajio', 'tata', 'croma',
-      'snapdeal', 'shopsy', 'jiomart',
+      'amazon',
+      'flipkart',
+      'myntra',
+      'nykaa',
+      'supermarket',
+      'dmart',
+      'reliance',
+      'meesho',
+      'ajio',
+      'tata',
+      'croma',
+      'snapdeal',
+      'shopsy',
+      'jiomart',
     ];
     const utilitiesKeywords = [
-      'airtel', 'jio', 'vi ', 'bsnl', 'bescom', 'electricity',
-      'water', 'broadband', 'recharge', 'gas', 'lpg', 'postpaid',
-      'tata power', 'msedcl', 'tneb', 'wbsedcl',
+      'airtel',
+      'jio',
+      'vi ',
+      'bsnl',
+      'bescom',
+      'electricity',
+      'water',
+      'broadband',
+      'recharge',
+      'gas',
+      'lpg',
+      'postpaid',
+      'tata power',
+      'msedcl',
+      'tneb',
+      'wbsedcl',
     ];
     const entertainmentKeywords = [
-      'netflix', 'spotify', 'prime', 'hotstar', 'pvr',
-      'bookmyshow', 'disney', 'zee5', 'sonyliv', 'jiocinema',
-      'youtube', 'apple music', 'gaana',
+      'netflix',
+      'spotify',
+      'prime',
+      'hotstar',
+      'pvr',
+      'bookmyshow',
+      'disney',
+      'zee5',
+      'sonyliv',
+      'jiocinema',
+      'youtube',
+      'apple music',
+      'gaana',
     ];
     const healthKeywords = [
-      'pharmacy', 'hospital', 'apollo', 'medplus', 'clinic',
-      'pharma', 'medic', 'health', 'netmeds', '1mg', 'practo',
-      'tata 1mg', 'cult.fit', 'docprime',
+      'pharmacy',
+      'hospital',
+      'apollo',
+      'medplus',
+      'clinic',
+      'pharma',
+      'medic',
+      'health',
+      'netmeds',
+      '1mg',
+      'practo',
+      'tata 1mg',
+      'cult.fit',
+      'docprime',
     ];
     const educationKeywords = [
-      'byju', 'unacademy', 'coursera', 'udemy', 'skill', 'vedantu',
-      'topper', 'whitehat', 'school', 'college', 'university', 'exam',
+      'byju',
+      'unacademy',
+      'coursera',
+      'udemy',
+      'skill',
+      'vedantu',
+      'topper',
+      'whitehat',
+      'school',
+      'college',
+      'university',
+      'exam',
     ];
 
     if (foodKeywords.any((k) => ml.contains(k))) return 'Food';

@@ -23,6 +23,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
       originalSms: transaction.originalSms,
       bankTransactionId: transaction.bankTransactionId,
       receiptAttachment: transaction.receiptAttachment,
+      paymentMethod: transaction.paymentMethod,
     );
   }
 
@@ -45,15 +46,35 @@ class TransactionRepositoryImpl implements TransactionRepository {
     return transaction != null ? _mapToEntity(transaction) : null;
   }
 
+  String _resolvePaymentMethod(TransactionEntity transaction) {
+    final method = transaction.paymentMethod?.trim();
+    if (transaction.originalSms != null) {
+      if (method != null && method.isNotEmpty) {
+        if (method == 'Cash') {
+          final smsLower = transaction.originalSms!.toLowerCase();
+          final isAtm = smsLower.contains('atm') ||
+              smsLower.contains('cash withdrawal') ||
+              smsLower.contains('wtd') ||
+              smsLower.contains('withdrawn');
+          return isAtm ? 'Cash' : 'UPI';
+        }
+        return method;
+      }
+      return 'UPI';
+    }
+    return (method != null && method.isNotEmpty) ? method : 'Cash';
+  }
+
   @override
   Future<int> insertTransaction(TransactionEntity transaction) async {
+    final resolvedMethod = _resolvePaymentMethod(transaction);
     return await db.into(db.transactions).insert(
       TransactionsCompanion.insert(
         amount: transaction.amount,
         type: transaction.type,
         merchant: Value(transaction.merchant),
         categoryId: Value(transaction.categoryId),
-        paymentMethod: Value(transaction.paymentMethod),
+        paymentMethod: Value(resolvedMethod),
         accountId: transaction.accountId,
         targetAccountId: Value(transaction.targetAccountId),
         availableBalance: Value(transaction.availableBalance),
@@ -67,6 +88,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
 
   @override
   Future<bool> updateTransaction(TransactionEntity transaction) async {
+    final resolvedMethod = _resolvePaymentMethod(transaction);
     return await db.update(db.transactions).replace(
       TransactionsCompanion(
         id: Value(transaction.id),
@@ -74,7 +96,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
         type: Value(transaction.type),
         merchant: Value(transaction.merchant),
         categoryId: Value(transaction.categoryId),
-        paymentMethod: Value(transaction.paymentMethod),
+        paymentMethod: Value(resolvedMethod),
         accountId: Value(transaction.accountId),
         targetAccountId: Value(transaction.targetAccountId),
         availableBalance: Value(transaction.availableBalance),

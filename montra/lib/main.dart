@@ -14,8 +14,16 @@ import 'src/core/routing/app_router.dart';
 import 'src/core/theme/app_theme.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:drift/drift.dart' as drift;
 import 'src/providers/auth_provider.dart';
 import 'src/providers/theme_provider.dart';
+import 'src/domain/entities/sms_message.dart';
+import 'src/services/sms/sms_parser.dart';
+import 'src/services/sms/sms_interceptor.dart';
+import 'src/services/notifications/notification_channels.dart';
+import 'src/providers/transactions_provider.dart';
+import 'src/data/database/database.dart';
+import 'src/data/repositories/notification_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -96,15 +104,120 @@ class _MontraAppState extends ConsumerState<MontraApp>
       if (isLockEnabled) {
         ref.read(authStateProvider.notifier).state = false;
       }
+    } else if (state == AppLifecycleState.resumed) {
+      // Re-trigger query stream so any transaction added while paused appears immediately
+      try {
+        final db = ref.read(databaseProvider);
+        db.notifyUpdates({drift.TableUpdate.onTable(db.transactions)});
+        ref.invalidate(allTransactionsProvider);
+        ref.invalidate(transactionsProvider);
+      } catch (e) {
+        debugPrint('Error refreshing transactions on resume: $e');
+      }
     }
   }
 
   Future<void> _initSmsListener() async {
     if (defaultTargetPlatform != TargetPlatform.android) return;
     try {
-      // Always re-register the callback handle on every launch so the
-      // background SmsReceiver always has a valid handle even after app updates.
       final interceptor = ref.read(smsInterceptorProvider);
+      if (interceptor is NativeSmsInterceptor) {
+        interceptor.onForegroundSms = (Map<String, dynamic> args) async {
+          try {
+            final message = SmsMessage.fromMap(args);
+            final parsed = SmsParser.parseSms(message.sender, message.body);
+            if (parsed != null) {
+              final db = ref.read(databaseProvider);
+              final categoryRow = await (db.select(db.categories)
+                    ..where((c) => c.name.equals(parsed.category)))
+                  .getSingleOrNull();
+
+              final insertedId = await db.into(db.transactions).insert(
+                    TransactionsCompanion.insert(
+                      amount: parsed.amount,
+                      type: parsed.type,
+                      merchant: drift.Value(parsed.merchant),
+                      categoryId: drift.Value(categoryRow?.id),
+                      accountId: 1,
+                      paymentMethod: drift.Value(parsed.paymentMethod),
+                      transactionDate: message.receivedAt,
+                      originalSms: drift.Value(message.body),
+                    ),
+                  );
+
+              // Instantly refresh UI without requiring app restart or manual refresh
+              db.notifyUpdates({drift.TableUpdate.onTable(db.transactions)});
+              ref.invalidate(allTransactionsProvider);
+              ref.invalidate(transactionsProvider);
+
+              // Show expense detection notification immediately
+              final notifService = ref.read(notificationServiceProvider);
+              await notifService.showNotification(
+                id: (DateTime.now().millisecondsSinceEpoch ~/ 100).remainder(2147483647),
+                title: '💳 Expense Detected',
+                body:
+                    'Spent ₹${parsed.amount.toStringAsFixed(0)} at ${parsed.merchant} via ${parsed.paymentMethod} (${parsed.category})',
+                channel: NotificationChannels.transactions,
+                payload: NotificationPayload(
+                  type: 'transactionDetected',
+                  route: '/transactions',
+                  data: {'transactionId': insertedId},
+                ),
+              );
+
+              // Check for Large Expense Alert if applicable
+              final notifRepo = ref.read(notificationRepositoryProvider);
+              final notifSettings = notifRepo.getSettings();
+              if (notifSettings.largeExpenseAlertsEnabled && parsed.amount >= notifSettings.largeExpenseThreshold) {
+                final manager = ref.read(notificationManagerProvider);
+                await manager.showLargeExpenseAlert(
+                  merchant: parsed.merchant,
+                  amount: parsed.amount,
+                  method: parsed.paymentMethod,
+                );
+              }
+
+              // Check for Budget Alert if applicable
+              if (notifSettings.budgetAlertsEnabled) {
+                final budgetRepo = ref.read(budgetRepositoryProvider);
+                final transactionRepo = ref.read(transactionRepositoryProvider);
+                final now = DateTime.now();
+                final budgets = await budgetRepo.getBudgetsByMonthAndYear(now.month, now.year);
+                final allTransactions = await transactionRepo.getAllTransactions();
+                final currentMonthTx = allTransactions.where((t) =>
+                    t.type == 'Expense' &&
+                    t.transactionDate.year == now.year &&
+                    t.transactionDate.month == now.month).toList();
+
+                final manager = ref.read(notificationManagerProvider);
+                for (var b in budgets) {
+                  if (b.categoryId == categoryRow?.id || b.categoryId == null) {
+                    final spent = currentMonthTx
+                        .where((t) => b.categoryId == null || t.categoryId == categoryRow?.id)
+                        .fold(0.0, (sum, t) => sum + t.amount);
+                    final percent = spent / b.amount;
+                    if (percent >= 1.0) {
+                      await manager.showBudgetAlert(
+                        budgetName: b.categoryId == null ? 'Overall Budget Limit Reached' : '${categoryRow?.name ?? "Category"} Budget Reached',
+                        used: spent,
+                        remaining: 0,
+                      );
+                    } else if (percent >= 0.8) {
+                      await manager.showBudgetAlert(
+                        budgetName: b.categoryId == null ? 'Overall Budget Alert (80%)' : '${categoryRow?.name ?? "Category"} Budget Alert (80%)',
+                        used: spent,
+                        remaining: b.amount - spent,
+                      );
+                    }
+                  }
+                }
+              }
+            }
+          } catch (e, st) {
+            debugPrint('Foreground SMS processing error: $e\n$st');
+          }
+        };
+      }
       await interceptor.initialize();
     } catch (e) {
       debugPrint('SMS interceptor initialization error: $e');
@@ -118,8 +231,18 @@ class _MontraAppState extends ConsumerState<MontraApp>
       router.push(payload.route);
     });
 
-    // Check if a new month has started and send monthly summary notification
     final db = ref.read(databaseProvider);
+
+    // Ensure any previously inserted SMS transactions with missing or 'Cash' paymentMethod are updated to 'UPI'
+    try {
+      await db.customStatement(
+        "UPDATE transactions SET payment_method = 'UPI' WHERE original_sms IS NOT NULL AND (payment_method IS NULL OR payment_method = 'Cash' OR payment_method = '');",
+      );
+    } catch (e) {
+      debugPrint('Error updating legacy SMS transactions: $e');
+    }
+
+    // Check if a new month has started and send monthly summary notification
     final notifManager = ref.read(notificationManagerProvider);
     final summaryService = MonthlySummaryService(db, notifManager);
     summaryService.checkAndSend();

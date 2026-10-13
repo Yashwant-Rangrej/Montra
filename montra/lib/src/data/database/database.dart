@@ -7,16 +7,32 @@ part 'database.g.dart';
 
 @DriftDatabase(tables: [Accounts, Categories, Transactions, Budgets, Notifications, Settings, Tags, TransactionTags, UnrecognizedSms, SavedSummaries, NotificationSettingsDb])
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(impl.openConnection());
+  AppDatabase([QueryExecutor? executor]) : super(executor ?? impl.openConnection());
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
       onCreate: (Migrator m) async {
         await m.createAll();
+        try {
+          await customStatement('''
+            CREATE TRIGGER IF NOT EXISTS trg_transactions_default_payment_method
+            AFTER INSERT ON transactions
+            FOR EACH ROW
+            WHEN NEW.payment_method IS NULL OR NEW.payment_method = ''
+            BEGIN
+              UPDATE transactions
+              SET payment_method = CASE
+                WHEN NEW.original_sms IS NOT NULL THEN 'UPI'
+                ELSE 'Cash'
+              END
+              WHERE id = NEW.id;
+            END;
+          ''');
+        } catch (_) {}
       },
       onUpgrade: (Migrator m, int from, int to) async {
         if (from < 2) {
@@ -62,12 +78,60 @@ class AppDatabase extends _$AppDatabase {
             );
           } catch (_) {}
         }
+        if (from < 9) {
+          try {
+            await customStatement(
+              "UPDATE transactions SET payment_method = 'UPI' WHERE original_sms IS NOT NULL AND (payment_method IS NULL OR payment_method = '' OR (payment_method = 'Cash' AND original_sms NOT LIKE '%atm%' AND original_sms NOT LIKE '%cash withdrawal%' AND original_sms NOT LIKE '%withdrawn%'));",
+            );
+            await customStatement(
+              "UPDATE transactions SET payment_method = 'Cash' WHERE original_sms IS NULL AND (payment_method IS NULL OR payment_method = '');",
+            );
+            await customStatement('''
+              CREATE TRIGGER IF NOT EXISTS trg_transactions_default_payment_method
+              AFTER INSERT ON transactions
+              FOR EACH ROW
+              WHEN NEW.payment_method IS NULL OR NEW.payment_method = ''
+              BEGIN
+                UPDATE transactions
+                SET payment_method = CASE
+                  WHEN NEW.original_sms IS NOT NULL THEN 'UPI'
+                  ELSE 'Cash'
+                END
+                WHERE id = NEW.id;
+              END;
+            ''');
+          } catch (_) {}
+        }
       },
       beforeOpen: (details) async {
         // WAL mode: better crash-safety and concurrent read performance
         await customStatement('PRAGMA journal_mode=WAL;');
         // Enforce foreign key constraints
         await customStatement('PRAGMA foreign_keys=ON;');
+
+        // Ensure database satisfies the requirement: SMS detected transactions are stored as UPI, manual defaults to Cash
+        try {
+          await customStatement(
+            "UPDATE transactions SET payment_method = 'UPI' WHERE original_sms IS NOT NULL AND (payment_method IS NULL OR payment_method = '' OR (payment_method = 'Cash' AND original_sms NOT LIKE '%atm%' AND original_sms NOT LIKE '%cash withdrawal%' AND original_sms NOT LIKE '%withdrawn%'));",
+          );
+          await customStatement(
+            "UPDATE transactions SET payment_method = 'Cash' WHERE original_sms IS NULL AND (payment_method IS NULL OR payment_method = '');",
+          );
+          await customStatement('''
+            CREATE TRIGGER IF NOT EXISTS trg_transactions_default_payment_method
+            AFTER INSERT ON transactions
+            FOR EACH ROW
+            WHEN NEW.payment_method IS NULL OR NEW.payment_method = ''
+            BEGIN
+              UPDATE transactions
+              SET payment_method = CASE
+                WHEN NEW.original_sms IS NOT NULL THEN 'UPI'
+                ELSE 'Cash'
+              END
+              WHERE id = NEW.id;
+            END;
+          ''');
+        } catch (_) {}
       },
     );
   }

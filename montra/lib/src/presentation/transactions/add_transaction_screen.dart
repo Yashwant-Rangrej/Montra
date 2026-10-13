@@ -49,7 +49,9 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       _notes = t.notes ?? '';
       _accountId = t.accountId;
       _categoryId = t.categoryId;
-      _paymentMethod = t.paymentMethod ?? 'Cash';
+      _paymentMethod = (t.originalSms != null && (t.paymentMethod == null || t.paymentMethod == 'Cash'))
+          ? 'UPI'
+          : (t.paymentMethod ?? 'Cash');
       _date = t.transactionDate;
       if (t.receiptAttachment != null) {
         _receiptAttachment = File(t.receiptAttachment!);

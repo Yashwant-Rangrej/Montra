@@ -328,7 +328,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                                 color: tx.type == 'Ignored' ? Theme.of(context).colorScheme.outline : null,
                               )
                             ),
-                            subtitle: Text('${tx.type} • ${tx.paymentMethod ?? "Cash"} • ${tx.transactionDate.day}/${tx.transactionDate.month}/${tx.transactionDate.year}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                            subtitle: Text('${tx.type} • ${(tx.originalSms != null && (tx.paymentMethod == null || tx.paymentMethod == "Cash")) ? "UPI" : (tx.paymentMethod ?? "Cash")} • ${tx.transactionDate.day}/${tx.transactionDate.month}/${tx.transactionDate.year}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                             trailing: _isSelectionMode
                               ? Checkbox(
                                   value: _selectedIds.contains(tx.id),

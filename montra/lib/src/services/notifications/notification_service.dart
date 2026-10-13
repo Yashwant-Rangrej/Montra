@@ -105,34 +105,85 @@ class NotificationService {
     required NotificationPayload payload,
     List<AndroidNotificationAction>? actions,
   }) async {
+    // 1. Primary attempt: with ic_notification small icon and ic_launcher large icon
     try {
       final androidDetails = AndroidNotificationDetails(
         channel.id,
         channel.name,
         channelDescription: channel.description,
-        importance: channel.importance,
-        priority: Priority.high,
+        importance: Importance.max,
+        priority: Priority.max,
         icon: 'ic_notification',
-        largeIcon: const DrawableResourceAndroidBitmap('app_logo'),
+        largeIcon: const DrawableResourceAndroidBitmap('ic_launcher'),
         visibility: NotificationVisibility.public,
         category: AndroidNotificationCategory.message,
         actions: actions,
       );
 
-      final details = NotificationDetails(android: androidDetails);
+      await _plugin.show(
+        id: id,
+        title: title,
+        body: body,
+        notificationDetails: NotificationDetails(android: androidDetails),
+        payload: jsonEncode(payload.toJson()),
+      );
+      debugPrint('NotificationService: Notification shown (id=$id, title=$title)');
+      return;
+    } catch (e) {
+      debugPrint('NotificationService: Primary showNotification failed: $e. Retrying with basic notification.');
+    }
+
+    // 2. Secondary fallback: without large icon (standard clean Android notification)
+    try {
+      final fallbackDetails = AndroidNotificationDetails(
+        channel.id,
+        channel.name,
+        channelDescription: channel.description,
+        importance: Importance.max,
+        priority: Priority.max,
+        icon: 'ic_notification',
+        visibility: NotificationVisibility.public,
+        category: AndroidNotificationCategory.message,
+        actions: actions,
+      );
 
       await _plugin.show(
         id: id,
         title: title,
         body: body,
-        notificationDetails: details,
+        notificationDetails: NotificationDetails(android: fallbackDetails),
         payload: jsonEncode(payload.toJson()),
       );
-      debugPrint(
-        'NotificationService: Notification shown (id=$id, title=$title)',
+      debugPrint('NotificationService: Fallback notification shown (id=$id, title=$title)');
+      return;
+    } catch (e) {
+      debugPrint('NotificationService: Secondary showNotification failed: $e. Retrying with @mipmap/ic_launcher.');
+    }
+
+    // 3. Ultimate fallback: using @mipmap/ic_launcher for small icon
+    try {
+      final ultimateDetails = AndroidNotificationDetails(
+        channel.id,
+        channel.name,
+        channelDescription: channel.description,
+        importance: Importance.max,
+        priority: Priority.max,
+        icon: '@mipmap/ic_launcher',
+        visibility: NotificationVisibility.public,
+        category: AndroidNotificationCategory.message,
+        actions: actions,
       );
+
+      await _plugin.show(
+        id: id,
+        title: title,
+        body: body,
+        notificationDetails: NotificationDetails(android: ultimateDetails),
+        payload: jsonEncode(payload.toJson()),
+      );
+      debugPrint('NotificationService: Ultimate fallback notification shown (id=$id, title=$title)');
     } catch (e, st) {
-      debugPrint('NotificationService: showNotification FAILED: $e\n$st');
+      debugPrint('NotificationService: All notification attempts FAILED: $e\n$st');
     }
   }
 }

@@ -28,7 +28,7 @@ class Transactions extends Table {
   TextColumn get type => text()(); 
   TextColumn get merchant => text().nullable()();
   IntColumn get categoryId => integer().nullable()();
-  TextColumn get paymentMethod => text().nullable()();
+  TextColumn get paymentMethod => text().nullable().withDefault(const Constant('UPI'))();
   IntColumn get accountId => integer()();
   IntColumn get targetAccountId => integer().nullable()(); 
   RealColumn get availableBalance => real().nullable()(); 

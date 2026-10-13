@@ -46,10 +46,10 @@ class SmsReceiver : BroadcastReceiver() {
         val messages = Telephony.Sms.Intents.getMessagesFromIntent(intent)
         if (messages.isNullOrEmpty()) return
 
-        for (sms in messages) {
-            val sender = sms.displayOriginatingAddress ?: ""
-            val body = sms.displayMessageBody ?: ""
-            val receivedAt = sms.timestampMillis
+        val messagesBySender = messages.groupBy { it.displayOriginatingAddress ?: "" }
+        for ((sender, parts) in messagesBySender) {
+            val body = parts.joinToString("") { it.displayMessageBody ?: "" }
+            val receivedAt = parts.firstOrNull()?.timestampMillis ?: System.currentTimeMillis()
 
             Log.d(TAG, "Received SMS from: $sender, body length: ${body.length}")
 
@@ -59,15 +59,21 @@ class SmsReceiver : BroadcastReceiver() {
                 "receivedAt" to receivedAt
             )
 
-            synchronized(lock) {
-                if (isChannelReady && backgroundChannel != null) {
-                    Log.d(TAG, "Channel ready, sending SMS to Dart immediately")
-                    pendingProcessingCount++
-                    backgroundChannel!!.invokeMethod("onSmsReceived", args)
-                } else {
-                    Log.d(TAG, "Channel not ready, queueing SMS and starting engine")
-                    pendingSmsQueue.add(args)
-                    startBackgroundEngine(context)
+            val fgChannel = MainActivity.foregroundChannel
+            if (fgChannel != null) {
+                Log.d(TAG, "App is in foreground, sending SMS to foreground channel directly")
+                fgChannel.invokeMethod("onSmsReceivedForeground", args)
+            } else {
+                synchronized(lock) {
+                    if (isChannelReady && backgroundChannel != null) {
+                        Log.d(TAG, "Channel ready, sending SMS to Dart immediately")
+                        pendingProcessingCount++
+                        backgroundChannel!!.invokeMethod("onSmsReceived", args)
+                    } else {
+                        Log.d(TAG, "Channel not ready, queueing SMS and starting engine")
+                        pendingSmsQueue.add(args)
+                        startBackgroundEngine(context)
+                    }
                 }
             }
         }
@@ -140,8 +146,14 @@ class SmsReceiver : BroadcastReceiver() {
                             pendingProcessingCount--
                             Log.d(TAG, "SMS processed. Remaining: $pendingProcessingCount")
                             if (pendingProcessingCount <= 0) {
-                                Log.d(TAG, "All SMS processed. Tearing down background engine.")
-                                resetEngine()
+                                Log.d(TAG, "All SMS processed. Scheduling engine teardown in 2500ms.")
+                                android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                                    synchronized(lock) {
+                                        if (pendingProcessingCount <= 0) {
+                                            resetEngine()
+                                        }
+                                    }
+                                }, 2500)
                             }
                         }
                     }
