@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'notification_channels.dart';
@@ -114,6 +115,7 @@ class NotificationService {
         importance: Importance.max,
         priority: Priority.max,
         icon: 'ic_notification',
+        color: const Color(0xFF03AB75),
         largeIcon: const DrawableResourceAndroidBitmap('ic_launcher'),
         visibility: NotificationVisibility.public,
         category: AndroidNotificationCategory.message,
@@ -142,6 +144,7 @@ class NotificationService {
         importance: Importance.max,
         priority: Priority.max,
         icon: 'ic_notification',
+        color: const Color(0xFF03AB75),
         visibility: NotificationVisibility.public,
         category: AndroidNotificationCategory.message,
         actions: actions,
@@ -157,10 +160,10 @@ class NotificationService {
       debugPrint('NotificationService: Fallback notification shown (id=$id, title=$title)');
       return;
     } catch (e) {
-      debugPrint('NotificationService: Secondary showNotification failed: $e. Retrying with @mipmap/ic_launcher.');
+      debugPrint('NotificationService: Secondary showNotification failed: $e. Retrying with basic channel.');
     }
 
-    // 3. Ultimate fallback: using @mipmap/ic_launcher for small icon
+    // 3. Ultimate fallback: basic notification
     try {
       final ultimateDetails = AndroidNotificationDetails(
         channel.id,
@@ -168,7 +171,8 @@ class NotificationService {
         channelDescription: channel.description,
         importance: Importance.max,
         priority: Priority.max,
-        icon: '@mipmap/ic_launcher',
+        icon: 'ic_notification',
+        color: const Color(0xFF03AB75),
         visibility: NotificationVisibility.public,
         category: AndroidNotificationCategory.message,
         actions: actions,
