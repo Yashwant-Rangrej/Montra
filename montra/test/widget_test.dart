@@ -22,14 +22,14 @@ void main() {
     });
 
     test('Parses HDFC Sent Rs UPI SMS with recipient and UPI paymentMethod', () {
-      const sms = 'Sent Rs.1.00 From HDFC Bank A/C *8031 to Yashawant janardhanasa ra on 13-10-26 via UPI Ref 628721381273.';
+      const sms = 'Sent Rs.1.00 From HDFC Bank A/C *8031 to Rohan Sharma on 13-10-26 via UPI Ref 628721381273.';
       final result = SmsParser.parseSms('JD-HDFCBN-S', sms);
 
       expect(result, isNotNull);
       expect(result!.amount, 1.0);
       expect(result.type, 'Expense');
       expect(result.paymentMethod, 'UPI');
-      expect(result.merchant, 'Yashawant janardhanasa ra');
+      expect(result.merchant, 'Rohan Sharma');
     });
 
     test('Ignores credit/deposit messages', () {
@@ -57,12 +57,12 @@ void main() {
     });
 
     test('Parses IndusInd towards VPA SMS with Rs amount, balance, and RRN', () {
-      const sms = 'A/C *XX4492 debited by Rs 1250.00 towards yashawantrangrej-2@xis. RRN:6227103. Avl Bal:254.77. Not you? Call 18602677777 - IndusInd bank';
+      const sms = 'A/C *XX1234 debited by Rs 1250.00 towards store-pay@upi. RRN:6227103. Avl Bal:254.77. Not you? Call 18602677777 - IndusInd bank';
       final result = SmsParser.parseSms('AD-INDUSB', sms);
 
       expect(result, isNotNull);
       expect(result!.amount, 1250.0);
-      expect(result.merchant, 'yashawantrangrej-2@xis');
+      expect(result.merchant, 'store-pay@upi');
       expect(result.type, 'Expense');
       expect(result.paymentMethod, 'UPI');
       expect(result.availableBalance, 254.77);
@@ -70,12 +70,12 @@ void main() {
     });
 
     test('Parses IndusInd SMS even if sender is unknown because body has bank and financial structure', () {
-      const sms = 'A/C *XX4492 debited by Rs 1250.00 towards yashawantrangrej-2@xis. RRN:6227103. Avl Bal:254.77. Not you? Call 18602677777 - IndusInd bank';
+      const sms = 'A/C *XX1234 debited by Rs 1250.00 towards store-pay@upi. RRN:6227103. Avl Bal:254.77. Not you? Call 18602677777 - IndusInd bank';
       final result = SmsParser.parseSms('UNKNOWN', sms);
 
       expect(result, isNotNull);
       expect(result!.amount, 1250.0);
-      expect(result.merchant, 'yashawantrangrej-2@xis');
+      expect(result.merchant, 'store-pay@upi');
       expect(result.paymentMethod, 'UPI');
     });
 

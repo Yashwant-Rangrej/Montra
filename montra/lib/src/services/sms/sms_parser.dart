@@ -33,7 +33,11 @@ class SmsParser {
     'icici', 'icicib', 'icicip', 'icicic',
     'axis', 'axisbk', 'axisbn', 'axisbank', 'axismb',
     'kotak', 'kotakb', 'kmbl',
-    'indus', 'indusb', 'indusind', 'indusbk', 'induslnd', // IndusInd Bank (covers all variations)
+    'indus',
+    'indusb',
+    'indusind',
+    'indusbk',
+    'induslnd', // IndusInd Bank (covers all variations)
     'pnb', 'pnbsms', 'pnbup',
     'bob', 'bobsms', 'bobtxn', 'baroda',
     'canara', 'canarab', 'cnrbnk', 'canbnk',
@@ -75,15 +79,45 @@ class SmsParser {
 
   // Bank names and indicators that appear directly in SMS body signatures
   static const _bankBodyPatterns = [
-    'indusind', 'hdfc', 'sbi', 'state bank', 'icici', 'axis', 'kotak',
-    'pnb', 'punjab national', 'bank of baroda', 'canara', 'idbi',
-    'federal bank', 'union bank', 'yes bank', 'rbl bank', 'idfc',
-    'uco bank', 'bank of india', 'central bank', 'indian bank',
-    'indian overseas', 'punjab & sind', 'bandhan', 'au small',
-    'equitas', 'ujjivan', 'south indian bank', 'karnataka bank',
-    'karur vysya', 'city union bank', 'standard chartered', 'hsbc',
-    'citibank', 'dbs bank', 'american express', 'paytm payments',
-    'airtel payments', 'bank',
+    'indusind',
+    'hdfc',
+    'sbi',
+    'state bank',
+    'icici',
+    'axis',
+    'kotak',
+    'pnb',
+    'punjab national',
+    'bank of baroda',
+    'canara',
+    'idbi',
+    'federal bank',
+    'union bank',
+    'yes bank',
+    'rbl bank',
+    'idfc',
+    'uco bank',
+    'bank of india',
+    'central bank',
+    'indian bank',
+    'indian overseas',
+    'punjab & sind',
+    'bandhan',
+    'au small',
+    'equitas',
+    'ujjivan',
+    'south indian bank',
+    'karnataka bank',
+    'karur vysya',
+    'city union bank',
+    'standard chartered',
+    'hsbc',
+    'citibank',
+    'dbs bank',
+    'american express',
+    'paytm payments',
+    'airtel payments',
+    'bank',
   ];
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -102,7 +136,10 @@ class SmsParser {
 
     // "Paid" variants
     RegExp(r'\bpaid\b', caseSensitive: false),
-    RegExp(r'\bpayment\s+(?:of|for|to|done|success|made)', caseSensitive: false),
+    RegExp(
+      r'\bpayment\s+(?:of|for|to|done|success|made)',
+      caseSensitive: false,
+    ),
 
     // "Sent" variants
     RegExp(r'\bsent\s+(?:rs\.?|inr|₹|\d|to\s+\w)', caseSensitive: false),
@@ -180,7 +217,8 @@ class SmsParser {
     if (!hasDebitKeyword) return null;
 
     // Reject pure credit/deposit messages (e.g. "INR 5000 credited to your account")
-    final isPureCredit = RegExp(
+    final isPureCredit =
+        RegExp(
           r'\b(?:credited|deposited|refund\s+received)\b',
           caseSensitive: false,
         ).hasMatch(lowerBody) &&
@@ -302,7 +340,8 @@ class SmsParser {
     final lower = body.toLowerCase();
 
     // 0. ATM / Cash withdrawal check
-    final isAtm = lower.contains('atm') ||
+    final isAtm =
+        lower.contains('atm') ||
         lower.contains('cash withdrawal') ||
         lower.contains('withdrawn cash') ||
         lower.contains('atm wdl') ||
@@ -328,7 +367,9 @@ class SmsParser {
     ).firstMatch(body);
     if (anyVpaMatch != null) {
       final m = anyVpaMatch.group(1)!.trim();
-      if (!m.contains('support@') && !m.contains('help@') && !m.contains('care@')) {
+      if (!m.contains('support@') &&
+          !m.contains('help@') &&
+          !m.contains('care@')) {
         return _cleanMerchantName(m);
       }
     }
@@ -358,7 +399,8 @@ class SmsParser {
     ).firstMatch(body);
     if (infoMatch != null) {
       final m = infoMatch.group(1)!.trim();
-      if (m.isNotEmpty && m.length > 2 && !_isBankPhrase(m)) return _cleanMerchantName(m);
+      if (m.isNotEmpty && m.length > 2 && !_isBankPhrase(m))
+        return _cleanMerchantName(m);
     }
 
     // Short Info: "Info: UPI/ref/Merchant"
@@ -368,11 +410,12 @@ class SmsParser {
     ).firstMatch(body);
     if (shortInfoMatch != null) {
       final m = shortInfoMatch.group(1)!.trim();
-      if (m.isNotEmpty && m.length > 2 && !_isBankPhrase(m)) return _cleanMerchantName(m);
+      if (m.isNotEmpty && m.length > 2 && !_isBankPhrase(m))
+        return _cleanMerchantName(m);
     }
 
     // 3. "towards MERCHANT" — common in IndusInd, Axis, SBI, ICICI
-    // E.g. "towards yashawantrangrej-2@xis. RRN:6227103" or "towards Swiggy."
+    // E.g. "towards store-pay@upi. RRN:67103" or "towards Swiggy."
     final towardsMatch = RegExp(
       r'\btowards\s+([A-Za-z0-9][A-Za-z0-9\s\-&.@]{1,40}?)(?:\s+on\b|\s+via\b|\s+using\b|\s+ref\b|\s+rrn\b|\s+avl\b|\s+bal\b|\s+a\/c\b|\.|\,|\n|$)',
       caseSensitive: false,
@@ -403,7 +446,7 @@ class SmsParser {
     }
 
     // 6. "at MERCHANT" or "to MERCHANT" or "sent to" or "paid to"
-    // E.g. "at Starbucks via UPI" / "to Yashawant janardhanasa ra on 13-10-26" / "at AMAZON on"
+    // E.g. "at Starbucks via UPI" / "to Rahul Sharma on 13-10-26" / "at AMAZON on"
     final stdMatch = RegExp(
       r'\b(?:at|to|sent\s+to|paid\s+to)\s+([A-Za-z0-9][A-Za-z0-9\s\-&.@]{1,40}?)(?:\s+on\b|\s+via\b|\s+using\b|\s+from\b|\s+ref\b|\s+rrn\b|\s+avl\b|\s+bal\b|\s+a\/c\b|\.|\,|\n|$)',
       caseSensitive: false,
@@ -489,26 +532,30 @@ class SmsParser {
   static String _extractPaymentMethod(String body) {
     final lowerBody = body.toLowerCase();
 
-    final bool isAtm = lowerBody.contains('atm') ||
+    final bool isAtm =
+        lowerBody.contains('atm') ||
         lowerBody.contains('cash withdrawal') ||
         lowerBody.contains('withdrawn cash') ||
         lowerBody.contains('atm wdl') ||
         lowerBody.contains('cash wdl');
 
-    final bool isCard = lowerBody.contains('credit card') ||
+    final bool isCard =
+        lowerBody.contains('credit card') ||
         lowerBody.contains('debit card') ||
         RegExp(
           r'\b(?:card\s+(?:xx|ending|no\.?)|card\s*purchase|pos\s*txn)\b',
           caseSensitive: false,
         ).hasMatch(lowerBody);
 
-    final bool isBankTransfer = lowerBody.contains('neft') ||
+    final bool isBankTransfer =
+        lowerBody.contains('neft') ||
         lowerBody.contains('rtgs') ||
         lowerBody.contains('imps') ||
         lowerBody.contains('netbanking') ||
         lowerBody.contains('internet banking');
 
-    final bool isUpi = lowerBody.contains('upi') ||
+    final bool isUpi =
+        lowerBody.contains('upi') ||
         lowerBody.contains('@') ||
         lowerBody.contains('phonepe') ||
         lowerBody.contains('gpay') ||
@@ -519,8 +566,14 @@ class SmsParser {
         lowerBody.contains('cred') ||
         lowerBody.contains('amazon pay') ||
         lowerBody.contains('rrn') ||
-        RegExp(r'\bsent\s+(?:rs\.?|inr|₹)', caseSensitive: false).hasMatch(body) ||
-        RegExp(r'\bpaid\s+(?:rs\.?|inr|₹)', caseSensitive: false).hasMatch(body) ||
+        RegExp(
+          r'\bsent\s+(?:rs\.?|inr|₹)',
+          caseSensitive: false,
+        ).hasMatch(body) ||
+        RegExp(
+          r'\bpaid\s+(?:rs\.?|inr|₹)',
+          caseSensitive: false,
+        ).hasMatch(body) ||
         RegExp(r'upi\s*ref', caseSensitive: false).hasMatch(body);
 
     if (isAtm) return 'Cash';
@@ -568,50 +621,173 @@ class SmsParser {
     final String ml = merchant.toLowerCase();
 
     const foodKeywords = [
-      'starbucks', 'zomato', 'swiggy', 'mcdonalds', 'kfc', 'restaurant',
-      'cafe', 'food', 'blinkit', 'bigbasket', 'grofers', 'dunzo',
-      'dominos', 'pizza', 'burger', 'dineout', 'eatsure', 'zepto',
-      'instamart', 'chaayos', 'chai', 'coffee', 'bakery', 'hotel', 'dhaba',
+      'starbucks',
+      'zomato',
+      'swiggy',
+      'mcdonalds',
+      'kfc',
+      'restaurant',
+      'cafe',
+      'food',
+      'blinkit',
+      'bigbasket',
+      'grofers',
+      'dunzo',
+      'dominos',
+      'pizza',
+      'burger',
+      'dineout',
+      'eatsure',
+      'zepto',
+      'instamart',
+      'chaayos',
+      'chai',
+      'coffee',
+      'bakery',
+      'hotel',
+      'dhaba',
     ];
     const transportKeywords = [
-      'uber', 'ola', 'irctc', 'petrol', 'fuel', 'hpcl', 'ioc', 'bpcl',
-      'metro', 'rapido', 'bus', 'train', 'flight', 'airport', 'indigo',
-      'spicejet', 'airindia', 'makemytrip', 'redbus', 'toll', 'fastag',
-      'parking', 'auto', 'cab',
+      'uber',
+      'ola',
+      'irctc',
+      'petrol',
+      'fuel',
+      'hpcl',
+      'ioc',
+      'bpcl',
+      'metro',
+      'rapido',
+      'bus',
+      'train',
+      'flight',
+      'airport',
+      'indigo',
+      'spicejet',
+      'airindia',
+      'makemytrip',
+      'redbus',
+      'toll',
+      'fastag',
+      'parking',
+      'auto',
+      'cab',
     ];
     const shoppingKeywords = [
-      'amazon', 'flipkart', 'myntra', 'nykaa', 'supermarket', 'dmart',
-      'reliance', 'meesho', 'ajio', 'tata', 'croma', 'snapdeal', 'shopsy',
-      'jiomart', 'retail', 'store', 'mall', 'mart', 'clothes', 'fashion',
+      'amazon',
+      'flipkart',
+      'myntra',
+      'nykaa',
+      'supermarket',
+      'dmart',
+      'reliance',
+      'meesho',
+      'ajio',
+      'tata',
+      'croma',
+      'snapdeal',
+      'shopsy',
+      'jiomart',
+      'retail',
+      'store',
+      'mall',
+      'mart',
+      'clothes',
+      'fashion',
     ];
     const utilitiesKeywords = [
-      'airtel', 'jio', 'vi ', 'bsnl', 'bescom', 'electricity', 'water',
-      'broadband', 'recharge', 'gas', 'lpg', 'postpaid', 'tata power',
-      'msedcl', 'tneb', 'wbsedcl', 'billdesk', 'bbps', 'dth', 'tata sky',
-      'dish tv', 'act fibernet', 'wifi',
+      'airtel',
+      'jio',
+      'vi ',
+      'bsnl',
+      'bescom',
+      'electricity',
+      'water',
+      'broadband',
+      'recharge',
+      'gas',
+      'lpg',
+      'postpaid',
+      'tata power',
+      'msedcl',
+      'tneb',
+      'wbsedcl',
+      'billdesk',
+      'bbps',
+      'dth',
+      'tata sky',
+      'dish tv',
+      'act fibernet',
+      'wifi',
     ];
     const entertainmentKeywords = [
-      'netflix', 'spotify', 'prime', 'hotstar', 'pvr', 'bookmyshow',
-      'disney', 'zee5', 'sonyliv', 'jiocinema', 'youtube', 'apple music',
-      'gaana', 'cinema', 'movie', 'theatre', 'gaming', 'steam',
+      'netflix',
+      'spotify',
+      'prime',
+      'hotstar',
+      'pvr',
+      'bookmyshow',
+      'disney',
+      'zee5',
+      'sonyliv',
+      'jiocinema',
+      'youtube',
+      'apple music',
+      'gaana',
+      'cinema',
+      'movie',
+      'theatre',
+      'gaming',
+      'steam',
     ];
     const healthKeywords = [
-      'pharmacy', 'hospital', 'apollo', 'medplus', 'clinic', 'pharma',
-      'medic', 'health', 'netmeds', '1mg', 'practo', 'tata 1mg',
-      'cult.fit', 'docprime', 'dental', 'diagnostic', 'pathology',
-      'lab', 'wellness',
+      'pharmacy',
+      'hospital',
+      'apollo',
+      'medplus',
+      'clinic',
+      'pharma',
+      'medic',
+      'health',
+      'netmeds',
+      '1mg',
+      'practo',
+      'tata 1mg',
+      'cult.fit',
+      'docprime',
+      'dental',
+      'diagnostic',
+      'pathology',
+      'lab',
+      'wellness',
     ];
     const educationKeywords = [
-      'byju', 'unacademy', 'coursera', 'udemy', 'skill', 'vedantu',
-      'topper', 'whitehat', 'school', 'college', 'university', 'exam',
-      'fee', 'fees', 'tuition', 'coaching', 'classes', 'academy',
+      'byju',
+      'unacademy',
+      'coursera',
+      'udemy',
+      'skill',
+      'vedantu',
+      'topper',
+      'whitehat',
+      'school',
+      'college',
+      'university',
+      'exam',
+      'fee',
+      'fees',
+      'tuition',
+      'coaching',
+      'classes',
+      'academy',
     ];
 
     if (foodKeywords.any((k) => ml.contains(k))) return 'Food';
     if (transportKeywords.any((k) => ml.contains(k))) return 'Transportation';
     if (shoppingKeywords.any((k) => ml.contains(k))) return 'Shopping';
     if (utilitiesKeywords.any((k) => ml.contains(k))) return 'Utilities';
-    if (entertainmentKeywords.any((k) => ml.contains(k))) return 'Entertainment';
+    if (entertainmentKeywords.any((k) => ml.contains(k)))
+      return 'Entertainment';
     if (healthKeywords.any((k) => ml.contains(k))) return 'Health';
     if (educationKeywords.any((k) => ml.contains(k))) return 'Education';
 
