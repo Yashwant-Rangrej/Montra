@@ -399,8 +399,9 @@ class SmsParser {
     ).firstMatch(body);
     if (infoMatch != null) {
       final m = infoMatch.group(1)!.trim();
-      if (m.isNotEmpty && m.length > 2 && !_isBankPhrase(m))
+      if (m.isNotEmpty && m.length > 2 && !_isBankPhrase(m)) {
         return _cleanMerchantName(m);
+      }
     }
 
     // Short Info: "Info: UPI/ref/Merchant"
@@ -410,8 +411,9 @@ class SmsParser {
     ).firstMatch(body);
     if (shortInfoMatch != null) {
       final m = shortInfoMatch.group(1)!.trim();
-      if (m.isNotEmpty && m.length > 2 && !_isBankPhrase(m))
+      if (m.isNotEmpty && m.length > 2 && !_isBankPhrase(m)) {
         return _cleanMerchantName(m);
+      }
     }
 
     // 3. "towards MERCHANT" — common in IndusInd, Axis, SBI, ICICI
@@ -786,8 +788,9 @@ class SmsParser {
     if (transportKeywords.any((k) => ml.contains(k))) return 'Transportation';
     if (shoppingKeywords.any((k) => ml.contains(k))) return 'Shopping';
     if (utilitiesKeywords.any((k) => ml.contains(k))) return 'Utilities';
-    if (entertainmentKeywords.any((k) => ml.contains(k)))
+    if (entertainmentKeywords.any((k) => ml.contains(k))) {
       return 'Entertainment';
+    }
     if (healthKeywords.any((k) => ml.contains(k))) return 'Health';
     if (educationKeywords.any((k) => ml.contains(k))) return 'Education';
 
