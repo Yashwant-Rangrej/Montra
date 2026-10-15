@@ -134,6 +134,14 @@ class SettingsScreen extends ConsumerWidget {
             children: [
               _buildSettingsTile(
                 context,
+                title: 'Import & Export Data (Backup & Restore)',
+                icon: Icons.import_export_rounded,
+                iconColor: Colors.blue,
+                isLast: false,
+                onTap: () => context.push('/backup'),
+              ),
+              _buildSettingsTile(
+                context,
                 title: 'Clear Database',
                 icon: Icons.delete_outline,
                 iconColor: Colors.red,

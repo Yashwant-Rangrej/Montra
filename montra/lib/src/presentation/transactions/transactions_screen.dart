@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import '../../providers/transactions_provider.dart';
 import '../../providers/categories_provider.dart';
 import '../../providers/repository_providers.dart';
@@ -103,6 +104,15 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                       if (context.mounted) Navigator.pop(context);
                     },
                   ),
+            ListTile(
+              leading: const Icon(Icons.edit_calendar_outlined),
+              title: const Text('Edit Details & Date'),
+              subtitle: const Text('Customize amount, date, time, and category'),
+              onTap: () {
+                Navigator.pop(context);
+                context.push('/add-transaction', extra: tx);
+              },
+            ),
             ListTile(
               leading: const Icon(Icons.delete),
               title: const Text('Delete transaction(s)'),
@@ -328,7 +338,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                                 color: tx.type == 'Ignored' ? Theme.of(context).colorScheme.outline : null,
                               )
                             ),
-                            subtitle: Text('${tx.type} • ${(tx.originalSms != null && (tx.paymentMethod == null || tx.paymentMethod == "Cash")) ? "UPI" : (tx.paymentMethod ?? "Cash")} • ${tx.transactionDate.day}/${tx.transactionDate.month}/${tx.transactionDate.year}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                            subtitle: Text('${tx.type} • ${(tx.originalSms != null && (tx.paymentMethod == null || tx.paymentMethod == "Cash")) ? "UPI" : (tx.paymentMethod ?? "Cash")} • ${DateFormat('dd MMM yyyy, hh:mm a').format(tx.transactionDate)}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                             trailing: _isSelectionMode
                               ? Checkbox(
                                   value: _selectedIds.contains(tx.id),

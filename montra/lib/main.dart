@@ -128,8 +128,25 @@ class _MontraAppState extends ConsumerState<MontraApp>
             final parsed = SmsParser.parseSms(message.sender, message.body);
             if (parsed != null) {
               final db = ref.read(databaseProvider);
+
+              // Prevent duplicate transactions if reference number or identical SMS already stored
+              if (parsed.referenceNumber != null && parsed.referenceNumber!.isNotEmpty) {
+                final existingRef = await (db.select(db.transactions)
+                      ..where((t) => t.bankTransactionId.equals(parsed.referenceNumber!)))
+                    .getSingleOrNull();
+                if (existingRef != null) {
+                  return;
+                }
+              }
+              final existingSms = await (db.select(db.transactions)
+                    ..where((t) => t.originalSms.equals(message.body)))
+                  .getSingleOrNull();
+              if (existingSms != null) {
+                return;
+              }
+
               final categoryRow = await (db.select(db.categories)
-                    ..where((c) => c.name.equals(parsed.category)))
+                    ..where((c) => c.name.equals(parsed.category) | c.name.like('${parsed.category}%')))
                   .getSingleOrNull();
 
               final insertedId = await db.into(db.transactions).insert(
@@ -140,10 +157,21 @@ class _MontraAppState extends ConsumerState<MontraApp>
                       categoryId: drift.Value(categoryRow?.id),
                       accountId: 1,
                       paymentMethod: drift.Value(parsed.paymentMethod),
+                      availableBalance: drift.Value(parsed.availableBalance),
+                      bankTransactionId: drift.Value(parsed.referenceNumber),
                       transactionDate: message.receivedAt,
                       originalSms: drift.Value(message.body),
                     ),
                   );
+
+              if (parsed.availableBalance != null) {
+                await (db.update(db.accounts)..where((a) => a.id.equals(1))).write(
+                  AccountsCompanion(
+                    availableBalance: drift.Value(parsed.availableBalance),
+                    lastTransactionDate: drift.Value(message.receivedAt),
+                  ),
+                );
+              }
 
               // Instantly refresh UI without requiring app restart or manual refresh
               db.notifyUpdates({drift.TableUpdate.onTable(db.transactions)});
@@ -211,6 +239,20 @@ class _MontraAppState extends ConsumerState<MontraApp>
                     }
                   }
                 }
+              }
+            } else {
+              if (SmsParser.isFinancialMessage(message.sender, message.body)) {
+                final db = ref.read(databaseProvider);
+                await db.into(db.unrecognizedSms).insert(
+                      UnrecognizedSmsCompanion.insert(
+                        sender: message.sender,
+                        body: message.body,
+                        receivedAt: message.receivedAt,
+                        reason: const drift.Value(
+                          'Could not extract transaction details from SMS.',
+                        ),
+                      ),
+                    );
               }
             }
           } catch (e, st) {

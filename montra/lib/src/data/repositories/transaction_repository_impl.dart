@@ -29,13 +29,17 @@ class TransactionRepositoryImpl implements TransactionRepository {
 
   @override
   Future<List<TransactionEntity>> getAllTransactions() async {
-    final transactions = await db.select(db.transactions).get();
+    final transactions = await (db.select(db.transactions)
+          ..orderBy([(t) => OrderingTerm(expression: t.transactionDate, mode: OrderingMode.desc)]))
+        .get();
     return transactions.map(_mapToEntity).toList();
   }
 
   @override
   Future<List<TransactionEntity>> getTransactionsByAccount(int accountId) async {
-    final query = db.select(db.transactions)..where((t) => t.accountId.equals(accountId));
+    final query = db.select(db.transactions)
+      ..where((t) => t.accountId.equals(accountId))
+      ..orderBy([(t) => OrderingTerm(expression: t.transactionDate, mode: OrderingMode.desc)]);
     final transactions = await query.get();
     return transactions.map(_mapToEntity).toList();
   }
@@ -82,6 +86,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
         notes: Value(transaction.notes),
         originalSms: Value(transaction.originalSms),
         bankTransactionId: Value(transaction.bankTransactionId),
+        receiptAttachment: Value(transaction.receiptAttachment),
       ),
     );
   }
@@ -104,6 +109,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
         notes: Value(transaction.notes),
         originalSms: Value(transaction.originalSms),
         bankTransactionId: Value(transaction.bankTransactionId),
+        receiptAttachment: Value(transaction.receiptAttachment),
       ),
     );
   }

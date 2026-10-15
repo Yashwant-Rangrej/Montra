@@ -10,13 +10,27 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? impl.openConnection());
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
       onCreate: (Migrator m) async {
         await m.createAll();
+
+        // 1. Create performance indexes on frequently filtered/sorted columns
+        try {
+          await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(transaction_date DESC);');
+          await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_category ON transactions(category_id);');
+          await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_account ON transactions(account_id);');
+          await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(type);');
+          await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_bank_tx_id ON transactions(bank_transaction_id);');
+          await customStatement('CREATE INDEX IF NOT EXISTS idx_budgets_month_year ON budgets(month, year);');
+          await customStatement('CREATE INDEX IF NOT EXISTS idx_unrecognized_sms_date ON unrecognized_sms(received_at DESC);');
+          await customStatement('CREATE INDEX IF NOT EXISTS idx_notifications_date ON notifications(notification_date DESC);');
+        } catch (_) {}
+
+        // 2. Default payment method trigger: SMS detected defaults to UPI, manual to Cash
         try {
           await customStatement('''
             CREATE TRIGGER IF NOT EXISTS trg_transactions_default_payment_method
@@ -102,6 +116,18 @@ class AppDatabase extends _$AppDatabase {
             ''');
           } catch (_) {}
         }
+        if (from < 10) {
+          try {
+            await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(transaction_date DESC);');
+            await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_category ON transactions(category_id);');
+            await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_account ON transactions(account_id);');
+            await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(type);');
+            await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_bank_tx_id ON transactions(bank_transaction_id);');
+            await customStatement('CREATE INDEX IF NOT EXISTS idx_budgets_month_year ON budgets(month, year);');
+            await customStatement('CREATE INDEX IF NOT EXISTS idx_unrecognized_sms_date ON unrecognized_sms(received_at DESC);');
+            await customStatement('CREATE INDEX IF NOT EXISTS idx_notifications_date ON notifications(notification_date DESC);');
+          } catch (_) {}
+        }
       },
       beforeOpen: (details) async {
         // WAL mode: better crash-safety and concurrent read performance
@@ -109,7 +135,19 @@ class AppDatabase extends _$AppDatabase {
         // Enforce foreign key constraints
         await customStatement('PRAGMA foreign_keys=ON;');
 
-        // Ensure database satisfies the requirement: SMS detected transactions are stored as UPI, manual defaults to Cash
+        // Ensure performance indexes exist
+        try {
+          await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(transaction_date DESC);');
+          await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_category ON transactions(category_id);');
+          await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_account ON transactions(account_id);');
+          await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(type);');
+          await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_bank_tx_id ON transactions(bank_transaction_id);');
+          await customStatement('CREATE INDEX IF NOT EXISTS idx_budgets_month_year ON budgets(month, year);');
+          await customStatement('CREATE INDEX IF NOT EXISTS idx_unrecognized_sms_date ON unrecognized_sms(received_at DESC);');
+          await customStatement('CREATE INDEX IF NOT EXISTS idx_notifications_date ON notifications(notification_date DESC);');
+        } catch (_) {}
+
+        // Ensure database satisfies payment method requirements
         try {
           await customStatement(
             "UPDATE transactions SET payment_method = 'UPI' WHERE original_sms IS NOT NULL AND (payment_method IS NULL OR payment_method = '' OR (payment_method = 'Cash' AND original_sms NOT LIKE '%atm%' AND original_sms NOT LIKE '%cash withdrawal%' AND original_sms NOT LIKE '%withdrawn%'));",

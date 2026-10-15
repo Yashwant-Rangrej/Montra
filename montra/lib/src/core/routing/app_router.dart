@@ -22,6 +22,7 @@ import '../../presentation/categories/add_category_screen.dart';
 import '../../presentation/budgets/add_budget_screen.dart';
 import '../../domain/entities/category_entity.dart';
 import '../../presentation/analytics/monthly_summary_screen.dart';
+import '../../presentation/backup/backup_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
@@ -153,6 +154,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         final stats = state.extra as Map<String, dynamic>;
         return MonthlySummaryScreen(stats: stats);
       },
+    ),
+    GoRoute(
+      path: '/backup',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const BackupScreen(),
     ),
   ],
 );

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:intl/intl.dart';
 import '../../providers/transactions_provider.dart';
 import '../../providers/categories_provider.dart';
 import '../../providers/sms_providers.dart';
+import '../../providers/backup_providers.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/category_icon_helper.dart';
 import '../widgets/empty_state_widget.dart';
@@ -17,8 +20,8 @@ class DashboardScreen extends ConsumerStatefulWidget {
   ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsBindingObserver {
-
+class _DashboardScreenState extends ConsumerState<DashboardScreen>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -29,7 +32,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
       ref.invalidate(transactionsProvider);
 
       // Listen for background SMS processing notifications
-      const MethodChannel bgChannel = MethodChannel('com.montra.app/sms_background');
+      const MethodChannel bgChannel = MethodChannel(
+        'com.montra.app/sms_background',
+      );
       bgChannel.setMethodCallHandler((call) async {
         if (call.method == 'smsProcessed') {
           // Refresh transactions when a new SMS is processed
@@ -51,6 +56,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
     if (state == AppLifecycleState.resumed) {
       // Refresh transactions when returning to the app
       ref.invalidate(transactionsProvider);
+    } else if (state == AppLifecycleState.paused) {
+      // Trigger background auto-backup when user leaves app
+      ref.read(backupServiceProvider).triggerAutoBackupIfEnabled();
     }
   }
 
@@ -64,7 +72,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
           builder: (context) => AlertDialog(
             title: const Text('SMS Access Required'),
             content: const Text(
-                'Montra needs access to your SMS messages to automatically track your expenses and income directly from bank notifications. We value your privacy and this data never leaves your device.'),
+              'Montra needs access to your SMS messages to automatically track your expenses and income directly from bank notifications. We value your privacy and this data never leaves your device.',
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -135,9 +144,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
         title: const Text('Edit Name'),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(
-            hintText: 'Enter your name',
-          ),
+          decoration: const InputDecoration(hintText: 'Enter your name'),
           autofocus: true,
           textCapitalization: TextCapitalization.words,
         ),
@@ -175,12 +182,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.5),
                     width: 3,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.2),
                       blurRadius: 10,
                       spreadRadius: 2,
                     ),
@@ -188,15 +199,24 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
                 ),
                 child: CircleAvatar(
                   radius: 40,
-                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                  child: Icon(Icons.person, size: 40, color: Theme.of(context).colorScheme.primary),
+                  backgroundColor: Theme.of(
+                    context,
+                  ).colorScheme.primaryContainer,
+                  child: Icon(
+                    Icons.person,
+                    size: 40,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
               Consumer(
                 builder: (context, ref, child) {
                   final name = ref.watch(usernameProvider);
-                  return Text(name, style: Theme.of(context).textTheme.headlineSmall);
+                  return Text(
+                    name,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  );
                 },
               ),
               const SizedBox(height: 32),
@@ -224,7 +244,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(_getGreeting(), style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+            Text(
+              _getGreeting(),
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
             Text(userName, style: Theme.of(context).textTheme.headlineMedium),
           ],
         ),
@@ -234,43 +259,73 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.5),
                 width: 2,
               ),
             ),
             child: CircleAvatar(
               radius: 22,
               backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-              child: Icon(Icons.person, color: Theme.of(context).colorScheme.primary),
+              child: Icon(
+                Icons.person,
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
           ),
-        )
+        ),
       ],
     );
   }
-
 
   Widget _buildBalanceCard(AsyncValue<Map<String, double>> statsAsync) {
     return statsAsync.when(
       data: (stats) {
         return Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondary,
-              borderRadius: BorderRadius.circular(32),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-              Text('Today', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7))),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.secondary,
+            borderRadius: BorderRadius.circular(32),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                'Today',
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSecondary.withValues(alpha: 0.7),
+                ),
+              ),
               const SizedBox(height: 8),
-              _buildIncomeExpenseStat('Total Expenses', stats['todayExpense'] ?? 0.0, false),
+              _buildIncomeExpenseStat(
+                'Total Expenses',
+                stats['todayExpense'] ?? 0.0,
+                false,
+              ),
               const SizedBox(height: 16),
-              Divider(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.2)),
+              Divider(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSecondary.withValues(alpha: 0.2),
+              ),
               const SizedBox(height: 16),
-              Text('This Month', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7))),
+              Text(
+                'This Month',
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSecondary.withValues(alpha: 0.7),
+                ),
+              ),
               const SizedBox(height: 8),
-              _buildIncomeExpenseStat('Total Expenses', stats['monthlyExpense'] ?? 0.0, false),
+              _buildIncomeExpenseStat(
+                'Total Expenses',
+                stats['monthlyExpense'] ?? 0.0,
+                false,
+              ),
             ],
           ),
         );
@@ -284,7 +339,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
     return Row(
       children: [
         CircleAvatar(
-          backgroundColor: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.1),
+          backgroundColor: Theme.of(
+            context,
+          ).colorScheme.onSecondary.withValues(alpha: 0.1),
           radius: 20,
           child: Icon(
             isIncome ? Icons.arrow_downward : Icons.arrow_upward,
@@ -296,19 +353,37 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7))),
-            Text('₹${amount.toStringAsFixed(2)}', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.onSecondary)),
+            Text(
+              title,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSecondary.withValues(alpha: 0.7),
+              ),
+            ),
+            Text(
+              '₹${amount.toStringAsFixed(2)}',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: Theme.of(context).colorScheme.onSecondary,
+              ),
+            ),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildRecentTransactions(AsyncValue<List<dynamic>> transactionsAsync, AsyncValue<List<dynamic>> categoriesAsync) {
+  Widget _buildRecentTransactions(
+    AsyncValue<List<dynamic>> transactionsAsync,
+    AsyncValue<List<dynamic>> categoriesAsync,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Recent Transactions', style: Theme.of(context).textTheme.titleLarge),
+        Text(
+          'Recent Transactions',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         const SizedBox(height: 16),
         transactionsAsync.when(
           data: (transactions) {
@@ -327,32 +402,53 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
                 final tx = transactions[index];
                 String? catName;
                 categoriesAsync.whenData((categories) {
-                  catName = categories.where((c) => c.id == tx.categoryId).firstOrNull?.name;
+                  catName = categories
+                      .where((c) => c.id == tx.categoryId)
+                      .firstOrNull
+                      ?.name;
                 });
                 final iconData = CategoryIconHelper.getIcon(catName);
 
                 return ListTile(
                   contentPadding: EdgeInsets.zero,
+                  onTap: () => context.push('/add-transaction', extra: tx),
                   leading: CircleAvatar(
-                    backgroundColor: tx.type == 'Ignored' ? Theme.of(context).colorScheme.surfaceContainerHighest : AppTheme.expense.withValues(alpha: 0.1),
+                    backgroundColor: tx.type == 'Ignored'
+                        ? Theme.of(context).colorScheme.surfaceContainerHighest
+                        : AppTheme.expense.withValues(alpha: 0.1),
                     child: Icon(
                       iconData,
-                      color: tx.type == 'Ignored' ? Theme.of(context).colorScheme.outline : AppTheme.expense,
+                      color: tx.type == 'Ignored'
+                          ? Theme.of(context).colorScheme.outline
+                          : AppTheme.expense,
                     ),
                   ),
                   title: Text(
                     tx.merchant ?? tx.notes ?? 'Transaction',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      decoration: tx.type == 'Ignored' ? TextDecoration.lineThrough : null,
-                      color: tx.type == 'Ignored' ? Theme.of(context).colorScheme.outline : null,
+                      decoration: tx.type == 'Ignored'
+                          ? TextDecoration.lineThrough
+                          : null,
+                      color: tx.type == 'Ignored'
+                          ? Theme.of(context).colorScheme.outline
+                          : null,
                     ),
                   ),
-                  subtitle: Text('${tx.type} • ${(tx.originalSms != null && (tx.paymentMethod == null || tx.paymentMethod == "Cash")) ? "UPI" : (tx.paymentMethod ?? "Cash")}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                  subtitle: Text(
+                    '${tx.type} • ${(tx.originalSms != null && (tx.paymentMethod == null || tx.paymentMethod == "Cash")) ? "UPI" : (tx.paymentMethod ?? "Cash")} • ${DateFormat('dd MMM, hh:mm a').format(tx.transactionDate)}',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                   trailing: Text(
                     '-₹${tx.amount.toStringAsFixed(2)}',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: tx.type == 'Ignored' ? Theme.of(context).colorScheme.outline : AppTheme.expense,
-                      decoration: tx.type == 'Ignored' ? TextDecoration.lineThrough : null,
+                      color: tx.type == 'Ignored'
+                          ? Theme.of(context).colorScheme.outline
+                          : AppTheme.expense,
+                      decoration: tx.type == 'Ignored'
+                          ? TextDecoration.lineThrough
+                          : null,
                     ),
                   ),
                 );
@@ -361,7 +457,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with WidgetsB
           },
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (err, stack) => Text('Error: $err'),
-        )
+        ),
       ],
     );
   }

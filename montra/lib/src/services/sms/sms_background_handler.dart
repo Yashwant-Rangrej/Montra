@@ -50,13 +50,33 @@ Future<void> _processSms(
     if (parsed != null) {
       debugPrint('SMS parsed: ${parsed.merchant} - ₹${parsed.amount}');
 
+      // Prevent duplicate transactions if reference number or identical SMS already stored
+      if (parsed.referenceNumber != null && parsed.referenceNumber!.isNotEmpty) {
+        final existingRef = await (db.select(db.transactions)
+              ..where((t) => t.bankTransactionId.equals(parsed.referenceNumber!)))
+            .getSingleOrNull();
+        if (existingRef != null) {
+          debugPrint('Duplicate SMS skipped: reference number ${parsed.referenceNumber} already exists');
+          await db.close();
+          return;
+        }
+      }
+      final existingSms = await (db.select(db.transactions)
+            ..where((t) => t.originalSms.equals(message.body)))
+          .getSingleOrNull();
+      if (existingSms != null) {
+        debugPrint('Duplicate SMS skipped: identical body already recorded');
+        await db.close();
+        return;
+      }
+
       // Default to accountId 1
       const accountId = 1;
 
       // Find category ID based on parsed category name
       final categoryRow = await (db.select(
         db.categories,
-      )..where((c) => c.name.equals(parsed.category))).getSingleOrNull();
+      )..where((c) => c.name.equals(parsed.category) | c.name.like('${parsed.category}%'))).getSingleOrNull();
       final int? categoryId = categoryRow?.id;
 
       // Insert parsed transaction into local Drift database
@@ -70,6 +90,8 @@ Future<void> _processSms(
               categoryId: drift.Value(categoryId),
               accountId: accountId,
               paymentMethod: drift.Value(parsed.paymentMethod),
+              availableBalance: drift.Value(parsed.availableBalance),
+              bankTransactionId: drift.Value(parsed.referenceNumber),
               transactionDate: message.receivedAt,
               originalSms: drift.Value(message.body),
             ),
@@ -77,7 +99,16 @@ Future<void> _processSms(
 
       debugPrint('Transaction inserted with id: $insertedId');
 
-      // FIX: Close DB before the async notification call so a notification
+      if (parsed.availableBalance != null) {
+        await (db.update(db.accounts)..where((a) => a.id.equals(accountId))).write(
+          AccountsCompanion(
+            availableBalance: drift.Value(parsed.availableBalance),
+            lastTransactionDate: drift.Value(message.receivedAt),
+          ),
+        );
+      }
+
+      // Close DB before the async notification call so a notification
       // failure never leaks the database handle.
       await db.close();
 
@@ -99,21 +130,7 @@ Future<void> _processSms(
         ),
       );
     } else {
-      // FIX: Only save as unrecognized if the sender IS a known financial
-      // sender but the body could not be parsed (e.g. bank balance enquiry).
-      // Non-financial senders (OTPs, promo SMS) are silently dropped — the
-      // parser already rejects them; no need to pollute unrecognizedSms.
-      final lowerSender = message.sender.toLowerCase();
-      const financialKeywords = [
-        'sbi', 'hdfc', 'icici', 'axis', 'kotak', 'yesbnk', 'yesbank',
-        'pnb', 'bob', 'canara', 'idbi', 'indus', 'federal', 'uco',
-        'union', 'rbl', 'hsbc', 'citibank', 'idfc', 'bajaj',
-        // 'bnk' catches abbreviated sender IDs; avoids generic spam senders.
-        'paytm', 'phonepe', 'gpay', 'amazon', 'bnk', 'wallet', 'upi', 'nbfc',
-      ];
-      final bool isFinancial = financialKeywords.any(
-        (k) => lowerSender.contains(k),
-      );
+      final bool isFinancial = SmsParser.isFinancialMessage(message.sender, message.body);
 
       if (isFinancial) {
         debugPrint(

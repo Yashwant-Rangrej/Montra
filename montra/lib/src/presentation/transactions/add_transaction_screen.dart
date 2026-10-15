@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 import '../../domain/entities/transaction_entity.dart';
 import '../../domain/entities/category_entity.dart';
@@ -9,6 +10,7 @@ import '../../providers/repository_providers.dart';
 import '../../providers/categories_provider.dart';
 import '../../providers/transactions_provider.dart';
 import '../../providers/unrecognized_sms_provider.dart';
+import '../../providers/backup_providers.dart';
 import '../../data/repositories/notification_repository.dart';
 import '../../services/notifications/notification_manager.dart';
 
@@ -64,6 +66,45 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     if (image != null) {
       setState(() {
         _receiptAttachment = File(image.path);
+      });
+    }
+  }
+
+  Future<void> _pickDate() async {
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _date,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (pickedDate != null && mounted) {
+      setState(() {
+        _date = DateTime(
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          _date.hour,
+          _date.minute,
+          _date.second,
+        );
+      });
+    }
+  }
+
+  Future<void> _pickTime() async {
+    final pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(_date),
+    );
+    if (pickedTime != null && mounted) {
+      setState(() {
+        _date = DateTime(
+          _date.year,
+          _date.month,
+          _date.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
       });
     }
   }
@@ -150,7 +191,6 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                         validator: (val) => val == null || val.isEmpty ? 'Required' : null,
                       ),
                       const SizedBox(height: 16),
-                      const SizedBox(height: 16),
                       categoriesAsync.when(
                         data: (categories) {
                           final filtered = categories.where((c) => c.type == _type).toList();
@@ -193,6 +233,142 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                             .map((t) => DropdownMenuItem(value: t, child: Text(t)))
                             .toList(),
                         onChanged: (val) => setState(() => _paymentMethod = val),
+                      ),
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.event_outlined,
+                                  size: 18,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Transaction Date & Time',
+                                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                        color: Theme.of(context).colorScheme.primary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
+                                const Spacer(),
+                                if (DateTime.now().difference(_date).abs() > const Duration(minutes: 5))
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _date = DateTime.now();
+                                      });
+                                    },
+                                    child: Text(
+                                      'Reset to Now',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Theme.of(context).colorScheme.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Expanded(
+                                  flex: 3,
+                                  child: InkWell(
+                                    onTap: _pickDate,
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).colorScheme.surface,
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.25),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.calendar_month_outlined,
+                                            size: 16,
+                                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                              DateFormat('EEE, dd MMM yyyy').format(_date),
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.arrow_drop_down,
+                                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  flex: 2,
+                                  child: InkWell(
+                                    onTap: _pickTime,
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).colorScheme.surface,
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.25),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.access_time_rounded,
+                                            size: 16,
+                                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Expanded(
+                                            child: Text(
+                                              DateFormat('hh:mm a').format(_date),
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.arrow_drop_down,
+                                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -374,6 +550,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       // Invalidate to refresh all relevant lists and stats immediately
       ref.invalidate(transactionsProvider);
       ref.invalidate(dashboardStatsProvider);
+      ref.read(backupServiceProvider).triggerAutoBackupIfEnabled();
       
       if (mounted) {
         Navigator.of(context).pop();
@@ -388,6 +565,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       
       ref.invalidate(transactionsProvider);
       ref.invalidate(dashboardStatsProvider);
+      ref.read(backupServiceProvider).triggerAutoBackupIfEnabled();
       
       if (mounted) {
         Navigator.of(context).pop();
