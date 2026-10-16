@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=0:1A237E,25:311B92,50:5E35B1,75:7F3DFF,100:00B4D8&height=220&section=header&text=Montra&fontSize=68&fontAlignY=36&desc=Autonomous,%20Offline%20%26%20Privacy-First%20Finance%20Tracker&descAlignY=58&descSize=19&animation=twinkling" width="100%" alt="Montra Dynamic Waving Header"/>
+  <img src="montra/assets/images/header.svg" width="100%" alt="Montra Dynamic Waving Header"/>
 </p>
 
 <!-- ═══════════════════════════════════════════════════════════════════ -->
@@ -251,7 +251,7 @@ flutter analyze
 <!-- ANIMATED WAVING FOOTER BANNER                                       -->
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=0:00B4D8,30:00E5FF,60:7F3DFF,100:1A237E&height=140&section=footer" width="100%" alt="Footer Banner"/>
+  <img src="montra/assets/images/footer.svg" width="100%" alt="Footer Banner"/>
 </p>
 
 <a id="license"></a>

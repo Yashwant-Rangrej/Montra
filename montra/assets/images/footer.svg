@@ -1,0 +1,79 @@
+<svg
+  width="100%"
+  height="140"
+  viewBox="0 0 1000 140"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  style="background: transparent; overflow: hidden;"
+>
+  <defs>
+    <!-- Footer Gradient: Cyan -> Electric Cyan -> Violet -> Deep Indigo -->
+    <linearGradient id="montraFooterGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00B4D8" />
+      <stop offset="30%" stop-color="#00E5FF" />
+      <stop offset="60%" stop-color="#7F3DFF" />
+      <stop offset="100%" stop-color="#1A237E" />
+    </linearGradient>
+
+    <linearGradient id="montraFooterGrad2" x1="100%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#1A237E" stop-opacity="0.8" />
+      <stop offset="40%" stop-color="#5E35B1" stop-opacity="0.6" />
+      <stop offset="75%" stop-color="#00D09E" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#00B4D8" stop-opacity="0.9" />
+    </linearGradient>
+  </defs>
+
+  <!-- Layer 1: Back Wave -->
+  <path fill="url(#montraFooterGrad2)" opacity="0.45">
+    <animate
+      attributeName="d"
+      dur="16s"
+      repeatCount="indefinite"
+      keyTimes="0;0.33;0.66;1"
+      calcMode="spline"
+      keySplines="0.4 0 0.2 1; 0.4 0 0.2 1; 0.4 0 0.2 1"
+      values="
+        M0 140 L0 50 Q250 15 500 55 T1000 40 L1000 140 Z;
+        M0 140 L0 30 Q250 65 500 35 T1000 60 L1000 140 Z;
+        M0 140 L0 55 Q250 25 500 60 T1000 35 L1000 140 Z;
+        M0 140 L0 50 Q250 15 500 55 T1000 40 L1000 140 Z
+      "
+    />
+  </path>
+
+  <!-- Layer 2: Middle Wave -->
+  <path fill="url(#montraFooterGrad1)" opacity="0.65">
+    <animate
+      attributeName="d"
+      dur="12s"
+      repeatCount="indefinite"
+      keyTimes="0;0.33;0.66;1"
+      calcMode="spline"
+      keySplines="0.4 0 0.2 1; 0.4 0 0.2 1; 0.4 0 0.2 1"
+      values="
+        M0 140 L0 40 Q250 65 500 35 T1000 55 L1000 140 Z;
+        M0 140 L0 60 Q250 25 500 65 T1000 35 L1000 140 Z;
+        M0 140 L0 35 Q250 60 500 30 T1000 60 L1000 140 Z;
+        M0 140 L0 40 Q250 65 500 35 T1000 55 L1000 140 Z
+      "
+    />
+  </path>
+
+  <!-- Layer 3: Foreground Wave -->
+  <path fill="url(#montraFooterGrad1)" opacity="0.88">
+    <animate
+      attributeName="d"
+      dur="9s"
+      repeatCount="indefinite"
+      keyTimes="0;0.33;0.66;1"
+      calcMode="spline"
+      keySplines="0.4 0 0.2 1; 0.4 0 0.2 1; 0.4 0 0.2 1"
+      values="
+        M0 140 L0 55 Q250 20 500 55 T1000 40 L1000 140 Z;
+        M0 140 L0 35 Q250 60 500 30 T1000 65 L1000 140 Z;
+        M0 140 L0 50 Q250 25 500 60 T1000 35 L1000 140 Z;
+        M0 140 L0 55 Q250 20 500 55 T1000 40 L1000 140 Z
+      "
+    />
+  </path>
+</svg>

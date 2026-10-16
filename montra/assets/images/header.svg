@@ -1,0 +1,152 @@
+<svg
+  width="100%"
+  height="220"
+  viewBox="0 0 1000 220"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  style="background: transparent; overflow: hidden;"
+>
+  <defs>
+    <!-- Primary Montra Gradient -->
+    <linearGradient id="montraHeaderGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1A237E" />
+      <stop offset="25%" stop-color="#311B92" />
+      <stop offset="50%" stop-color="#5E35B1" />
+      <stop offset="75%" stop-color="#7F3DFF" />
+      <stop offset="100%" stop-color="#00B4D8" />
+    </linearGradient>
+
+    <!-- Secondary Overlay Gradient with Montra Emerald & Violet -->
+    <linearGradient id="montraHeaderGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00B4D8" stop-opacity="0.8" />
+      <stop offset="40%" stop-color="#00D09E" stop-opacity="0.6" />
+      <stop offset="70%" stop-color="#7F3DFF" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#1A237E" stop-opacity="0.9" />
+    </linearGradient>
+
+    <!-- Deep Ambient Glow Filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <filter id="subtleShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.45" />
+    </filter>
+  </defs>
+
+  <style>
+    .title-text {
+      font-size: 64px;
+      font-weight: 800;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      fill: #FFFFFF;
+      letter-spacing: 2.5px;
+    }
+    .desc-text {
+      font-size: 19px;
+      font-weight: 500;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      fill: #E0E7FF;
+      letter-spacing: 0.8px;
+    }
+    .shimmer {
+      animation: shimmerText 5s ease-in-out infinite;
+    }
+    @keyframes shimmerText {
+      0%, 100% { opacity: 0.96; }
+      50% { opacity: 0.78; }
+    }
+    .star {
+      animation: pulseStar 3s ease-in-out infinite;
+    }
+    @keyframes pulseStar {
+      0%, 100% { opacity: 0.2; transform: scale(0.8); }
+      50% { opacity: 0.85; transform: scale(1.2); }
+    }
+  </style>
+
+  <!-- Ambient Background Sparkles -->
+  <g opacity="0.6">
+    <circle cx="150" cy="50" r="2" fill="#00E5FF" class="star" style="animation-delay: 0s;" />
+    <circle cx="320" cy="30" r="1.5" fill="#FFFFFF" class="star" style="animation-delay: 1.2s;" />
+    <circle cx="680" cy="40" r="2" fill="#B388FF" class="star" style="animation-delay: 0.7s;" />
+    <circle cx="850" cy="65" r="2.5" fill="#00D09E" class="star" style="animation-delay: 1.8s;" />
+    <circle cx="920" cy="35" r="1.5" fill="#FFFFFF" class="star" style="animation-delay: 2.3s;" />
+  </g>
+
+  <!-- Layer 1: Back Wave (Slow Undulation) -->
+  <path fill="url(#montraHeaderGrad2)" opacity="0.45">
+    <animate
+      attributeName="d"
+      dur="18s"
+      repeatCount="indefinite"
+      keyTimes="0;0.33;0.66;1"
+      calcMode="spline"
+      keySplines="0.4 0 0.2 1; 0.4 0 0.2 1; 0.4 0 0.2 1"
+      values="
+        M0 0 L0 145 Q250 185 500 150 T1000 165 L1000 0 Z;
+        M0 0 L0 170 Q250 140 500 175 T1000 145 L1000 0 Z;
+        M0 0 L0 150 Q250 180 500 140 T1000 175 L1000 0 Z;
+        M0 0 L0 145 Q250 185 500 150 T1000 165 L1000 0 Z
+      "
+    />
+  </path>
+
+  <!-- Layer 2: Middle Wave (Medium Undulation) -->
+  <path fill="url(#montraHeaderGrad1)" opacity="0.65">
+    <animate
+      attributeName="d"
+      dur="14s"
+      repeatCount="indefinite"
+      keyTimes="0;0.33;0.66;1"
+      calcMode="spline"
+      keySplines="0.4 0 0.2 1; 0.4 0 0.2 1; 0.4 0 0.2 1"
+      values="
+        M0 0 L0 160 Q250 135 500 165 T1000 140 L1000 0 Z;
+        M0 0 L0 140 Q250 175 500 145 T1000 170 L1000 0 Z;
+        M0 0 L0 170 Q250 145 500 170 T1000 150 L1000 0 Z;
+        M0 0 L0 160 Q250 135 500 165 T1000 140 L1000 0 Z
+      "
+    />
+  </path>
+
+  <!-- Layer 3: Main Foreground Wave (Smooth, Vibrant Flow) -->
+  <path fill="url(#montraHeaderGrad1)" opacity="0.88">
+    <animate
+      attributeName="d"
+      dur="10s"
+      repeatCount="indefinite"
+      keyTimes="0;0.33;0.66;1"
+      calcMode="spline"
+      keySplines="0.4 0 0.2 1; 0.4 0 0.2 1; 0.4 0 0.2 1"
+      values="
+        M0 0 L0 140 Q250 180 500 145 T1000 160 L1000 0 Z;
+        M0 0 L0 165 Q250 145 500 170 T1000 145 L1000 0 Z;
+        M0 0 L0 145 Q250 170 500 140 T1000 165 L1000 0 Z;
+        M0 0 L0 140 Q250 180 500 145 T1000 160 L1000 0 Z
+      "
+    />
+  </path>
+
+  <!-- Typography: Header Title & Subtitle with Crisp Shadow -->
+  <g filter="url(#subtleShadow)">
+    <!-- Montra Title -->
+    <text
+      x="50%"
+      y="38%"
+      text-anchor="middle"
+      dominant-baseline="middle"
+      class="title-text"
+    >Montra</text>
+
+    <!-- Subtitle / Tagline -->
+    <text
+      x="50%"
+      y="62%"
+      text-anchor="middle"
+      dominant-baseline="middle"
+      class="desc-text shimmer"
+    >Autonomous, Offline &amp; Privacy-First Finance Tracker</text>
+  </g>
+</svg>
