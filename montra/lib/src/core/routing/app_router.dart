@@ -27,36 +27,71 @@ import '../../presentation/backup/backup_screen.dart';
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 
+class RouterNotifier extends ChangeNotifier {
+  final Ref _ref;
+  String _previousLocation = '/';
+
+  String get previousLocation => _previousLocation;
+
+  RouterNotifier(this._ref) {
+    _ref.listen<bool>(appLockEnabledProvider, (_, _) => notifyListeners());
+    _ref.listen<bool>(authStateProvider, (_, _) => notifyListeners());
+    _ref.listen<bool>(onboardingCompletedProvider, (_, _) => notifyListeners());
+  }
+
+  void saveLocation(String loc) {
+    if (loc != '/auth' && loc != '/splash' && loc.isNotEmpty) {
+      _previousLocation = loc;
+    }
+  }
+}
+
+final routerNotifierProvider = Provider<RouterNotifier>((ref) {
+  return RouterNotifier(ref);
+});
+
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final isAppLockEnabled = ref.watch(appLockEnabledProvider);
-  final isUnlocked = ref.watch(authStateProvider);
-  final isOnboardingCompleted = ref.watch(onboardingCompletedProvider);
+  final notifier = ref.watch(routerNotifierProvider);
+  final isAppLockEnabled = ref.read(appLockEnabledProvider);
+  final isUnlocked = ref.read(authStateProvider);
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
+    refreshListenable: notifier,
     // On cold launch, if lock is enabled and not yet unlocked → start at /auth.
     // Otherwise start at /splash as normal.
     initialLocation: isAppLockEnabled && !isUnlocked ? '/auth' : '/splash',
     redirect: (context, state) {
       final loc = state.matchedLocation;
+      final lockEnabled = ref.read(appLockEnabledProvider);
+      final unlocked = ref.read(authStateProvider);
+      final onboardingDone = ref.read(onboardingCompletedProvider);
+
+      // Save user location whenever on a valid app screen
+      if (loc != '/auth' && loc != '/splash') {
+        notifier.saveLocation(loc);
+      }
 
       // Lock: if enabled and not unlocked, only /auth is allowed.
-      if (isAppLockEnabled && !isUnlocked) {
+      if (lockEnabled && !unlocked) {
         if (loc != '/auth') return '/auth';
         return null;
       }
 
-      // After unlock, redirect away from /auth → splash.
-      if (loc == '/auth') return '/splash';
+      // After unlock, restore the exact screen the user was on before lock, or home.
+      if (loc == '/auth') {
+        final dest = notifier.previousLocation;
+        return dest.isNotEmpty && dest != '/auth' && dest != '/splash' ? dest : '/';
+      }
 
       // Splash plays without interruption.
       if (loc == '/splash') return null;
 
       // Onboarding check.
-      if (!isOnboardingCompleted && loc != '/onboarding') {
+      if (!onboardingDone && loc != '/onboarding') {
         return '/onboarding';
       }
-      if (isOnboardingCompleted && loc == '/onboarding') {
+      if (onboardingDone && loc == '/onboarding') {
         return '/';
       }
 

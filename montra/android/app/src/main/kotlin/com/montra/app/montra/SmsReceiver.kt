@@ -3,6 +3,7 @@ package com.montra.app.montra
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.PowerManager
 import android.provider.Telephony
 import android.util.Log
 import io.flutter.embedding.engine.FlutterEngine
@@ -20,12 +21,40 @@ class SmsReceiver : BroadcastReceiver() {
         @Volatile private var backgroundEngine: FlutterEngine? = null
         @Volatile private var backgroundChannel: MethodChannel? = null
         @Volatile private var isChannelReady = false
+        @Volatile private var wakeLock: PowerManager.WakeLock? = null
 
         // Tracks how many SMS have been sent to Dart but not yet confirmed done.
         private var pendingProcessingCount = 0
 
         // SMS received before the Dart engine is ready.
         private val pendingSmsQueue = mutableListOf<Map<String, Any>>()
+
+        private fun acquireWakeLock(context: Context) {
+            try {
+                if (wakeLock == null) {
+                    val powerManager = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
+                    wakeLock = powerManager?.newWakeLock(
+                        PowerManager.PARTIAL_WAKE_LOCK,
+                        "Montra::SmsBackgroundWakeLock"
+                    )?.apply {
+                        setReferenceCounted(false)
+                    }
+                }
+                wakeLock?.acquire(15000) // 15 seconds max timeout
+            } catch (e: Exception) {
+                Log.w(TAG, "Could not acquire wake lock: ${e.message}")
+            }
+        }
+
+        private fun releaseWakeLock() {
+            try {
+                if (wakeLock?.isHeld == true) {
+                    wakeLock?.release()
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "Could not release wake lock: ${e.message}")
+            }
+        }
 
         fun resetEngine() {
             synchronized(lock) {
@@ -36,6 +65,7 @@ class SmsReceiver : BroadcastReceiver() {
                 backgroundEngine = null
                 isChannelReady = false
                 pendingProcessingCount = 0
+                releaseWakeLock()
             }
         }
     }
@@ -60,11 +90,12 @@ class SmsReceiver : BroadcastReceiver() {
             )
 
             val fgChannel = MainActivity.foregroundChannel
-            if (fgChannel != null) {
+            if (MainActivity.isAppInForeground && fgChannel != null) {
                 Log.d(TAG, "App is in foreground, sending SMS to foreground channel directly")
                 fgChannel.invokeMethod("onSmsReceivedForeground", args)
             } else {
                 synchronized(lock) {
+                    acquireWakeLock(context)
                     if (isChannelReady && backgroundChannel != null) {
                         Log.d(TAG, "Channel ready, sending SMS to Dart immediately")
                         pendingProcessingCount++
@@ -91,6 +122,7 @@ class SmsReceiver : BroadcastReceiver() {
         if (callbackHandle == -1L) {
             Log.e(TAG, "No callback handle stored. Open the app at least once to register.")
             pendingSmsQueue.clear()
+            releaseWakeLock()
             return
         }
 

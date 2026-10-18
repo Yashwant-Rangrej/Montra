@@ -58,6 +58,9 @@ Future<void> _processSms(
         if (existingRef != null) {
           debugPrint('Duplicate SMS skipped: reference number ${parsed.referenceNumber} already exists');
           await db.close();
+          try {
+            await channel.invokeMethod('smsProcessingComplete');
+          } catch (_) {}
           return;
         }
       }
@@ -67,6 +70,9 @@ Future<void> _processSms(
       if (existingSms != null) {
         debugPrint('Duplicate SMS skipped: identical body already recorded');
         await db.close();
+        try {
+          await channel.invokeMethod('smsProcessingComplete');
+        } catch (_) {}
         return;
       }
 

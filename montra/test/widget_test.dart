@@ -22,7 +22,7 @@ void main() {
     });
 
     test('Parses HDFC Sent Rs UPI SMS with recipient and UPI paymentMethod', () {
-      const sms = 'Sent Rs.1.00 From HDFC Bank A/C *8031 to Rohan Sharma on 13-10-26 via UPI Ref 628721381273.';
+      const sms = 'Sent Rs.1.00 From HDFC Bank A/C *4921 to Rohan Sharma on 13-10-26 via UPI Ref 628721381273.';
       final result = SmsParser.parseSms('JD-HDFCBN-S', sms);
 
       expect(result, isNotNull);

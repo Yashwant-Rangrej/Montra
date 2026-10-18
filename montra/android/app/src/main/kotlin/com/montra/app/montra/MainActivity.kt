@@ -4,13 +4,27 @@ import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import android.content.Context
+import android.content.Intent
+import android.os.Bundle
 
 class MainActivity: FlutterFragmentActivity() {
     companion object {
         var foregroundChannel: MethodChannel? = null
+        var isAppInForeground: Boolean = false
     }
 
     private val CHANNEL = "com.montra.app/sms_interceptor"
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (!isTaskRoot) {
+            val intent = intent
+            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && Intent.ACTION_MAIN == intent.action) {
+                finish()
+                return
+            }
+        }
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -33,8 +47,19 @@ class MainActivity: FlutterFragmentActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        isAppInForeground = true
+    }
+
+    override fun onPause() {
+        super.onPause()
+        isAppInForeground = false
+    }
+
     override fun onDestroy() {
         foregroundChannel = null
+        isAppInForeground = false
         super.onDestroy()
     }
 }

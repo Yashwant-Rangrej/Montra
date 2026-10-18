@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
+import '../../core/routing/app_router.dart';
 
 class LockScreen extends ConsumerStatefulWidget {
   const LockScreen({super.key});
@@ -37,9 +38,8 @@ class _LockScreenState extends ConsumerState<LockScreen> {
       });
       if (isAuth) {
         ref.read(authStateProvider.notifier).state = true;
-        // Router redirect will automatically send us from /auth → /splash
-        // via the redirect rule once isUnlocked becomes true.
-        context.go('/splash');
+        final target = ref.read(routerNotifierProvider).previousLocation;
+        context.go(target.isNotEmpty && target != '/auth' && target != '/splash' ? target : '/');
       }
     }
   }
