@@ -6,7 +6,7 @@ import '../../core/theme/app_theme.dart';
 class SplashScreen extends StatefulWidget {
   final Duration duration;
 
-  const SplashScreen({super.key, this.duration = const Duration(seconds: 3)});
+  const SplashScreen({super.key, this.duration = const Duration(seconds: 2)});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -17,7 +17,6 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
-  double _progress = 0.0;
   Timer? _timer;
 
   @override
@@ -38,26 +37,11 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _animationController.forward();
-    _startLoadingProgress();
-  }
 
-  void _startLoadingProgress() {
-    const interval = Duration(milliseconds: 30);
-    final totalSteps = widget.duration.inMilliseconds / interval.inMilliseconds;
-
-    _timer = Timer.periodic(interval, (timer) {
+    _timer = Timer(widget.duration, () {
       if (mounted) {
-        setState(() {
-          _progress += 1 / totalSteps;
-          if (_progress >= 1.0) {
-            _progress = 1.0;
-            timer.cancel();
-            // Go to home — lock overlay on the home screen handles auth if enabled
-            context.go('/');
-          }
-        });
-      } else {
-        timer.cancel();
+        // Go to home — lock overlay on the home screen handles auth if enabled
+        context.go('/');
       }
     });
   }
@@ -141,48 +125,13 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                 ),
 
-                // Bottom Progress Indicator
-                Column(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: LinearProgressIndicator(
-                        value: _progress,
-                        minHeight: 6,
-                        backgroundColor: AppTheme.surfaceVariant,
-                        valueColor: const AlwaysStoppedAnimation<Color>(
-                          AppTheme.primary,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          _progress >= 1.0 ? 'Ready!' : 'Initializing App...',
-                          style: Theme.of(context).textTheme.labelMedium
-                              ?.copyWith(color: AppTheme.onSurfaceVariant),
-                        ),
-                        Text(
-                          '${(_progress * 100).toInt()}%',
-                          style: Theme.of(context).textTheme.labelMedium
-                              ?.copyWith(
-                                color: AppTheme.onSurface,
-                                fontWeight: FontWeight.w500,
-                              ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Developed by Yashwant Rangrej',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: AppTheme.outline,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                  ],
+                // Bottom Credits
+                Text(
+                  'Developed by Yashwant Rangrej',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: AppTheme.outline,
+                    letterSpacing: 1.5,
+                  ),
                 ),
               ],
             ),

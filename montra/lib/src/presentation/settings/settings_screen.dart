@@ -80,20 +80,40 @@ class SettingsScreen extends ConsumerWidget {
             children: [
               _buildSwitchTile(
                 context,
-                title: 'App Lock (Biometrics/PIN)',
-                subtitle: 'Require authentication to open Montra',
-                icon: Icons.lock_outline,
+                title: 'Mobile Local Authentication',
+                subtitle: 'Require device screen lock or biometrics (Fingerprint/PIN) to open Montra',
+                icon: Icons.fingerprint_rounded,
                 iconColor: Colors.teal,
                 value: isAppLockEnabled,
                 onChanged: (value) async {
+                  final authService = ref.read(authServiceProvider);
                   if (value) {
-                    final authService = ref.read(authServiceProvider);
-                    final success = await authService.authenticateUser();
+                    final isSupported = await authService.isDeviceSupported();
+                    if (!isSupported) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'No screen lock or biometrics configured on this device. Please set up a screen lock in phone settings.',
+                            ),
+                          ),
+                        );
+                      }
+                      return;
+                    }
+                    final success = await authService.authenticateUser(
+                      reason: 'Confirm your device screen lock or biometrics to enable App Lock',
+                    );
                     if (success) {
                       ref.read(appLockEnabledProvider.notifier).toggle(true);
                     }
                   } else {
-                    ref.read(appLockEnabledProvider.notifier).toggle(false);
+                    final success = await authService.authenticateUser(
+                      reason: 'Authenticate using your device screen lock or biometrics to disable App Lock',
+                    );
+                    if (success) {
+                      ref.read(appLockEnabledProvider.notifier).toggle(false);
+                    }
                   }
                 },
                 isLast: true,

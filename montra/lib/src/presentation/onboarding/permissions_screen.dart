@@ -92,15 +92,30 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
               ),
               const SizedBox(height: 16),
               _PermissionCard(
-                icon: Icons.fingerprint,
-                title: 'Biometrics',
-                subtitle: 'Secure your data with device biometrics',
+                icon: Icons.fingerprint_rounded,
+                title: 'Device Lock',
+                subtitle: 'Secure your data with mobile local authentication',
                 badgeText: 'Optional',
                 value: isAppLockEnabled,
                 onChanged: (val) async {
                   if (val) {
                     final authService = ref.read(authServiceProvider);
-                    final success = await authService.authenticateUser();
+                    final isSupported = await authService.isDeviceSupported();
+                    if (!isSupported) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'No screen lock or biometrics configured on this device. Please set up a screen lock in phone settings.',
+                            ),
+                          ),
+                        );
+                      }
+                      return;
+                    }
+                    final success = await authService.authenticateUser(
+                      reason: 'Confirm your device screen lock or biometrics to enable App Lock',
+                    );
                     if (success) {
                       ref.read(appLockEnabledProvider.notifier).toggle(true);
                     }

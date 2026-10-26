@@ -98,11 +98,15 @@ class _MontraAppState extends ConsumerState<MontraApp>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // When the app is sent to the phone home screen or background,
     // reset the auth session so the lock screen shows on next launch.
+    // Skip if the pause was triggered by the OS local authentication prompt itself.
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.hidden) {
-      final isLockEnabled = ref.read(appLockEnabledProvider);
-      if (isLockEnabled) {
-        ref.read(authStateProvider.notifier).state = false;
+      final authService = ref.read(authServiceProvider);
+      if (!authService.isAuthenticating && !authService.justFinishedAuthenticating) {
+        final isLockEnabled = ref.read(appLockEnabledProvider);
+        if (isLockEnabled) {
+          ref.read(authStateProvider.notifier).state = false;
+        }
       }
     } else if (state == AppLifecycleState.resumed) {
       // Re-trigger query stream so any transaction added while paused appears immediately
