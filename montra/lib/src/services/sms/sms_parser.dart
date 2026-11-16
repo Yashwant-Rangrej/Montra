@@ -28,8 +28,26 @@ class SmsParser {
   // ─────────────────────────────────────────────────────────────────────────
   static const _bankSenderPatterns = [
     // Major Indian Banks
-    'sbi', 'sbiinb', 'sbicrd', 'sbipsg', 'sbipay', 'sbiupi', 'sbin', 'sbcard', 'sbism',
-    'hdfc', 'hdfcbk', 'hdfcbn', 'hdfcba', 'hdfccc', 'hdfcup', 'hdfcsm', 'hdfcal', 'hdfclt', 'hdfcad', 'hdfclife',
+    'sbi',
+    'sbiinb',
+    'sbicrd',
+    'sbipsg',
+    'sbipay',
+    'sbiupi',
+    'sbin',
+    'sbcard',
+    'sbism',
+    'hdfc',
+    'hdfcbk',
+    'hdfcbn',
+    'hdfcba',
+    'hdfccc',
+    'hdfcup',
+    'hdfcsm',
+    'hdfcal',
+    'hdfclt',
+    'hdfcad',
+    'hdfclife',
     'icici', 'icicib', 'icicip', 'icicic', 'icicim', 'icicik',
     'axis', 'axisbk', 'axisbn', 'axisbank', 'axismb', 'axismp', 'axispg',
     'kotak', 'kotakb', 'kmbl', 'kotakm',
@@ -145,20 +163,38 @@ class SmsParser {
   // ─────────────────────────────────────────────────────────────────────────
   static final List<RegExp> _ignorePatterns = [
     // OTP & Verification codes
-    RegExp(r'\b(?:otp|one\s+time\s+password|verification\s+code|security\s+code|login\s+code|auth\s+code|secret\s+code|passcode)\b', caseSensitive: false),
-    RegExp(r'\b(?:do\s+not\s+share|never\s+share\s+your\s+otp|valid\s+for\s+\d+\s*(?:mins?|minutes?)|use\s+this\s+code)\b', caseSensitive: false),
+    RegExp(
+      r'\b(?:otp|one\s+time\s+password|verification\s+code|security\s+code|login\s+code|auth\s+code|secret\s+code|passcode)\b',
+      caseSensitive: false,
+    ),
+    RegExp(
+      r'\b(?:do\s+not\s+share|never\s+share\s+your\s+otp|valid\s+for\s+\d+\s*(?:mins?|minutes?)|use\s+this\s+code)\b',
+      caseSensitive: false,
+    ),
 
     // Promotional & Loan offers
-    RegExp(r'\b(?:pre[- ]?approved|apply\s+for|apply\s+now|get\s+instant\s+loan|congratulations!\s+you\s+are\s+eligible|claim\s+your|avail\s+now|limited\s+period\s+offer|zero\s+interest|win\s+cash|lottery)\b', caseSensitive: false),
+    RegExp(
+      r'\b(?:pre[- ]?approved|apply\s+for|apply\s+now|get\s+instant\s+loan|congratulations!\s+you\s+are\s+eligible|claim\s+your|avail\s+now|limited\s+period\s+offer|zero\s+interest|win\s+cash|lottery)\b',
+      caseSensitive: false,
+    ),
 
     // Payment Requests / Mandates / Collect requests (not yet paid)
-    RegExp(r'\b(?:has\s+requested|requesting\s+(?:rs\.?|inr|₹|\d)|collect\s+request|mandate\s+request|approval\s+request|pay\s+or\s+decline|is\s+requesting\s+a\s+payment|autopay\s+request)\b', caseSensitive: false),
+    RegExp(
+      r'\b(?:has\s+requested|requesting\s+(?:rs\.?|inr|₹|\d)|collect\s+request|mandate\s+request|approval\s+request|pay\s+or\s+decline|is\s+requesting\s+a\s+payment|autopay\s+request)\b',
+      caseSensitive: false,
+    ),
 
     // Transaction Declined / Failed / Reversed
-    RegExp(r'\b(?:transaction\s+declined|payment\s+declined|txn\s+declined|declined\s+due\s+to|failed\s+due\s+to|transaction\s+failed|payment\s+failed|insufficient\s+funds|unsuccessful|cancelled\b|could\s+not\s+be\s+processed)\b', caseSensitive: false),
+    RegExp(
+      r'\b(?:transaction\s+declined|payment\s+declined|txn\s+declined|declined\s+due\s+to|failed\s+due\s+to|transaction\s+failed|payment\s+failed|insufficient\s+funds|unsuccessful|cancelled\b|could\s+not\s+be\s+processed)\b',
+      caseSensitive: false,
+    ),
 
     // Pure balance inquiry without any transaction
-    RegExp(r'\b(?:mini\s+statement|statement\s+for\s+the\s+period|uncleared\s+balance)\b', caseSensitive: false),
+    RegExp(
+      r'\b(?:mini\s+statement|statement\s+for\s+the\s+period|uncleared\s+balance)\b',
+      caseSensitive: false,
+    ),
   ];
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -184,7 +220,10 @@ class SmsParser {
 
     // "Paid" variants
     RegExp(r'\bpaid\b', caseSensitive: false),
-    RegExp(r'\bpayment\s+(?:of|for|to|done|success|successful|made)', caseSensitive: false),
+    RegExp(
+      r'\bpayment\s+(?:of|for|to|done|success|successful|made)',
+      caseSensitive: false,
+    ),
 
     // "Sent" variants
     RegExp(r'\bsent\s+(?:rs\.?|inr|₹|\$|\d|to\s+\w)', caseSensitive: false),
@@ -199,11 +238,20 @@ class SmsParser {
     RegExp(r'\bfunds?\s+transferred\b', caseSensitive: false),
 
     // NEFT / IMPS / RTGS transfers from account
-    RegExp(r'\b(?:neft|imps|rtgs)\s+(?:of|trn|txn|transfer|from|:)\b', caseSensitive: false),
+    RegExp(
+      r'\b(?:neft|imps|rtgs)\s+(?:of|trn|txn|transfer|from|:)\b',
+      caseSensitive: false,
+    ),
 
     // Transaction / Txn / Trnsctn
-    RegExp(r'\b(?:transaction|txn|trnsctn)\s+(?:of|amt|done|at|successful)\b', caseSensitive: false),
-    RegExp(r'\b(?:transaction|txn)\s+has\s+been\s+made\b', caseSensitive: false),
+    RegExp(
+      r'\b(?:transaction|txn|trnsctn)\s+(?:of|amt|done|at|successful)\b',
+      caseSensitive: false,
+    ),
+    RegExp(
+      r'\b(?:transaction|txn)\s+has\s+been\s+made\b',
+      caseSensitive: false,
+    ),
 
     // Card POS / Usage
     RegExp(r'\bused\s+(?:at|for|on)\b', caseSensitive: false),
@@ -217,10 +265,16 @@ class SmsParser {
     RegExp(r'\bemi\s+(?:of|for|deducted|paid)\b', caseSensitive: false),
     RegExp(r'\bnach\s+debit\b', caseSensitive: false),
     RegExp(r'\becs\s+debit\b', caseSensitive: false),
-    RegExp(r'\b(?:service\s+fee|service\s+charge|alert\s+fee|charges\s+for)\b', caseSensitive: false),
+    RegExp(
+      r'\b(?:service\s+fee|service\s+charge|alert\s+fee|charges\s+for)\b',
+      caseSensitive: false,
+    ),
 
     // UPI-specific
-    RegExp(r'\bupi\s+(?:debit|txn|transaction|payment)\b', caseSensitive: false),
+    RegExp(
+      r'\bupi\s+(?:debit|txn|transaction|payment)\b',
+      caseSensitive: false,
+    ),
     RegExp(r'\bvia\s+upi\b', caseSensitive: false),
   ];
 
@@ -681,7 +735,9 @@ class SmsParser {
     }
 
     // Bank account phrases
-    if (RegExp(r'\b(?:a\/c|acct|account|saving|savings|current|branch)\b').hasMatch(lower)) {
+    if (RegExp(
+      r'\b(?:a\/c|acct|account|saving|savings|current|branch)\b',
+    ).hasMatch(lower)) {
       return false;
     }
     if (lower.startsWith('xx') || RegExp(r'^\*+\d').hasMatch(lower)) {
@@ -722,10 +778,13 @@ class SmsParser {
     // Only title-case words if it's not a VPA/email (contains '@')
     if (!cleaned.contains('@') && cleaned.length > 2) {
       if (cleaned == cleaned.toUpperCase()) {
-        cleaned = cleaned.split(' ').map((word) {
-          if (word.isEmpty) return word;
-          return word[0].toUpperCase() + word.substring(1).toLowerCase();
-        }).join(' ');
+        cleaned = cleaned
+            .split(' ')
+            .map((word) {
+              if (word.isEmpty) return word;
+              return word[0].toUpperCase() + word.substring(1).toLowerCase();
+            })
+            .join(' ');
       }
     }
     return cleaned.isEmpty ? raw.trim() : cleaned;
@@ -789,8 +848,14 @@ class SmsParser {
         lowerBody.contains('amazon pay') ||
         lowerBody.contains('rrn') ||
         lowerBody.contains('block upi') ||
-        RegExp(r'\bsent\s+(?:rs\.?|inr|₹)', caseSensitive: false).hasMatch(body) ||
-        RegExp(r'\bpaid\s+(?:rs\.?|inr|₹)', caseSensitive: false).hasMatch(body) ||
+        RegExp(
+          r'\bsent\s+(?:rs\.?|inr|₹)',
+          caseSensitive: false,
+        ).hasMatch(body) ||
+        RegExp(
+          r'\bpaid\s+(?:rs\.?|inr|₹)',
+          caseSensitive: false,
+        ).hasMatch(body) ||
         RegExp(r'upi\s*ref', caseSensitive: false).hasMatch(body);
 
     if (isAtm) return 'Cash';
@@ -824,7 +889,10 @@ class SmsParser {
       return refMatch.group(1);
     }
     // Also match "IMPS: <digits>"
-    final impsMatch = RegExp(r'\bimps\s*[:\-]\s*(\d+)', caseSensitive: false).firstMatch(body);
+    final impsMatch = RegExp(
+      r'\bimps\s*[:\-]\s*(\d+)',
+      caseSensitive: false,
+    ).firstMatch(body);
     if (impsMatch != null) {
       return impsMatch.group(1);
     }
@@ -866,60 +934,255 @@ class SmsParser {
     final String ml = merchant.toLowerCase();
 
     const foodKeywords = [
-      'starbucks', 'zomato', 'swiggy', 'mcdonalds', 'kfc', 'burger king',
-      'subway', 'pizza hut', 'dominos', 'pizza', 'burger', 'dineout',
-      'eatsure', 'blinkit', 'bigbasket', 'grofers', 'dunzo', 'zepto',
-      'instamart', 'chaayos', 'chai', 'coffee', 'bakery', 'hotel', 'dhaba',
-      'restaurant', 'cafe', 'food', 'biryani', 'kitchen', 'sweets', 'bakes',
-      'juice', 'tea', 'haldiram', 'barbeque nation', 'behrouz', 'faasos',
-      'ccd', 'cafe coffee day', 'bar', 'pub', 'dining',
+      'starbucks',
+      'zomato',
+      'swiggy',
+      'mcdonalds',
+      'kfc',
+      'burger king',
+      'subway',
+      'pizza hut',
+      'dominos',
+      'pizza',
+      'burger',
+      'dineout',
+      'eatsure',
+      'blinkit',
+      'bigbasket',
+      'grofers',
+      'dunzo',
+      'zepto',
+      'instamart',
+      'chaayos',
+      'chai',
+      'coffee',
+      'bakery',
+      'hotel',
+      'dhaba',
+      'restaurant',
+      'cafe',
+      'food',
+      'biryani',
+      'kitchen',
+      'sweets',
+      'bakes',
+      'juice',
+      'tea',
+      'haldiram',
+      'barbeque nation',
+      'behrouz',
+      'faasos',
+      'ccd',
+      'cafe coffee day',
+      'bar',
+      'pub',
+      'dining',
     ];
     const transportKeywords = [
-      'uber', 'ola', 'irctc', 'petrol', 'fuel', 'hpcl', 'iocl', 'ioc',
-      'bpcl', 'shell', 'metro', 'rapido', 'bus', 'train', 'flight',
-      'airport', 'indigo', 'spicejet', 'airindia', 'air india', 'akasa',
-      'vistara', 'makemytrip', 'goibibo', 'yatra', 'easemytrip', 'redbus',
-      'abhibus', 'cleartrip', 'toll', 'fastag', 'parking', 'auto', 'cab',
-      'taxi', 'rail', 'transport',
+      'uber',
+      'ola',
+      'irctc',
+      'petrol',
+      'fuel',
+      'hpcl',
+      'iocl',
+      'ioc',
+      'bpcl',
+      'shell',
+      'metro',
+      'rapido',
+      'bus',
+      'train',
+      'flight',
+      'airport',
+      'indigo',
+      'spicejet',
+      'airindia',
+      'air india',
+      'akasa',
+      'vistara',
+      'makemytrip',
+      'goibibo',
+      'yatra',
+      'easemytrip',
+      'redbus',
+      'abhibus',
+      'cleartrip',
+      'toll',
+      'fastag',
+      'parking',
+      'auto',
+      'cab',
+      'taxi',
+      'rail',
+      'transport',
     ];
     const shoppingKeywords = [
-      'amazon', 'flipkart', 'myntra', 'nykaa', 'supermarket', 'dmart',
-      'd-mart', 'reliance', 'meesho', 'ajio', 'tata', 'tata cliq', 'croma',
-      'vijay sales', 'snapdeal', 'shopsy', 'jiomart', 'retail', 'store',
-      'mall', 'mart', 'clothes', 'fashion', 'zara', 'h&m', 'uniqlo',
-      'max', 'westside', 'pantaloons', 'lifestyle', 'decathlon',
-      'shoppers stop', 'lenskart', 'tanishq', 'titan', 'caratlane',
+      'amazon',
+      'flipkart',
+      'myntra',
+      'nykaa',
+      'supermarket',
+      'dmart',
+      'd-mart',
+      'reliance',
+      'meesho',
+      'ajio',
+      'tata',
+      'tata cliq',
+      'croma',
+      'vijay sales',
+      'snapdeal',
+      'shopsy',
+      'jiomart',
+      'retail',
+      'store',
+      'mall',
+      'mart',
+      'clothes',
+      'fashion',
+      'zara',
+      'h&m',
+      'uniqlo',
+      'max',
+      'westside',
+      'pantaloons',
+      'lifestyle',
+      'decathlon',
+      'shoppers stop',
+      'lenskart',
+      'tanishq',
+      'titan',
+      'caratlane',
       'electronics',
     ];
     const utilitiesKeywords = [
-      'airtel', 'jio', 'vi ', 'bsnl', 'bescom', 'electricity', 'water',
-      'broadband', 'recharge', 'gas', 'lpg', 'postpaid', 'tata power',
-      'adani electricity', 'msedcl', 'tneb', 'wbsedcl', 'billdesk', 'bbps',
-      'dth', 'tata sky', 'tata play', 'dish tv', 'sun direct', 'act fibernet',
-      'hathway', 'wifi', 'utility', 'municipal', 'igl', 'mgl', 'indane',
+      'airtel',
+      'jio',
+      'vi ',
+      'bsnl',
+      'bescom',
+      'electricity',
+      'water',
+      'broadband',
+      'recharge',
+      'gas',
+      'lpg',
+      'postpaid',
+      'tata power',
+      'adani electricity',
+      'msedcl',
+      'tneb',
+      'wbsedcl',
+      'billdesk',
+      'bbps',
+      'dth',
+      'tata sky',
+      'tata play',
+      'dish tv',
+      'sun direct',
+      'act fibernet',
+      'hathway',
+      'wifi',
+      'utility',
+      'municipal',
+      'igl',
+      'mgl',
+      'indane',
     ];
     const entertainmentKeywords = [
-      'netflix', 'spotify', 'prime', 'hotstar', 'pvr', 'inox', 'cinepolis',
-      'bookmyshow', 'disney', 'zee5', 'sonyliv', 'jiocinema', 'youtube',
-      'apple music', 'gaana', 'wynk', 'cinema', 'movie', 'theatre',
-      'gaming', 'steam', 'playstation', 'xbox', 'subscription',
+      'netflix',
+      'spotify',
+      'prime',
+      'hotstar',
+      'pvr',
+      'inox',
+      'cinepolis',
+      'bookmyshow',
+      'disney',
+      'zee5',
+      'sonyliv',
+      'jiocinema',
+      'youtube',
+      'apple music',
+      'gaana',
+      'wynk',
+      'cinema',
+      'movie',
+      'theatre',
+      'gaming',
+      'steam',
+      'playstation',
+      'xbox',
+      'subscription',
     ];
     const healthKeywords = [
-      'pharmacy', 'hospital', 'apollo', 'medplus', 'clinic', 'pharma',
-      'medic', 'health', 'netmeds', '1mg', 'practo', 'tata 1mg', 'cult.fit',
-      'cultfit', 'docprime', 'dental', 'diagnostic', 'pathology', 'lab',
-      'wellness', 'pharmeasy', 'medicos', 'care',
+      'pharmacy',
+      'hospital',
+      'apollo',
+      'medplus',
+      'clinic',
+      'pharma',
+      'medic',
+      'health',
+      'netmeds',
+      '1mg',
+      'practo',
+      'tata 1mg',
+      'cult.fit',
+      'cultfit',
+      'docprime',
+      'dental',
+      'diagnostic',
+      'pathology',
+      'lab',
+      'wellness',
+      'pharmeasy',
+      'medicos',
+      'care',
     ];
     const educationKeywords = [
-      'byju', 'unacademy', 'coursera', 'udemy', 'skill', 'vedantu',
-      'topper', 'whitehat', 'school', 'college', 'university', 'exam',
-      'fee', 'fees', 'tuition', 'coaching', 'classes', 'academy',
-      'upgrad', 'simplilearn', 'institute', 'learning',
+      'byju',
+      'unacademy',
+      'coursera',
+      'udemy',
+      'skill',
+      'vedantu',
+      'topper',
+      'whitehat',
+      'school',
+      'college',
+      'university',
+      'exam',
+      'fee',
+      'fees',
+      'tuition',
+      'coaching',
+      'classes',
+      'academy',
+      'upgrad',
+      'simplilearn',
+      'institute',
+      'learning',
     ];
     const investmentKeywords = [
-      'zerodha', 'groww', 'upstox', 'angel one', 'coin', 'indmoney',
-      'kuvera', 'smallcase', 'mutual fund', 'amc', 'sip', 'lic',
-      'hdfc life', 'max life', 'icici pru', 'sbi life', 'star health',
+      'zerodha',
+      'groww',
+      'upstox',
+      'angel one',
+      'coin',
+      'indmoney',
+      'kuvera',
+      'smallcase',
+      'mutual fund',
+      'amc',
+      'sip',
+      'lic',
+      'hdfc life',
+      'max life',
+      'icici pru',
+      'sbi life',
+      'star health',
       'insurance',
     ];
 

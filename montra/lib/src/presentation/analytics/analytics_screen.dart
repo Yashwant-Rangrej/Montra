@@ -46,21 +46,24 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
           Expanded(
             child: transactionsAsync.when(
               data: (transactions) {
+                final now = DateTime.now();
                 final filtered = transactions
-                    .where((t) => t.type.toLowerCase() == 'expense')
+                    .where((t) =>
+                        t.type.toLowerCase() == 'expense' &&
+                        t.transactionDate.year == now.year &&
+                        t.transactionDate.month == now.month)
                     .toList();
 
                 if (filtered.isEmpty) {
                   return const EmptyStateWidget(
                     icon: Icons.analytics_outlined,
                     title: 'No Data Available',
-                    message: 'There are no expense transactions to analyze yet.',
+                    message: 'There are no expense transactions for this month yet.',
                   );
                 }
 
                 return categoriesAsync.when(
                   data: (categories) {
-                    final now = DateTime.now();
                     final today = DateTime(now.year, now.month, now.day);
 
                     // Daily sums for the 7-day window (0 = Today, ..., 6 = 6 days ago)

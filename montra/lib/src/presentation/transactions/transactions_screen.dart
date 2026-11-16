@@ -9,6 +9,8 @@ import '../../core/theme/app_theme.dart';
 import '../../core/utils/category_icon_helper.dart';
 import '../../domain/entities/transaction_entity.dart';
 import '../widgets/empty_state_widget.dart';
+import '../../services/monthly_summary_service.dart';
+import '../../services/notifications/notification_manager.dart';
 
 class TransactionsScreen extends ConsumerStatefulWidget {
   const TransactionsScreen({super.key});
@@ -45,7 +47,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                       itemCount: categories.length,
                       itemBuilder: (context, index) {
                         final cat = categories[index];
-                        final iconData = CategoryIconHelper.getIcon(cat.name);
+                        final iconData = CategoryIconHelper.getIcon(cat.name, cat.icon);
                         return ListTile(
                           leading: CircleAvatar(
                             backgroundColor: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.2),
@@ -232,13 +234,49 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                                           final year = parts[0];
 
                                           return ListTile(
-                                            contentPadding: EdgeInsets.zero,
+                                            contentPadding: const EdgeInsets.symmetric(vertical: 4),
                                             leading: CircleAvatar(
                                               backgroundColor: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.1),
                                               child: Icon(Icons.calendar_month, color: Theme.of(context).colorScheme.primary),
                                             ),
                                             title: Text('$monthName $year', style: Theme.of(context).textTheme.titleMedium),
-                                            trailing: Text('₹${amount.toStringAsFixed(2)}', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppTheme.expense, fontWeight: FontWeight.w600)),
+                                            subtitle: const Text('Tap to view monthly summary report', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                                            trailing: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  '₹${amount.toStringAsFixed(2)}',
+                                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                        color: AppTheme.expense,
+                                                        fontWeight: FontWeight.w600,
+                                                      ),
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Icon(
+                                                  Icons.bar_chart_rounded,
+                                                  color: Theme.of(context).colorScheme.primary,
+                                                  size: 24,
+                                                ),
+                                              ],
+                                            ),
+                                            onTap: () async {
+                                              final db = ref.read(databaseProvider);
+                                              final notifManager = ref.read(notificationManagerProvider);
+                                              final service = MonthlySummaryService(db, notifManager);
+                                              final targetMonth = int.parse(parts[1]);
+                                              final targetYear = int.parse(parts[0]);
+                                              final stats = await service.computeStatsForMonth(targetMonth, targetYear);
+                                              if (context.mounted) {
+                                                Navigator.pop(context);
+                                                if (stats != null) {
+                                                  context.push('/monthly-summary-report', extra: stats);
+                                                } else {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text('No expense data found for $monthName $year.')),
+                                                  );
+                                                }
+                                              }
+                                            },
                                           );
                                         },
                                       ),
@@ -299,10 +337,13 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                     itemBuilder: (context, index) {
                       final tx = transactions[index];
                       String? catName;
+                      String? catIcon;
                       categoriesAsync.whenData((categories) {
-                        catName = categories.where((c) => c.id == tx.categoryId).firstOrNull?.name;
+                        final cat = categories.where((c) => c.id == tx.categoryId).firstOrNull;
+                        catName = cat?.name;
+                        catIcon = cat?.icon;
                       });
-                      final iconData = CategoryIconHelper.getIcon(catName);
+                      final iconData = CategoryIconHelper.getIcon(catName, catIcon);
 
                       return Card(
                         margin: const EdgeInsets.only(bottom: 12),

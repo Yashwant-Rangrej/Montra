@@ -79,21 +79,24 @@ class MonthlySummaryService {
       month = 12;
       year -= 1;
     }
+    return computeStatsForMonth(month, year);
+  }
 
+  Future<Map<String, dynamic>?> computeStatsForMonth(int month, int year) async {
     final allTx = await _db.select(_db.transactions).get();
-    final lastMonthTx = allTx.where((t) =>
+    final monthTx = allTx.where((t) =>
       t.transactionDate.year == year &&
       t.transactionDate.month == month &&
       t.type.toLowerCase() == 'expense'
     ).toList();
 
-    if (lastMonthTx.isEmpty) return null;
+    if (monthTx.isEmpty) return null;
 
     double totalExpense = 0;
     final Map<int, double> byCategory = {};
     final Map<String, double> byMerchant = {};
 
-    for (final tx in lastMonthTx) {
+    for (final tx in monthTx) {
       totalExpense += tx.amount;
       if (tx.categoryId != null) {
         byCategory[tx.categoryId!] = (byCategory[tx.categoryId!] ?? 0) + tx.amount;
@@ -126,7 +129,7 @@ class MonthlySummaryService {
       'topCategory': topCategory,
       'topCategoryAmount': topCategoryAmount,
       'topMerchant': topMerchant,
-      'txCount': lastMonthTx.length,
+      'txCount': monthTx.length,
       'byCategory': byCategory, // For the pie chart
     };
   }

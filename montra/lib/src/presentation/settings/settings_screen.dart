@@ -4,8 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../providers/repository_providers.dart';
-import '../../services/update/update_service.dart';
-import '../../services/monthly_summary_service.dart';
 import '../../services/notifications/notification_manager.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -49,19 +47,8 @@ class SettingsScreen extends ConsumerWidget {
                 title: 'Ignored SMS',
                 icon: Icons.sms_failed_outlined,
                 iconColor: Colors.orange,
-                onTap: () => context.push('/ignored-sms'),
-              ),
-              _buildSettingsTile(
-                context,
-                title: 'Check for Updates',
-                icon: Icons.system_update_outlined,
-                iconColor: Colors.teal,
                 isLast: true,
-                onTap: () {
-                  // This checks github pages for the version.json
-                  final updateService = UpdateService();
-                  updateService.checkForUpdates(context, showNoUpdateMessage: true);
-                },
+                onTap: () => context.push('/ignored-sms'),
               ),
             ],
           ),
@@ -117,33 +104,6 @@ class SettingsScreen extends ConsumerWidget {
                   }
                 },
                 isLast: true,
-              ),
-            ],
-          ),
-          const SizedBox(height: 32),
-          _buildSectionHeader(context, 'Reports'),
-          _buildSettingsGroup(
-            context,
-            children: [
-              _buildSettingsTile(
-                context,
-                title: 'Generate Monthly Summary',
-                icon: Icons.bar_chart_outlined,
-                iconColor: Colors.indigo,
-                isLast: true,
-                onTap: () async {
-                  final db = ref.read(databaseProvider);
-                  final notifManager = ref.read(notificationManagerProvider);
-                  final service = MonthlySummaryService(db, notifManager);
-                  final stats = await service.computeLastMonthStats(DateTime.now());
-                  if (stats != null && context.mounted) {
-                    context.push('/monthly-summary-report', extra: stats);
-                  } else if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('No expenses found for last month.')),
-                    );
-                  }
-                },
               ),
             ],
           ),

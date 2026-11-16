@@ -6,7 +6,8 @@ import 'package:intl/intl.dart';
 import '../../providers/transactions_provider.dart';
 import '../../providers/categories_provider.dart';
 import '../../providers/sms_providers.dart';
-import '../../providers/backup_providers.dart';
+import '../../providers/repository_providers.dart';
+import '../../domain/entities/transaction_entity.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/category_icon_helper.dart';
 import '../widgets/empty_state_widget.dart';
@@ -56,9 +57,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     if (state == AppLifecycleState.resumed) {
       // Refresh transactions when returning to the app
       ref.invalidate(transactionsProvider);
-    } else if (state == AppLifecycleState.paused) {
-      // Trigger background auto-backup when user leaves app
-      ref.read(backupServiceProvider).triggerAutoBackupIfEnabled();
     }
   }
 
@@ -373,6 +371,167 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     );
   }
 
+  void _showCategorySelection(BuildContext context, WidgetRef ref, TransactionEntity tx) {
+    final categoriesAsync = ref.read(categoriesProvider);
+    showModalBottomSheet(
+      context: context,
+      useRootNavigator: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return categoriesAsync.when(
+          data: (categories) {
+            return SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Text(
+                      'Select Category for ${tx.merchant ?? "Transaction"}',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                  ),
+                  Flexible(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: categories.length,
+                      itemBuilder: (context, index) {
+                        final cat = categories[index];
+                        final iconData = CategoryIconHelper.getIcon(cat.name, cat.icon);
+                        return ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Theme.of(context)
+                                .colorScheme
+                                .primaryContainer
+                                .withValues(alpha: 0.2),
+                            child: Icon(iconData, color: Theme.of(context).colorScheme.primary),
+                          ),
+                          title: Text(cat.name),
+                          onTap: () async {
+                            final updatedTx = tx.copyWith(categoryId: cat.id);
+                            await ref.read(transactionRepositoryProvider).updateTransaction(updatedTx);
+                            ref.invalidate(transactionsProvider);
+                            if (context.mounted) Navigator.pop(context);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+          loading: () => const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24.0),
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          error: (e, s) => Center(
+            child: Padding(
+              padding: EdgeInsets.all(24.0),
+              child: Text('Error: $e'),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showLongPressMenu(BuildContext context, TransactionEntity tx) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            tx.type == 'Ignored'
+                ? ListTile(
+                    leading: const Icon(Icons.restore),
+                    title: const Text('Restore this transaction'),
+                    subtitle: const Text('It will be counted in your stats again'),
+                    onTap: () async {
+                      final updatedTx = tx.copyWith(type: 'Expense');
+                      await ref.read(transactionRepositoryProvider).updateTransaction(updatedTx);
+                      ref.invalidate(transactionsProvider);
+                      if (context.mounted) Navigator.pop(context);
+                    },
+                  )
+                : ListTile(
+                    leading: const Icon(Icons.visibility_off),
+                    title: const Text('Ignore this transaction'),
+                    subtitle: const Text('It will not be counted in your stats'),
+                    onTap: () async {
+                      final updatedTx = tx.copyWith(type: 'Ignored');
+                      await ref.read(transactionRepositoryProvider).updateTransaction(updatedTx);
+                      ref.invalidate(transactionsProvider);
+                      if (context.mounted) Navigator.pop(context);
+                    },
+                  ),
+            ListTile(
+              leading: const Icon(Icons.category_outlined),
+              title: const Text('Change Category'),
+              subtitle: const Text('Assign or change the category for this transaction'),
+              onTap: () {
+                Navigator.pop(context);
+                _showCategorySelection(context, ref, tx);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.edit_calendar_outlined),
+              title: const Text('Edit Details & Date'),
+              subtitle: const Text('Customize amount, date, time, and category'),
+              onTap: () {
+                Navigator.pop(context);
+                context.push('/add-transaction', extra: tx);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('Delete transaction', style: TextStyle(color: Colors.red)),
+              onTap: () async {
+                Navigator.pop(context);
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text('Delete Transaction'),
+                    content: Text('Are you sure you want to delete ${tx.merchant ?? "this transaction"}?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, false),
+                        child: const Text('Cancel'),
+                      ),
+                      FilledButton(
+                        style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                        onPressed: () => Navigator.pop(ctx, true),
+                        child: const Text('Delete'),
+                      ),
+                    ],
+                  ),
+                );
+                if (confirm == true) {
+                  await ref.read(transactionRepositoryProvider).deleteTransaction(tx.id);
+                  ref.invalidate(transactionsProvider);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Transaction deleted')),
+                    );
+                  }
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildRecentTransactions(
     AsyncValue<List<dynamic>> transactionsAsync,
     AsyncValue<List<dynamic>> categoriesAsync,
@@ -401,54 +560,65 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
               itemBuilder: (context, index) {
                 final tx = transactions[index];
                 String? catName;
+                String? catIcon;
                 categoriesAsync.whenData((categories) {
-                  catName = categories
+                  final cat = categories
                       .where((c) => c.id == tx.categoryId)
-                      .firstOrNull
-                      ?.name;
+                      .firstOrNull;
+                  catName = cat?.name;
+                  catIcon = cat?.icon;
                 });
-                final iconData = CategoryIconHelper.getIcon(catName);
+                final iconData = CategoryIconHelper.getIcon(catName, catIcon);
 
-                return ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  onTap: () => context.push('/add-transaction', extra: tx),
-                  leading: CircleAvatar(
-                    backgroundColor: tx.type == 'Ignored'
-                        ? Theme.of(context).colorScheme.surfaceContainerHighest
-                        : AppTheme.expense.withValues(alpha: 0.1),
-                    child: Icon(
-                      iconData,
-                      color: tx.type == 'Ignored'
-                          ? Theme.of(context).colorScheme.outline
-                          : AppTheme.expense,
-                    ),
-                  ),
-                  title: Text(
-                    tx.merchant ?? tx.notes ?? 'Transaction',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      decoration: tx.type == 'Ignored'
-                          ? TextDecoration.lineThrough
-                          : null,
-                      color: tx.type == 'Ignored'
-                          ? Theme.of(context).colorScheme.outline
-                          : null,
-                    ),
-                  ),
-                  subtitle: Text(
-                    '${tx.type} • ${(tx.originalSms != null && (tx.paymentMethod == null || tx.paymentMethod == "Cash")) ? "UPI" : (tx.paymentMethod ?? "Cash")} • ${DateFormat('dd MMM, hh:mm a').format(tx.transactionDate)}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  trailing: Text(
-                    '-₹${tx.amount.toStringAsFixed(2)}',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: tx.type == 'Ignored'
-                          ? Theme.of(context).colorScheme.outline
-                          : AppTheme.expense,
-                      decoration: tx.type == 'Ignored'
-                          ? TextDecoration.lineThrough
-                          : null,
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: GestureDetector(
+                    onDoubleTap: () => _showCategorySelection(context, ref, tx),
+                    onLongPress: () => _showLongPressMenu(context, tx),
+                    child: ListTile(
+                      onTap: () => context.push('/add-transaction', extra: tx),
+                      leading: GestureDetector(
+                        onTap: () => _showCategorySelection(context, ref, tx),
+                        child: CircleAvatar(
+                          backgroundColor: tx.type == 'Ignored'
+                              ? Theme.of(context).colorScheme.surfaceContainerHighest
+                              : AppTheme.expense.withValues(alpha: 0.1),
+                          child: Icon(
+                            iconData,
+                            color: tx.type == 'Ignored'
+                                ? Theme.of(context).colorScheme.outline
+                                : AppTheme.expense,
+                          ),
+                        ),
+                      ),
+                      title: Text(
+                        tx.merchant ?? tx.notes ?? 'Transaction',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          decoration: tx.type == 'Ignored'
+                              ? TextDecoration.lineThrough
+                              : null,
+                          color: tx.type == 'Ignored'
+                              ? Theme.of(context).colorScheme.outline
+                              : null,
+                        ),
+                      ),
+                      subtitle: Text(
+                        '${tx.type} • ${(tx.originalSms != null && (tx.paymentMethod == null || tx.paymentMethod == "Cash")) ? "UPI" : (tx.paymentMethod ?? "Cash")} • ${DateFormat('dd MMM, hh:mm a').format(tx.transactionDate)}',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      trailing: Text(
+                        '-₹${tx.amount.toStringAsFixed(2)}',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: tx.type == 'Ignored'
+                              ? Theme.of(context).colorScheme.outline
+                              : AppTheme.expense,
+                          decoration: tx.type == 'Ignored'
+                              ? TextDecoration.lineThrough
+                              : null,
+                        ),
+                      ),
                     ),
                   ),
                 );

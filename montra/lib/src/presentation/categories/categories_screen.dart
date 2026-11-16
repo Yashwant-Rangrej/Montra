@@ -40,7 +40,7 @@ class CategoriesScreen extends ConsumerWidget {
                   leading: CircleAvatar(
                     backgroundColor: color.withValues(alpha: 0.2),
                     child: Icon(
-                      CategoryIconHelper.getIcon(category.name),
+                      CategoryIconHelper.getIcon(category.name, category.icon),
                       color: color,
                     ),
                   ),

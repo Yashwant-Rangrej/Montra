@@ -10,7 +10,6 @@ import '../../providers/repository_providers.dart';
 import '../../providers/categories_provider.dart';
 import '../../providers/transactions_provider.dart';
 import '../../providers/unrecognized_sms_provider.dart';
-import '../../providers/backup_providers.dart';
 import '../../data/repositories/notification_repository.dart';
 import '../../services/notifications/notification_manager.dart';
 
@@ -550,7 +549,6 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       // Invalidate to refresh all relevant lists and stats immediately
       ref.invalidate(transactionsProvider);
       ref.invalidate(dashboardStatsProvider);
-      ref.read(backupServiceProvider).triggerAutoBackupIfEnabled();
       
       if (mounted) {
         Navigator.of(context).pop();
@@ -565,7 +563,6 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       
       ref.invalidate(transactionsProvider);
       ref.invalidate(dashboardStatsProvider);
-      ref.read(backupServiceProvider).triggerAutoBackupIfEnabled();
       
       if (mounted) {
         Navigator.of(context).pop();

@@ -148,6 +148,12 @@ void main() {
       expect(CategoryIconHelper.getIcon('Unknown'), Icons.category);
       expect(CategoryIconHelper.getIcon(null), Icons.shopping_bag);
     });
+
+    test('Returns explicit icon if iconName is provided', () {
+      expect(CategoryIconHelper.getIcon('Food', 'fastfood'), Icons.fastfood);
+      expect(CategoryIconHelper.getIcon('Custom', 'pets'), Icons.pets);
+      expect(CategoryIconHelper.getIcon('Bills', 'bolt'), Icons.bolt);
+    });
   });
 
   group('Database & Repository PaymentMethod Tests', () {
@@ -358,8 +364,8 @@ void main() {
       await db.close();
     });
 
-    test('Database schema version is 10 and performance indices are active', () async {
-      expect(db.schemaVersion, 10);
+    test('Database schema version is 11 and performance indices are active', () async {
+      expect(db.schemaVersion, 11);
 
       // Verify indexes in sqlite_master
       final indexes = await db.customSelect(

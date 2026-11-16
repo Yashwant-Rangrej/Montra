@@ -10,7 +10,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? impl.openConnection());
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration {
@@ -128,6 +128,19 @@ class AppDatabase extends _$AppDatabase {
             await customStatement('CREATE INDEX IF NOT EXISTS idx_notifications_date ON notifications(notification_date DESC);');
           } catch (_) {}
         }
+        if (from < 11) {
+          try {
+            await customStatement("UPDATE categories SET icon = 'restaurant' WHERE (icon IS NULL OR icon = '' OR icon = 'category') AND (lower(name) LIKE '%food%' OR lower(name) LIKE '%dining%' OR lower(name) LIKE '%restaurant%');");
+            await customStatement("UPDATE categories SET icon = 'directions_car' WHERE (icon IS NULL OR icon = '' OR icon = 'category') AND (lower(name) LIKE '%transport%' OR lower(name) LIKE '%travel%' OR lower(name) LIKE '%auto%' OR lower(name) LIKE '%fuel%');");
+            await customStatement("UPDATE categories SET icon = 'shopping_cart' WHERE (icon IS NULL OR icon = '' OR icon = 'category') AND (lower(name) LIKE '%shop%' OR lower(name) LIKE '%store%');");
+            await customStatement("UPDATE categories SET icon = 'local_grocery_store' WHERE (icon IS NULL OR icon = '' OR icon = 'category') AND (lower(name) LIKE '%grocery%' OR lower(name) LIKE '%market%');");
+            await customStatement("UPDATE categories SET icon = 'bolt' WHERE (icon IS NULL OR icon = '' OR icon = 'category') AND (lower(name) LIKE '%utilit%' OR lower(name) LIKE '%electric%' OR lower(name) LIKE '%bill%');");
+            await customStatement("UPDATE categories SET icon = 'local_hospital' WHERE (icon IS NULL OR icon = '' OR icon = 'category') AND (lower(name) LIKE '%health%' OR lower(name) LIKE '%medical%');");
+            await customStatement("UPDATE categories SET icon = 'movie' WHERE (icon IS NULL OR icon = '' OR icon = 'category') AND (lower(name) LIKE '%entertain%' OR lower(name) LIKE '%movie%');");
+            await customStatement("UPDATE categories SET icon = 'swap_horiz' WHERE (icon IS NULL OR icon = '' OR icon = 'category') AND lower(name) LIKE '%transfer%';");
+            await customStatement("UPDATE categories SET icon = 'category' WHERE icon IS NULL OR icon = '';");
+          } catch (_) {}
+        }
       },
       beforeOpen: (details) async {
         // WAL mode: better crash-safety and concurrent read performance
@@ -145,6 +158,19 @@ class AppDatabase extends _$AppDatabase {
           await customStatement('CREATE INDEX IF NOT EXISTS idx_budgets_month_year ON budgets(month, year);');
           await customStatement('CREATE INDEX IF NOT EXISTS idx_unrecognized_sms_date ON unrecognized_sms(received_at DESC);');
           await customStatement('CREATE INDEX IF NOT EXISTS idx_notifications_date ON notifications(notification_date DESC);');
+        } catch (_) {}
+
+        // Ensure all categories have a valid icon assigned
+        try {
+          await customStatement("UPDATE categories SET icon = 'restaurant' WHERE (icon IS NULL OR icon = '' OR icon = 'category') AND (lower(name) LIKE '%food%' OR lower(name) LIKE '%dining%' OR lower(name) LIKE '%restaurant%');");
+          await customStatement("UPDATE categories SET icon = 'directions_car' WHERE (icon IS NULL OR icon = '' OR icon = 'category') AND (lower(name) LIKE '%transport%' OR lower(name) LIKE '%travel%' OR lower(name) LIKE '%fuel%');");
+          await customStatement("UPDATE categories SET icon = 'shopping_cart' WHERE (icon IS NULL OR icon = '' OR icon = 'category') AND (lower(name) LIKE '%shop%' OR lower(name) LIKE '%store%');");
+          await customStatement("UPDATE categories SET icon = 'local_grocery_store' WHERE (icon IS NULL OR icon = '' OR icon = 'category') AND (lower(name) LIKE '%grocery%' OR lower(name) LIKE '%market%');");
+          await customStatement("UPDATE categories SET icon = 'bolt' WHERE (icon IS NULL OR icon = '' OR icon = 'category') AND (lower(name) LIKE '%utilit%' OR lower(name) LIKE '%bill%');");
+          await customStatement("UPDATE categories SET icon = 'local_hospital' WHERE (icon IS NULL OR icon = '' OR icon = 'category') AND (lower(name) LIKE '%health%' OR lower(name) LIKE '%medical%');");
+          await customStatement("UPDATE categories SET icon = 'movie' WHERE (icon IS NULL OR icon = '' OR icon = 'category') AND (lower(name) LIKE '%entertain%' OR lower(name) LIKE '%movie%');");
+          await customStatement("UPDATE categories SET icon = 'swap_horiz' WHERE (icon IS NULL OR icon = '' OR icon = 'category') AND lower(name) LIKE '%transfer%';");
+          await customStatement("UPDATE categories SET icon = 'category' WHERE icon IS NULL OR icon = '';");
         } catch (_) {}
 
         // Ensure database satisfies payment method requirements

@@ -23,7 +23,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     setState(() => _isExporting = true);
     try {
       final service = ref.read(backupServiceProvider);
-      final file = await service.createBackup(isAuto: false);
+      final file = await service.createBackup();
       ref.invalidate(availableBackupsProvider);
 
       if (mounted) {

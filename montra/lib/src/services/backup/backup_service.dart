@@ -55,7 +55,6 @@ class BackupService {
 
   BackupService(this._db, [this._baseDirectory]);
 
-  static const String _autoBackupPrefKey = 'montra_auto_backup_enabled';
   static const String _lastBackupDateKey = 'montra_last_backup_date';
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -117,7 +116,7 @@ class BackupService {
 
   /// Creates a complete JSON backup containing all 11 tables and metadata.
   /// Saves to internal backups folder AND copies to persistent external Downloads.
-  Future<File> createBackup({bool isAuto = false}) async {
+  Future<File> createBackup() async {
     final accounts = await _db.select(_db.accounts).get();
     final categories = await _db.select(_db.categories).get();
     final transactions = await _db.select(_db.transactions).get();
@@ -167,9 +166,7 @@ class BackupService {
     final jsonString = const JsonEncoder.withIndent('  ').convert(backupMap);
 
     final internalDir = await getInternalBackupDirectory();
-    final fileName = isAuto
-        ? 'montra_auto_backup.json'
-        : 'montra_backup_${DateFormat('yyyyMMdd_HHmmss').format(now)}.json';
+    final fileName = 'montra_backup_${DateFormat('yyyyMMdd_HHmmss').format(now)}.json';
 
     final internalFile = File(p.join(internalDir.path, fileName));
     await internalFile.writeAsString(jsonString, flush: true);
@@ -541,45 +538,11 @@ class BackupService {
     return false;
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // AUTO-BACKUP SETTINGS & TRIGGER
-  // ─────────────────────────────────────────────────────────────────────────
-
-  Future<bool> isAutoBackupEnabled() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_autoBackupPrefKey) ?? true; // Enabled by default
-  }
-
-  Future<void> setAutoBackupEnabled(bool enabled) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_autoBackupPrefKey, enabled);
-  }
-
   Future<DateTime?> getLastBackupDate() async {
     final prefs = await SharedPreferences.getInstance();
     final dateStr = prefs.getString(_lastBackupDateKey);
     if (dateStr == null) return null;
     return DateTime.tryParse(dateStr);
-  }
-
-  DateTime? _lastAutoBackupTime;
-
-  /// Throttled auto-backup (max once every 60 seconds) triggered when transactions are modified
-  Future<void> triggerAutoBackupIfEnabled() async {
-    try {
-      final enabled = await isAutoBackupEnabled();
-      if (!enabled) return;
-
-      final now = DateTime.now();
-      if (_lastAutoBackupTime != null &&
-          now.difference(_lastAutoBackupTime!).inSeconds < 60) {
-        return; // throttled
-      }
-      _lastAutoBackupTime = now;
-      await createBackup(isAuto: true);
-    } catch (e) {
-      debugPrint('Auto-backup check failed: $e');
-    }
   }
 
   // ─────────────────────────────────────────────────────────────────────────
