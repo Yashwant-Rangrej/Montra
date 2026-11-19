@@ -82,6 +82,19 @@
   * Lists each recorded month with its total spending (`Month Year • ₹Amount`).
   * **Interactive Report Generation:** Tapping any month item (or its chart icon) immediately computes stats for that specific month and navigates to the **Monthly Summary Report** screen (`/monthly-summary-report`).
 
+### 2b. Monthly Summary Report Screen (`/monthly-summary-report`)
+* **Strict Month Isolation:** All metrics, category breakdowns, payee rankings, and transaction items are strictly computed for the chosen calendar month using `.toLocal()` timezone boundaries. Ignored transactions are excluded.
+* **Month Navigation:** `< Previous Month` and `Next Month >` arrows (with future month prevention), plus an interactive 12-month & year picker modal sheet.
+* **Hero Statement Banner:** Deep gradient card showing total expense, transaction count, daily average spend, total income, net savings (positive/negative badges), and days recorded.
+* **Savings Health Card:** Displays savings percentage rate, retained savings vs deficit, and colored progress track.
+* **Key Highlights Row:** Top spending category, top merchant payee, and peak spending day.
+* **Category Breakdown:** FlChart Donut chart with touch highlighting and itemized list with percentage progress bars.
+* **Top Payees Leaderboard:** Ranked list (1-5) of top merchants with purchase counts and percentage share.
+* **Payment Modes Distribution:** Grid breakdown of UPI, Cards, Net Banking, and Cash.
+* **Top 5 Major Purchases:** Highlights the highest-value individual expenses of that month.
+* **Itemized Monthly Ledger:** "All Transactions of [Month Name]" with filter chips (`All`, `Expenses`, `Income`), clickable items to view/edit in `/add-transaction` with automatic statement reload on return, and expand/collapse support.
+* **Sharing & Persistence:** Formatted text report generation via `SharePlus` and snapshot storage in Drift `saved_summaries`.
+
 ### 3. Budgets Screen (`/budgets`)
 * Category-specific or Overall monthly budget limits.
 * Progress bars indicating spent amount, remaining amount, and percentage.
@@ -127,6 +140,7 @@
 | **2026-11-16** | **Create Persistent Project Memory**<br>"create a memory file in folder what ever i make changes and give you instruction and anything whatever it would be save that in that file and apps working and feature also" | Created `MEMORY.md` at both project root (`/`) and Flutter root (`/montra`) documenting full architecture, features, database schemas, and chronological instruction changelog. | **Completed** |
 | **2026-11-16** | **Production Release APK & Direct Device Install**<br>"now install the app directlly in connected device the smallest production ready apk" | Target device identified: `I2219` (`10BEAH2U41003X1`, `android-arm64`). Built release APK with `--split-per-abi`, `--obfuscate`, `--split-debug-info`, R8 shrinking (22.4 MB), and installed `app-arm64-v8a-release.apk` directly via ADB. | **Completed** |
 | **2026-11-16** | **Expand Category Icons Catalog**<br>"add more icons in category" | Expanded `CategoryIconHelper.availableIcons` from 32 to 85+ icons covering Food, Drinks, Groceries, Shopping, Fashion, Vehicles, Travel, Home, Bills, Healthcare, Sports, Entertainment, Tech, Kids, Pets, Investments, and Finance. Added instant search filter and scrollable container in `add_category_screen.dart`. | **Completed** |
+| **2026-11-19** | **Enhance Monthly Summary UI & Month Isolation**<br>"enhance the monthly summariy ui it is not good and detailed"<br>"monthly report should contain details of that month only" | 1. **Strict Month Isolation:** Filtered all transactions using `.toLocal()` calendar boundaries in `monthly_summary_service.dart` and `transactions_provider.dart`. Excluded ignored transactions and non-month records.<br>2. **Month Switcher & Picker:** Added `< Previous Month` and `Next Month >` navigation with future-month disabling, plus an interactive 12-month/year picker modal.<br>3. **Executive UI Overhaul:** Built gradient Hero Statement banner (Expense, Income, Net Savings, Daily Average), Savings Health card with progress bar, Key Highlights row (Top Category, Top Payee, Peak Spending Day), interactive FlChart Donut breakdown, Top 5 Payees leaderboard, Payment Modes distribution, and Top 5 Major Expenses.<br>4. **Itemized Monthly Ledger:** Added "All Transactions of [Month Name]" section with segmented filters (All, Expenses, Income), clickable transaction tiles to edit/inspect via `/add-transaction` with reactive reload, and expandable view.<br>5. **Zero-State Handling:** Empty months render a clean UI with month switcher intact instead of breaking.<br>6. **Tests:** Added `monthly_summary_test.dart` verifying data isolation and calculations (all 63 tests pass). | **Completed** |
 
 ---
 

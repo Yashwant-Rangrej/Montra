@@ -186,7 +186,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       path: '/monthly-summary-report',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
-        final stats = state.extra as Map<String, dynamic>;
+        final stats = state.extra as Map<String, dynamic>?;
         return MonthlySummaryScreen(stats: stats);
       },
     ),
