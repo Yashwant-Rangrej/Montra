@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:go_router/go_router.dart';
@@ -245,6 +246,11 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
     final db = ref.read(databaseProvider);
 
     try {
+      // Remove any previously saved snapshot for this month & year to avoid duplicates
+      await (db.delete(db.savedSummaries)
+            ..where((tbl) => tbl.month.equals(_selectedMonth) & tbl.year.equals(_selectedYear)))
+          .go();
+
       await db.into(db.savedSummaries).insert(
         SavedSummariesCompanion.insert(
           month: _selectedMonth,
@@ -254,6 +260,19 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
           topCategoryAmount: ((_stats!['topCategoryAmount'] as num?) ?? 0.0).toDouble(),
           topMerchant: drift.Value(_stats!['topMerchant'] as String?),
           transactionCount: (_stats!['txCount'] as int?) ?? 0,
+          totalIncome: drift.Value(((_stats!['totalIncome'] as num?) ?? 0.0).toDouble()),
+          netSavings: drift.Value(((_stats!['netSavings'] as num?) ?? 0.0).toDouble()),
+          dailyAverage: drift.Value(((_stats!['dailyAverage'] as num?) ?? 0.0).toDouble()),
+          incomeCount: drift.Value((_stats!['incomeCount'] as int?) ?? 0),
+          categoryBreakdown: drift.Value(
+            _stats!['categoryBreakdown'] != null ? jsonEncode(_stats!['categoryBreakdown']) : null,
+          ),
+          merchantBreakdown: drift.Value(
+            _stats!['merchantBreakdown'] != null ? jsonEncode(_stats!['merchantBreakdown']) : null,
+          ),
+          paymentMethodBreakdown: drift.Value(
+            _stats!['paymentMethodBreakdown'] != null ? jsonEncode(_stats!['paymentMethodBreakdown']) : null,
+          ),
         ),
       );
 

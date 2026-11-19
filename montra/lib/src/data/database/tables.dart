@@ -98,6 +98,13 @@ class SavedSummaries extends Table {
   RealColumn get topCategoryAmount => real()();
   TextColumn get topMerchant => text().nullable()();
   IntColumn get transactionCount => integer()();
+  RealColumn get totalIncome => real().withDefault(const Constant(0.0))();
+  RealColumn get netSavings => real().withDefault(const Constant(0.0))();
+  RealColumn get dailyAverage => real().withDefault(const Constant(0.0))();
+  IntColumn get incomeCount => integer().withDefault(const Constant(0))();
+  TextColumn get categoryBreakdown => text().nullable()();
+  TextColumn get merchantBreakdown => text().nullable()();
+  TextColumn get paymentMethodBreakdown => text().nullable()();
   DateTimeColumn get generatedAt => dateTime().withDefault(currentDateAndTime)();
 }
 

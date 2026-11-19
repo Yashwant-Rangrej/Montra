@@ -10,7 +10,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? impl.openConnection());
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration {
@@ -28,6 +28,7 @@ class AppDatabase extends _$AppDatabase {
           await customStatement('CREATE INDEX IF NOT EXISTS idx_budgets_month_year ON budgets(month, year);');
           await customStatement('CREATE INDEX IF NOT EXISTS idx_unrecognized_sms_date ON unrecognized_sms(received_at DESC);');
           await customStatement('CREATE INDEX IF NOT EXISTS idx_notifications_date ON notifications(notification_date DESC);');
+          await customStatement('CREATE INDEX IF NOT EXISTS idx_saved_summaries_month_year ON saved_summaries(month, year);');
         } catch (_) {}
 
         // 2. Default payment method trigger: SMS detected defaults to UPI, manual to Cash
@@ -141,6 +142,32 @@ class AppDatabase extends _$AppDatabase {
             await customStatement("UPDATE categories SET icon = 'category' WHERE icon IS NULL OR icon = '';");
           } catch (_) {}
         }
+        if (from < 12) {
+          try {
+            await m.addColumn(savedSummaries, savedSummaries.totalIncome);
+          } catch (_) {}
+          try {
+            await m.addColumn(savedSummaries, savedSummaries.netSavings);
+          } catch (_) {}
+          try {
+            await m.addColumn(savedSummaries, savedSummaries.dailyAverage);
+          } catch (_) {}
+          try {
+            await m.addColumn(savedSummaries, savedSummaries.incomeCount);
+          } catch (_) {}
+          try {
+            await m.addColumn(savedSummaries, savedSummaries.categoryBreakdown);
+          } catch (_) {}
+          try {
+            await m.addColumn(savedSummaries, savedSummaries.merchantBreakdown);
+          } catch (_) {}
+          try {
+            await m.addColumn(savedSummaries, savedSummaries.paymentMethodBreakdown);
+          } catch (_) {}
+          try {
+            await customStatement('CREATE INDEX IF NOT EXISTS idx_saved_summaries_month_year ON saved_summaries(month, year);');
+          } catch (_) {}
+        }
       },
       beforeOpen: (details) async {
         // WAL mode: better crash-safety and concurrent read performance
@@ -158,6 +185,7 @@ class AppDatabase extends _$AppDatabase {
           await customStatement('CREATE INDEX IF NOT EXISTS idx_budgets_month_year ON budgets(month, year);');
           await customStatement('CREATE INDEX IF NOT EXISTS idx_unrecognized_sms_date ON unrecognized_sms(received_at DESC);');
           await customStatement('CREATE INDEX IF NOT EXISTS idx_notifications_date ON notifications(notification_date DESC);');
+          await customStatement('CREATE INDEX IF NOT EXISTS idx_saved_summaries_month_year ON saved_summaries(month, year);');
         } catch (_) {}
 
         // Ensure all categories have a valid icon assigned

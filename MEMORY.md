@@ -37,7 +37,7 @@
 * **Unrecognized SMS:** Financial messages that cannot be parsed are captured in the `UnrecognizedSms` database table for audit and manual resolution.
 
 ### B. Database Schema & Migration (`AppDatabase`)
-* Current Schema Version: **11**
+* Current Schema Version: **12**
 * **Tables:**
   * `Transactions`: id, amount, type, merchant, categoryId, paymentMethod, accountId, targetAccountId, availableBalance, transactionDate, notes, originalSms, bankTransactionId, receiptAttachment.
   * `Categories`: id, name, type, color, icon.
@@ -47,7 +47,7 @@
   * `Settings`: key, value (primary key key).
   * `Tags` & `TransactionTags`: Multi-tagging support.
   * `UnrecognizedSms`: Audit trail for skipped or unrecognized bank messages.
-  * `SavedSummaries`: Historical monthly snapshots.
+  * `SavedSummaries`: id, month, year, totalExpense, topCategory, topCategoryAmount, topMerchant, transactionCount, totalIncome, netSavings, dailyAverage, incomeCount, categoryBreakdown (JSON), merchantBreakdown (JSON), paymentMethodBreakdown (JSON), generatedAt. Indexed by `(month, year)`.
   * `NotificationSettingsDb`: Settings for large expense thresholds and budget alerts.
 
 ### C. Notification Engine (`NotificationManager`)
@@ -141,6 +141,7 @@
 | **2026-11-16** | **Production Release APK & Direct Device Install**<br>"now install the app directlly in connected device the smallest production ready apk" | Target device identified: `I2219` (`10BEAH2U41003X1`, `android-arm64`). Built release APK with `--split-per-abi`, `--obfuscate`, `--split-debug-info`, R8 shrinking (22.4 MB), and installed `app-arm64-v8a-release.apk` directly via ADB. | **Completed** |
 | **2026-11-16** | **Expand Category Icons Catalog**<br>"add more icons in category" | Expanded `CategoryIconHelper.availableIcons` from 32 to 85+ icons covering Food, Drinks, Groceries, Shopping, Fashion, Vehicles, Travel, Home, Bills, Healthcare, Sports, Entertainment, Tech, Kids, Pets, Investments, and Finance. Added instant search filter and scrollable container in `add_category_screen.dart`. | **Completed** |
 | **2026-11-19** | **Enhance Monthly Summary UI & Month Isolation**<br>"enhance the monthly summariy ui it is not good and detailed"<br>"monthly report should contain details of that month only" | 1. **Strict Month Isolation:** Filtered all transactions using `.toLocal()` calendar boundaries in `monthly_summary_service.dart` and `transactions_provider.dart`. Excluded ignored transactions and non-month records.<br>2. **Month Switcher & Picker:** Added `< Previous Month` and `Next Month >` navigation with future-month disabling, plus an interactive 12-month/year picker modal.<br>3. **Executive UI Overhaul:** Built gradient Hero Statement banner (Expense, Income, Net Savings, Daily Average), Savings Health card with progress bar, Key Highlights row (Top Category, Top Payee, Peak Spending Day), interactive FlChart Donut breakdown, Top 5 Payees leaderboard, Payment Modes distribution, and Top 5 Major Expenses.<br>4. **Itemized Monthly Ledger:** Added "All Transactions of [Month Name]" section with segmented filters (All, Expenses, Income), clickable transaction tiles to edit/inspect via `/add-transaction` with reactive reload, and expandable view.<br>5. **Zero-State Handling:** Empty months render a clean UI with month switcher intact instead of breaking.<br>6. **Tests:** Added `monthly_summary_test.dart` verifying data isolation and calculations (all 63 tests pass). | **Completed** |
+| **2026-11-19** | **Database Schema Migration (Version 12)**<br>"edit the db base according to new chanegs" | 1. **SavedSummaries Schema Expansion:** Added `totalIncome`, `netSavings`, `dailyAverage`, `incomeCount`, and JSON fields (`categoryBreakdown`, `merchantBreakdown`, `paymentMethodBreakdown`) to `SavedSummaries` table in `tables.dart`.<br>2. **Index Optimization:** Added performance index `idx_saved_summaries_month_year` on `(month, year)` in `onCreate`, `onUpgrade`, and `beforeOpen`.<br>3. **Schema Version Bump:** Updated Drift database to `schemaVersion: 12` with non-destructive `addColumn` migrations in `database.dart`.<br>4. **Code Generation:** Re-ran `build_runner` generating updated table models and companions in `database.g.dart`.<br>5. **Persistence Logic:** Updated `_saveSummary()` in `monthly_summary_screen.dart` to save complete monthly financial metrics and remove previous snapshots for that month/year.<br>6. **Test Verification:** Updated and verified database schema version 12 in `widget_test.dart` (all 63 tests passed). | **Completed** |
 
 ---
 

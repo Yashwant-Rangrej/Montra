@@ -364,8 +364,8 @@ void main() {
       await db.close();
     });
 
-    test('Database schema version is 11 and performance indices are active', () async {
-      expect(db.schemaVersion, 11);
+    test('Database schema version is 12 and performance indices are active', () async {
+      expect(db.schemaVersion, 12);
 
       // Verify indexes in sqlite_master
       final indexes = await db.customSelect(
@@ -382,6 +382,7 @@ void main() {
       expect(indexNames.contains('idx_budgets_month_year'), isTrue);
       expect(indexNames.contains('idx_unrecognized_sms_date'), isTrue);
       expect(indexNames.contains('idx_notifications_date'), isTrue);
+      expect(indexNames.contains('idx_saved_summaries_month_year'), isTrue);
     });
 
     test('Receipt attachment path persists correctly on insert and update', () async {

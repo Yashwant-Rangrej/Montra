@@ -3821,6 +3821,89 @@ class $SavedSummariesTable extends SavedSummaries
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _totalIncomeMeta = const VerificationMeta(
+    'totalIncome',
+  );
+  @override
+  late final GeneratedColumn<double> totalIncome = GeneratedColumn<double>(
+    'total_income',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
+  static const VerificationMeta _netSavingsMeta = const VerificationMeta(
+    'netSavings',
+  );
+  @override
+  late final GeneratedColumn<double> netSavings = GeneratedColumn<double>(
+    'net_savings',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
+  static const VerificationMeta _dailyAverageMeta = const VerificationMeta(
+    'dailyAverage',
+  );
+  @override
+  late final GeneratedColumn<double> dailyAverage = GeneratedColumn<double>(
+    'daily_average',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
+  static const VerificationMeta _incomeCountMeta = const VerificationMeta(
+    'incomeCount',
+  );
+  @override
+  late final GeneratedColumn<int> incomeCount = GeneratedColumn<int>(
+    'income_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _categoryBreakdownMeta = const VerificationMeta(
+    'categoryBreakdown',
+  );
+  @override
+  late final GeneratedColumn<String> categoryBreakdown =
+      GeneratedColumn<String>(
+        'category_breakdown',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _merchantBreakdownMeta = const VerificationMeta(
+    'merchantBreakdown',
+  );
+  @override
+  late final GeneratedColumn<String> merchantBreakdown =
+      GeneratedColumn<String>(
+        'merchant_breakdown',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _paymentMethodBreakdownMeta =
+      const VerificationMeta('paymentMethodBreakdown');
+  @override
+  late final GeneratedColumn<String> paymentMethodBreakdown =
+      GeneratedColumn<String>(
+        'payment_method_breakdown',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _generatedAtMeta = const VerificationMeta(
     'generatedAt',
   );
@@ -3843,6 +3926,13 @@ class $SavedSummariesTable extends SavedSummaries
     topCategoryAmount,
     topMerchant,
     transactionCount,
+    totalIncome,
+    netSavings,
+    dailyAverage,
+    incomeCount,
+    categoryBreakdown,
+    merchantBreakdown,
+    paymentMethodBreakdown,
     generatedAt,
   ];
   @override
@@ -3929,6 +4019,66 @@ class $SavedSummariesTable extends SavedSummaries
     } else if (isInserting) {
       context.missing(_transactionCountMeta);
     }
+    if (data.containsKey('total_income')) {
+      context.handle(
+        _totalIncomeMeta,
+        totalIncome.isAcceptableOrUnknown(
+          data['total_income']!,
+          _totalIncomeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('net_savings')) {
+      context.handle(
+        _netSavingsMeta,
+        netSavings.isAcceptableOrUnknown(data['net_savings']!, _netSavingsMeta),
+      );
+    }
+    if (data.containsKey('daily_average')) {
+      context.handle(
+        _dailyAverageMeta,
+        dailyAverage.isAcceptableOrUnknown(
+          data['daily_average']!,
+          _dailyAverageMeta,
+        ),
+      );
+    }
+    if (data.containsKey('income_count')) {
+      context.handle(
+        _incomeCountMeta,
+        incomeCount.isAcceptableOrUnknown(
+          data['income_count']!,
+          _incomeCountMeta,
+        ),
+      );
+    }
+    if (data.containsKey('category_breakdown')) {
+      context.handle(
+        _categoryBreakdownMeta,
+        categoryBreakdown.isAcceptableOrUnknown(
+          data['category_breakdown']!,
+          _categoryBreakdownMeta,
+        ),
+      );
+    }
+    if (data.containsKey('merchant_breakdown')) {
+      context.handle(
+        _merchantBreakdownMeta,
+        merchantBreakdown.isAcceptableOrUnknown(
+          data['merchant_breakdown']!,
+          _merchantBreakdownMeta,
+        ),
+      );
+    }
+    if (data.containsKey('payment_method_breakdown')) {
+      context.handle(
+        _paymentMethodBreakdownMeta,
+        paymentMethodBreakdown.isAcceptableOrUnknown(
+          data['payment_method_breakdown']!,
+          _paymentMethodBreakdownMeta,
+        ),
+      );
+    }
     if (data.containsKey('generated_at')) {
       context.handle(
         _generatedAtMeta,
@@ -3979,6 +4129,34 @@ class $SavedSummariesTable extends SavedSummaries
         DriftSqlType.int,
         data['${effectivePrefix}transaction_count'],
       )!,
+      totalIncome: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}total_income'],
+      )!,
+      netSavings: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}net_savings'],
+      )!,
+      dailyAverage: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}daily_average'],
+      )!,
+      incomeCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}income_count'],
+      )!,
+      categoryBreakdown: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category_breakdown'],
+      ),
+      merchantBreakdown: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}merchant_breakdown'],
+      ),
+      paymentMethodBreakdown: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payment_method_breakdown'],
+      ),
       generatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}generated_at'],
@@ -4001,6 +4179,13 @@ class SavedSummary extends DataClass implements Insertable<SavedSummary> {
   final double topCategoryAmount;
   final String? topMerchant;
   final int transactionCount;
+  final double totalIncome;
+  final double netSavings;
+  final double dailyAverage;
+  final int incomeCount;
+  final String? categoryBreakdown;
+  final String? merchantBreakdown;
+  final String? paymentMethodBreakdown;
   final DateTime generatedAt;
   const SavedSummary({
     required this.id,
@@ -4011,6 +4196,13 @@ class SavedSummary extends DataClass implements Insertable<SavedSummary> {
     required this.topCategoryAmount,
     this.topMerchant,
     required this.transactionCount,
+    required this.totalIncome,
+    required this.netSavings,
+    required this.dailyAverage,
+    required this.incomeCount,
+    this.categoryBreakdown,
+    this.merchantBreakdown,
+    this.paymentMethodBreakdown,
     required this.generatedAt,
   });
   @override
@@ -4026,6 +4218,21 @@ class SavedSummary extends DataClass implements Insertable<SavedSummary> {
       map['top_merchant'] = Variable<String>(topMerchant);
     }
     map['transaction_count'] = Variable<int>(transactionCount);
+    map['total_income'] = Variable<double>(totalIncome);
+    map['net_savings'] = Variable<double>(netSavings);
+    map['daily_average'] = Variable<double>(dailyAverage);
+    map['income_count'] = Variable<int>(incomeCount);
+    if (!nullToAbsent || categoryBreakdown != null) {
+      map['category_breakdown'] = Variable<String>(categoryBreakdown);
+    }
+    if (!nullToAbsent || merchantBreakdown != null) {
+      map['merchant_breakdown'] = Variable<String>(merchantBreakdown);
+    }
+    if (!nullToAbsent || paymentMethodBreakdown != null) {
+      map['payment_method_breakdown'] = Variable<String>(
+        paymentMethodBreakdown,
+      );
+    }
     map['generated_at'] = Variable<DateTime>(generatedAt);
     return map;
   }
@@ -4042,6 +4249,19 @@ class SavedSummary extends DataClass implements Insertable<SavedSummary> {
           ? const Value.absent()
           : Value(topMerchant),
       transactionCount: Value(transactionCount),
+      totalIncome: Value(totalIncome),
+      netSavings: Value(netSavings),
+      dailyAverage: Value(dailyAverage),
+      incomeCount: Value(incomeCount),
+      categoryBreakdown: categoryBreakdown == null && nullToAbsent
+          ? const Value.absent()
+          : Value(categoryBreakdown),
+      merchantBreakdown: merchantBreakdown == null && nullToAbsent
+          ? const Value.absent()
+          : Value(merchantBreakdown),
+      paymentMethodBreakdown: paymentMethodBreakdown == null && nullToAbsent
+          ? const Value.absent()
+          : Value(paymentMethodBreakdown),
       generatedAt: Value(generatedAt),
     );
   }
@@ -4060,6 +4280,19 @@ class SavedSummary extends DataClass implements Insertable<SavedSummary> {
       topCategoryAmount: serializer.fromJson<double>(json['topCategoryAmount']),
       topMerchant: serializer.fromJson<String?>(json['topMerchant']),
       transactionCount: serializer.fromJson<int>(json['transactionCount']),
+      totalIncome: serializer.fromJson<double>(json['totalIncome']),
+      netSavings: serializer.fromJson<double>(json['netSavings']),
+      dailyAverage: serializer.fromJson<double>(json['dailyAverage']),
+      incomeCount: serializer.fromJson<int>(json['incomeCount']),
+      categoryBreakdown: serializer.fromJson<String?>(
+        json['categoryBreakdown'],
+      ),
+      merchantBreakdown: serializer.fromJson<String?>(
+        json['merchantBreakdown'],
+      ),
+      paymentMethodBreakdown: serializer.fromJson<String?>(
+        json['paymentMethodBreakdown'],
+      ),
       generatedAt: serializer.fromJson<DateTime>(json['generatedAt']),
     );
   }
@@ -4075,6 +4308,15 @@ class SavedSummary extends DataClass implements Insertable<SavedSummary> {
       'topCategoryAmount': serializer.toJson<double>(topCategoryAmount),
       'topMerchant': serializer.toJson<String?>(topMerchant),
       'transactionCount': serializer.toJson<int>(transactionCount),
+      'totalIncome': serializer.toJson<double>(totalIncome),
+      'netSavings': serializer.toJson<double>(netSavings),
+      'dailyAverage': serializer.toJson<double>(dailyAverage),
+      'incomeCount': serializer.toJson<int>(incomeCount),
+      'categoryBreakdown': serializer.toJson<String?>(categoryBreakdown),
+      'merchantBreakdown': serializer.toJson<String?>(merchantBreakdown),
+      'paymentMethodBreakdown': serializer.toJson<String?>(
+        paymentMethodBreakdown,
+      ),
       'generatedAt': serializer.toJson<DateTime>(generatedAt),
     };
   }
@@ -4088,6 +4330,13 @@ class SavedSummary extends DataClass implements Insertable<SavedSummary> {
     double? topCategoryAmount,
     Value<String?> topMerchant = const Value.absent(),
     int? transactionCount,
+    double? totalIncome,
+    double? netSavings,
+    double? dailyAverage,
+    int? incomeCount,
+    Value<String?> categoryBreakdown = const Value.absent(),
+    Value<String?> merchantBreakdown = const Value.absent(),
+    Value<String?> paymentMethodBreakdown = const Value.absent(),
     DateTime? generatedAt,
   }) => SavedSummary(
     id: id ?? this.id,
@@ -4098,6 +4347,19 @@ class SavedSummary extends DataClass implements Insertable<SavedSummary> {
     topCategoryAmount: topCategoryAmount ?? this.topCategoryAmount,
     topMerchant: topMerchant.present ? topMerchant.value : this.topMerchant,
     transactionCount: transactionCount ?? this.transactionCount,
+    totalIncome: totalIncome ?? this.totalIncome,
+    netSavings: netSavings ?? this.netSavings,
+    dailyAverage: dailyAverage ?? this.dailyAverage,
+    incomeCount: incomeCount ?? this.incomeCount,
+    categoryBreakdown: categoryBreakdown.present
+        ? categoryBreakdown.value
+        : this.categoryBreakdown,
+    merchantBreakdown: merchantBreakdown.present
+        ? merchantBreakdown.value
+        : this.merchantBreakdown,
+    paymentMethodBreakdown: paymentMethodBreakdown.present
+        ? paymentMethodBreakdown.value
+        : this.paymentMethodBreakdown,
     generatedAt: generatedAt ?? this.generatedAt,
   );
   SavedSummary copyWithCompanion(SavedSummariesCompanion data) {
@@ -4120,6 +4382,27 @@ class SavedSummary extends DataClass implements Insertable<SavedSummary> {
       transactionCount: data.transactionCount.present
           ? data.transactionCount.value
           : this.transactionCount,
+      totalIncome: data.totalIncome.present
+          ? data.totalIncome.value
+          : this.totalIncome,
+      netSavings: data.netSavings.present
+          ? data.netSavings.value
+          : this.netSavings,
+      dailyAverage: data.dailyAverage.present
+          ? data.dailyAverage.value
+          : this.dailyAverage,
+      incomeCount: data.incomeCount.present
+          ? data.incomeCount.value
+          : this.incomeCount,
+      categoryBreakdown: data.categoryBreakdown.present
+          ? data.categoryBreakdown.value
+          : this.categoryBreakdown,
+      merchantBreakdown: data.merchantBreakdown.present
+          ? data.merchantBreakdown.value
+          : this.merchantBreakdown,
+      paymentMethodBreakdown: data.paymentMethodBreakdown.present
+          ? data.paymentMethodBreakdown.value
+          : this.paymentMethodBreakdown,
       generatedAt: data.generatedAt.present
           ? data.generatedAt.value
           : this.generatedAt,
@@ -4137,6 +4420,13 @@ class SavedSummary extends DataClass implements Insertable<SavedSummary> {
           ..write('topCategoryAmount: $topCategoryAmount, ')
           ..write('topMerchant: $topMerchant, ')
           ..write('transactionCount: $transactionCount, ')
+          ..write('totalIncome: $totalIncome, ')
+          ..write('netSavings: $netSavings, ')
+          ..write('dailyAverage: $dailyAverage, ')
+          ..write('incomeCount: $incomeCount, ')
+          ..write('categoryBreakdown: $categoryBreakdown, ')
+          ..write('merchantBreakdown: $merchantBreakdown, ')
+          ..write('paymentMethodBreakdown: $paymentMethodBreakdown, ')
           ..write('generatedAt: $generatedAt')
           ..write(')'))
         .toString();
@@ -4152,6 +4442,13 @@ class SavedSummary extends DataClass implements Insertable<SavedSummary> {
     topCategoryAmount,
     topMerchant,
     transactionCount,
+    totalIncome,
+    netSavings,
+    dailyAverage,
+    incomeCount,
+    categoryBreakdown,
+    merchantBreakdown,
+    paymentMethodBreakdown,
     generatedAt,
   );
   @override
@@ -4166,6 +4463,13 @@ class SavedSummary extends DataClass implements Insertable<SavedSummary> {
           other.topCategoryAmount == this.topCategoryAmount &&
           other.topMerchant == this.topMerchant &&
           other.transactionCount == this.transactionCount &&
+          other.totalIncome == this.totalIncome &&
+          other.netSavings == this.netSavings &&
+          other.dailyAverage == this.dailyAverage &&
+          other.incomeCount == this.incomeCount &&
+          other.categoryBreakdown == this.categoryBreakdown &&
+          other.merchantBreakdown == this.merchantBreakdown &&
+          other.paymentMethodBreakdown == this.paymentMethodBreakdown &&
           other.generatedAt == this.generatedAt);
 }
 
@@ -4178,6 +4482,13 @@ class SavedSummariesCompanion extends UpdateCompanion<SavedSummary> {
   final Value<double> topCategoryAmount;
   final Value<String?> topMerchant;
   final Value<int> transactionCount;
+  final Value<double> totalIncome;
+  final Value<double> netSavings;
+  final Value<double> dailyAverage;
+  final Value<int> incomeCount;
+  final Value<String?> categoryBreakdown;
+  final Value<String?> merchantBreakdown;
+  final Value<String?> paymentMethodBreakdown;
   final Value<DateTime> generatedAt;
   const SavedSummariesCompanion({
     this.id = const Value.absent(),
@@ -4188,6 +4499,13 @@ class SavedSummariesCompanion extends UpdateCompanion<SavedSummary> {
     this.topCategoryAmount = const Value.absent(),
     this.topMerchant = const Value.absent(),
     this.transactionCount = const Value.absent(),
+    this.totalIncome = const Value.absent(),
+    this.netSavings = const Value.absent(),
+    this.dailyAverage = const Value.absent(),
+    this.incomeCount = const Value.absent(),
+    this.categoryBreakdown = const Value.absent(),
+    this.merchantBreakdown = const Value.absent(),
+    this.paymentMethodBreakdown = const Value.absent(),
     this.generatedAt = const Value.absent(),
   });
   SavedSummariesCompanion.insert({
@@ -4199,6 +4517,13 @@ class SavedSummariesCompanion extends UpdateCompanion<SavedSummary> {
     required double topCategoryAmount,
     this.topMerchant = const Value.absent(),
     required int transactionCount,
+    this.totalIncome = const Value.absent(),
+    this.netSavings = const Value.absent(),
+    this.dailyAverage = const Value.absent(),
+    this.incomeCount = const Value.absent(),
+    this.categoryBreakdown = const Value.absent(),
+    this.merchantBreakdown = const Value.absent(),
+    this.paymentMethodBreakdown = const Value.absent(),
     this.generatedAt = const Value.absent(),
   }) : month = Value(month),
        year = Value(year),
@@ -4215,6 +4540,13 @@ class SavedSummariesCompanion extends UpdateCompanion<SavedSummary> {
     Expression<double>? topCategoryAmount,
     Expression<String>? topMerchant,
     Expression<int>? transactionCount,
+    Expression<double>? totalIncome,
+    Expression<double>? netSavings,
+    Expression<double>? dailyAverage,
+    Expression<int>? incomeCount,
+    Expression<String>? categoryBreakdown,
+    Expression<String>? merchantBreakdown,
+    Expression<String>? paymentMethodBreakdown,
     Expression<DateTime>? generatedAt,
   }) {
     return RawValuesInsertable({
@@ -4226,6 +4558,14 @@ class SavedSummariesCompanion extends UpdateCompanion<SavedSummary> {
       if (topCategoryAmount != null) 'top_category_amount': topCategoryAmount,
       if (topMerchant != null) 'top_merchant': topMerchant,
       if (transactionCount != null) 'transaction_count': transactionCount,
+      if (totalIncome != null) 'total_income': totalIncome,
+      if (netSavings != null) 'net_savings': netSavings,
+      if (dailyAverage != null) 'daily_average': dailyAverage,
+      if (incomeCount != null) 'income_count': incomeCount,
+      if (categoryBreakdown != null) 'category_breakdown': categoryBreakdown,
+      if (merchantBreakdown != null) 'merchant_breakdown': merchantBreakdown,
+      if (paymentMethodBreakdown != null)
+        'payment_method_breakdown': paymentMethodBreakdown,
       if (generatedAt != null) 'generated_at': generatedAt,
     });
   }
@@ -4239,6 +4579,13 @@ class SavedSummariesCompanion extends UpdateCompanion<SavedSummary> {
     Value<double>? topCategoryAmount,
     Value<String?>? topMerchant,
     Value<int>? transactionCount,
+    Value<double>? totalIncome,
+    Value<double>? netSavings,
+    Value<double>? dailyAverage,
+    Value<int>? incomeCount,
+    Value<String?>? categoryBreakdown,
+    Value<String?>? merchantBreakdown,
+    Value<String?>? paymentMethodBreakdown,
     Value<DateTime>? generatedAt,
   }) {
     return SavedSummariesCompanion(
@@ -4250,6 +4597,14 @@ class SavedSummariesCompanion extends UpdateCompanion<SavedSummary> {
       topCategoryAmount: topCategoryAmount ?? this.topCategoryAmount,
       topMerchant: topMerchant ?? this.topMerchant,
       transactionCount: transactionCount ?? this.transactionCount,
+      totalIncome: totalIncome ?? this.totalIncome,
+      netSavings: netSavings ?? this.netSavings,
+      dailyAverage: dailyAverage ?? this.dailyAverage,
+      incomeCount: incomeCount ?? this.incomeCount,
+      categoryBreakdown: categoryBreakdown ?? this.categoryBreakdown,
+      merchantBreakdown: merchantBreakdown ?? this.merchantBreakdown,
+      paymentMethodBreakdown:
+          paymentMethodBreakdown ?? this.paymentMethodBreakdown,
       generatedAt: generatedAt ?? this.generatedAt,
     );
   }
@@ -4281,6 +4636,29 @@ class SavedSummariesCompanion extends UpdateCompanion<SavedSummary> {
     if (transactionCount.present) {
       map['transaction_count'] = Variable<int>(transactionCount.value);
     }
+    if (totalIncome.present) {
+      map['total_income'] = Variable<double>(totalIncome.value);
+    }
+    if (netSavings.present) {
+      map['net_savings'] = Variable<double>(netSavings.value);
+    }
+    if (dailyAverage.present) {
+      map['daily_average'] = Variable<double>(dailyAverage.value);
+    }
+    if (incomeCount.present) {
+      map['income_count'] = Variable<int>(incomeCount.value);
+    }
+    if (categoryBreakdown.present) {
+      map['category_breakdown'] = Variable<String>(categoryBreakdown.value);
+    }
+    if (merchantBreakdown.present) {
+      map['merchant_breakdown'] = Variable<String>(merchantBreakdown.value);
+    }
+    if (paymentMethodBreakdown.present) {
+      map['payment_method_breakdown'] = Variable<String>(
+        paymentMethodBreakdown.value,
+      );
+    }
     if (generatedAt.present) {
       map['generated_at'] = Variable<DateTime>(generatedAt.value);
     }
@@ -4298,6 +4676,13 @@ class SavedSummariesCompanion extends UpdateCompanion<SavedSummary> {
           ..write('topCategoryAmount: $topCategoryAmount, ')
           ..write('topMerchant: $topMerchant, ')
           ..write('transactionCount: $transactionCount, ')
+          ..write('totalIncome: $totalIncome, ')
+          ..write('netSavings: $netSavings, ')
+          ..write('dailyAverage: $dailyAverage, ')
+          ..write('incomeCount: $incomeCount, ')
+          ..write('categoryBreakdown: $categoryBreakdown, ')
+          ..write('merchantBreakdown: $merchantBreakdown, ')
+          ..write('paymentMethodBreakdown: $paymentMethodBreakdown, ')
           ..write('generatedAt: $generatedAt')
           ..write(')'))
         .toString();
@@ -7054,6 +7439,13 @@ typedef $$SavedSummariesTableCreateCompanionBuilder =
       required double topCategoryAmount,
       Value<String?> topMerchant,
       required int transactionCount,
+      Value<double> totalIncome,
+      Value<double> netSavings,
+      Value<double> dailyAverage,
+      Value<int> incomeCount,
+      Value<String?> categoryBreakdown,
+      Value<String?> merchantBreakdown,
+      Value<String?> paymentMethodBreakdown,
       Value<DateTime> generatedAt,
     });
 typedef $$SavedSummariesTableUpdateCompanionBuilder =
@@ -7066,6 +7458,13 @@ typedef $$SavedSummariesTableUpdateCompanionBuilder =
       Value<double> topCategoryAmount,
       Value<String?> topMerchant,
       Value<int> transactionCount,
+      Value<double> totalIncome,
+      Value<double> netSavings,
+      Value<double> dailyAverage,
+      Value<int> incomeCount,
+      Value<String?> categoryBreakdown,
+      Value<String?> merchantBreakdown,
+      Value<String?> paymentMethodBreakdown,
       Value<DateTime> generatedAt,
     });
 
@@ -7115,6 +7514,41 @@ class $$SavedSummariesTableFilterComposer
 
   ColumnFilters<int> get transactionCount => $composableBuilder(
     column: $table.transactionCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get totalIncome => $composableBuilder(
+    column: $table.totalIncome,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get netSavings => $composableBuilder(
+    column: $table.netSavings,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get dailyAverage => $composableBuilder(
+    column: $table.dailyAverage,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get incomeCount => $composableBuilder(
+    column: $table.incomeCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get categoryBreakdown => $composableBuilder(
+    column: $table.categoryBreakdown,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get merchantBreakdown => $composableBuilder(
+    column: $table.merchantBreakdown,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get paymentMethodBreakdown => $composableBuilder(
+    column: $table.paymentMethodBreakdown,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7173,6 +7607,41 @@ class $$SavedSummariesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get totalIncome => $composableBuilder(
+    column: $table.totalIncome,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get netSavings => $composableBuilder(
+    column: $table.netSavings,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get dailyAverage => $composableBuilder(
+    column: $table.dailyAverage,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get incomeCount => $composableBuilder(
+    column: $table.incomeCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get categoryBreakdown => $composableBuilder(
+    column: $table.categoryBreakdown,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get merchantBreakdown => $composableBuilder(
+    column: $table.merchantBreakdown,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get paymentMethodBreakdown => $composableBuilder(
+    column: $table.paymentMethodBreakdown,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get generatedAt => $composableBuilder(
     column: $table.generatedAt,
     builder: (column) => ColumnOrderings(column),
@@ -7219,6 +7688,41 @@ class $$SavedSummariesTableAnnotationComposer
 
   GeneratedColumn<int> get transactionCount => $composableBuilder(
     column: $table.transactionCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get totalIncome => $composableBuilder(
+    column: $table.totalIncome,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get netSavings => $composableBuilder(
+    column: $table.netSavings,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get dailyAverage => $composableBuilder(
+    column: $table.dailyAverage,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get incomeCount => $composableBuilder(
+    column: $table.incomeCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get categoryBreakdown => $composableBuilder(
+    column: $table.categoryBreakdown,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get merchantBreakdown => $composableBuilder(
+    column: $table.merchantBreakdown,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get paymentMethodBreakdown => $composableBuilder(
+    column: $table.paymentMethodBreakdown,
     builder: (column) => column,
   );
 
@@ -7269,6 +7773,13 @@ class $$SavedSummariesTableTableManager
                 Value<double> topCategoryAmount = const Value.absent(),
                 Value<String?> topMerchant = const Value.absent(),
                 Value<int> transactionCount = const Value.absent(),
+                Value<double> totalIncome = const Value.absent(),
+                Value<double> netSavings = const Value.absent(),
+                Value<double> dailyAverage = const Value.absent(),
+                Value<int> incomeCount = const Value.absent(),
+                Value<String?> categoryBreakdown = const Value.absent(),
+                Value<String?> merchantBreakdown = const Value.absent(),
+                Value<String?> paymentMethodBreakdown = const Value.absent(),
                 Value<DateTime> generatedAt = const Value.absent(),
               }) => SavedSummariesCompanion(
                 id: id,
@@ -7279,6 +7790,13 @@ class $$SavedSummariesTableTableManager
                 topCategoryAmount: topCategoryAmount,
                 topMerchant: topMerchant,
                 transactionCount: transactionCount,
+                totalIncome: totalIncome,
+                netSavings: netSavings,
+                dailyAverage: dailyAverage,
+                incomeCount: incomeCount,
+                categoryBreakdown: categoryBreakdown,
+                merchantBreakdown: merchantBreakdown,
+                paymentMethodBreakdown: paymentMethodBreakdown,
                 generatedAt: generatedAt,
               ),
           createCompanionCallback:
@@ -7291,6 +7809,13 @@ class $$SavedSummariesTableTableManager
                 required double topCategoryAmount,
                 Value<String?> topMerchant = const Value.absent(),
                 required int transactionCount,
+                Value<double> totalIncome = const Value.absent(),
+                Value<double> netSavings = const Value.absent(),
+                Value<double> dailyAverage = const Value.absent(),
+                Value<int> incomeCount = const Value.absent(),
+                Value<String?> categoryBreakdown = const Value.absent(),
+                Value<String?> merchantBreakdown = const Value.absent(),
+                Value<String?> paymentMethodBreakdown = const Value.absent(),
                 Value<DateTime> generatedAt = const Value.absent(),
               }) => SavedSummariesCompanion.insert(
                 id: id,
@@ -7301,6 +7826,13 @@ class $$SavedSummariesTableTableManager
                 topCategoryAmount: topCategoryAmount,
                 topMerchant: topMerchant,
                 transactionCount: transactionCount,
+                totalIncome: totalIncome,
+                netSavings: netSavings,
+                dailyAverage: dailyAverage,
+                incomeCount: incomeCount,
+                categoryBreakdown: categoryBreakdown,
+                merchantBreakdown: merchantBreakdown,
+                paymentMethodBreakdown: paymentMethodBreakdown,
                 generatedAt: generatedAt,
               ),
           withReferenceMapper: (p0) => p0
