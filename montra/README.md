@@ -3,12 +3,12 @@
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <p align="center">
   <a href="https://github.com/Yashwant-Rangrej/Montra">
-    <img src="assets/images/logo.png" alt="Montra Official Logo" width="130" style="max-width: 100%; height: auto;"/>
+    <img src="montra/assets/images/logo.png" alt="Montra Official Logo" width="130" style="max-width: 100%; height: auto;"/>
   </a>
 </p>
 
 <p align="center">
-  <img src="assets/images/header.svg" width="100%" alt="Montra Dynamic Waving Header"/>
+  <img src="montra/assets/images/header.svg" width="100%" alt="Montra Dynamic Waving Header"/>
 </p>
 
 <!-- ═══════════════════════════════════════════════════════════════════ -->
@@ -27,10 +27,22 @@
   <a href="https://flutter.dev"><img src="https://img.shields.io/badge/Flutter-3.x-02569B?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter"></a>
   <a href="https://dart.dev"><img src="https://img.shields.io/badge/Dart-3.x-0175C2?style=for-the-badge&logo=dart&logoColor=white" alt="Dart"></a>
   <a href="https://riverpod.dev"><img src="https://img.shields.io/badge/Riverpod-State_Management-5E35B1?style=for-the-badge&logo=redux&logoColor=white" alt="Riverpod"></a>
-  <a href="https://drift.simonbinder.eu/"><img src="https://img.shields.io/badge/Drift-SQLite_v10-009688?style=for-the-badge&logo=sqlite&logoColor=white" alt="Drift SQLite"></a>
+  <a href="https://drift.simonbinder.eu/"><img src="https://img.shields.io/badge/Drift-SQLite_v12-009688?style=for-the-badge&logo=sqlite&logoColor=white" alt="Drift SQLite"></a>
   <a href="https://developer.android.com"><img src="https://img.shields.io/badge/Android-SDK_26+-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android"></a>
-  <a href="#testing"><img src="https://img.shields.io/badge/Tests-22%2F22_Passing-00C853?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Tests"></a>
-  <a href="../LICENSE"><img src="https://img.shields.io/badge/License-MIT-E91E63?style=for-the-badge" alt="License"></a>
+  <a href="#testing"><img src="https://img.shields.io/badge/Tests-63%2F63_Passing-00C853?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Tests"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-E91E63?style=for-the-badge" alt="License"></a>
+</p>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- DIRECT APK DOWNLOAD BUTTONS                                         -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<p align="center">
+  <a href="releases/Montra-Release-arm64-v8a.apk">
+    <img src="https://img.shields.io/badge/⚡_DOWNLOAD_APK-Direct_Install_(22.6_MB)-7F3DFF?style=for-the-badge&logo=android&logoColor=white" alt="Download Production APK" />
+  </a>
+  <a href="#download-apk">
+    <img src="https://img.shields.io/badge/📖_Installation_Guide-How_to_Install-00B4D8?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Installation Guide" />
+  </a>
 </p>
 
 <!-- ═══════════════════════════════════════════════════════════════════ -->
@@ -51,15 +63,45 @@
 <!-- INTERACTIVE QUICK NAVIGATION BAR                                    -->
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <p align="center">
+  <a href="#download-apk"><img src="https://img.shields.io/badge/📲_Download_APK-7F3DFF?style=flat-square" alt="Download APK"/></a>
   <a href="#overview"><img src="https://img.shields.io/badge/📖_Overview-1A237E?style=flat-square" alt="Overview"/></a>
   <a href="#key-features"><img src="https://img.shields.io/badge/🚀_Key_Features-7F3DFF?style=flat-square" alt="Key Features"/></a>
   <a href="#system-architecture"><img src="https://img.shields.io/badge/🏗️_Architecture-00B4D8?style=flat-square" alt="Architecture"/></a>
-  <a href="#database-architecture"><img src="https://img.shields.io/badge/🗄️_Database_v10-009688?style=flat-square" alt="Database"/></a>
+  <a href="#database-architecture"><img src="https://img.shields.io/badge/🗄️_Database_v12-009688?style=flat-square" alt="Database"/></a>
   <a href="#supported-banks"><img src="https://img.shields.io/badge/🏦_SMS_Parser-00C853?style=flat-square" alt="SMS Parser"/></a>
   <a href="#getting-started"><img src="https://img.shields.io/badge/🚦_Get_Started-FF9100?style=flat-square" alt="Getting Started"/></a>
   <a href="#testing"><img src="https://img.shields.io/badge/🧪_QA_Tests-3DDC84?style=flat-square" alt="QA & Tests"/></a>
   <a href="#privacy"><img src="https://img.shields.io/badge/🔒_Privacy-E91E63?style=flat-square" alt="Privacy"/></a>
 </p>
+
+---
+
+<a id="download-apk"></a>
+## 📲 Direct APK Download & Installation
+
+You can download and install the latest release directly on your Android phone — no compilation or setup needed:
+
+<p align="center">
+  <a href="releases/Montra-Release-arm64-v8a.apk">
+    <img src="https://img.shields.io/badge/⚡_Download_Production_APK-arm64--v8a_(22.6_MB)-7F3DFF?style=for-the-badge&logo=android&logoColor=white" alt="Download Production APK" />
+  </a>
+  <a href="https://github.com/Yashwant-Rangrej/Montra/releases/latest">
+    <img src="https://img.shields.io/badge/📦_GitHub_Releases-Latest_Version-00B4D8?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Releases" />
+  </a>
+</p>
+
+### 📥 How to Install on Your Android Device:
+1. **Download:** Tap the **[Download Production APK (22.6 MB)](releases/Montra-Release-arm64-v8a.apk)** button above on your Android phone (or download via browser).
+2. **Open APK:** Once downloaded, tap the notification or locate `Montra-Release-arm64-v8a.apk` in your phone's **Files / Downloads** app.
+3. **Allow Installation:** If prompted by Android security, tap **Settings** and toggle **"Allow from this source"** for your browser or file manager.
+4. **Install & Launch:** Tap **Install**, then open **Montra** and enjoy private, automated expense tracking!
+
+> [!TIP]
+> **Developer / ADB Installation (Direct via USB):**
+> If your phone is connected to your computer via USB with USB Debugging enabled:
+> ```powershell
+> adb install -r releases/Montra-Release-arm64-v8a.apk
+> ```
 
 ---
 
@@ -69,7 +111,7 @@
 > [!NOTE]
 > **Montra** is a personal finance and budget management application engineered to deliver complete financial clarity without ever compromising your privacy. Unlike commercial trackers that harvest and sell personal transaction feeds to ad networks, Montra operates **100% offline and on-device**.
 
-It pairs **autonomous native Android background SMS transaction detection** with a **universal backup & restore engine**, a high-performance **Drift SQLite v10 database**, and **granular past/future date customization**.
+It pairs **autonomous native Android background SMS transaction detection** with a **universal backup & restore engine**, a high-performance **Drift SQLite v12 database**, and **granular past/future date customization**.
 
 ---
 
@@ -232,7 +274,7 @@ flutter analyze
 ```
 
 > [!TIP]
-> Current test suite status: **22/22 tests passing** with **0 issues found** on `flutter analyze`.
+> Current test suite status: **63/63 tests passing** with **0 issues found** on `flutter analyze`.
 
 ---
 
@@ -251,10 +293,10 @@ flutter analyze
 <!-- ANIMATED WAVING FOOTER BANNER                                       -->
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <p align="center">
-  <img src="assets/images/footer.svg" width="100%" alt="Footer Banner"/>
+  <img src="montra/assets/images/footer.svg" width="100%" alt="Footer Banner"/>
 </p>
 
 <a id="license"></a>
 <p align="center">
-  <sub>Built with ❤️ using Flutter & Drift • Licensed under <a href="../LICENSE">MIT</a></sub>
+  <sub>Built with ❤️ using Flutter & Drift • Licensed under <a href="LICENSE">MIT</a></sub>
 </p>
